@@ -40,6 +40,8 @@ $routes->get('menu_akses', 'SuperController::kelola_menu');
 $routes->post('/supercontroller/createUser', 'SuperController::createUser');
 $routes->post('/supercontroller/updateUser', 'SuperController::updateUser');
 $routes->get('/supercontroller/deleteUser/(:num)', 'SuperController::deleteUser/$1');
+$routes->get('pengaturan_role', 'SuperController::pengaturan_role');
+$routes->post('role/update_permissions/(:num)', 'SuperController::update_permissions/$1');
 
 // TAMPILAN USER
 $routes->get('user_view', 'UserController::viewuser');
