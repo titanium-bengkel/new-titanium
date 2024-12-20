@@ -15,7 +15,7 @@ class UserModel extends Model
     protected $useSoftDeletes = false;
 
     protected $allowedFields = [
-        'username', 'password', 'nama_user', 'alamat', 'kontak', 'email', 'status', 'level', 'foto','id_role'
+        'username', 'password', 'nama_user', 'alamat', 'kontak', 'email', 'status', 'level', 'foto'
     ];
 
     protected $useTimestamps = true;
@@ -23,12 +23,7 @@ class UserModel extends Model
     protected $updatedField = 'updated_at';
     protected $deletedField = 'deleted_at';
 
-
-    // protected $validationRules = [
-    //     'username' => 'required|min_length[3]|max_length[50]|is_unique[auth_user.username,id,{id}]',
-    //     'email'    => 'required|valid_email|is_unique[auth_user.email,id,{id}]',
-    //     'password' => 'permit_empty|min_length[6]',
-    // ];
+    protected $validationRules = [];
     protected $validationMessages = [];
     protected $skipValidation = false;
 
