@@ -69,12 +69,8 @@
                                     <tr>
                                         <th>Kode Barang</th>
                                         <th>Nama Barang</th>
-                                        <th>QtyB</th>
-                                        <th>SatB</th>
-                                        <th>QtyT</th>
-                                        <th>SatT</th>
-                                        <th>QtyK</th>
-                                        <th>SatK</th>
+                                        <th>Qty</th>
+                                        <th>Satuan</th>
                                         <th>Harga</th>
                                         <th>Jumlah</th>
                                         <th>No Faktur</th>
@@ -85,14 +81,10 @@
                                 </thead>
                                 <tbody id="detail-barang-body">
                                     <tr>
-                                        <td><input type="text" class="form-control" name="kode_barang[]" data-bs-toggle="modal" data-bs-target="#kodeBarangModal" readonly></td>
+                                        <td><input type="text" class="form-control" name="id_kode_barang[]" data-bs-toggle="modal" data-bs-target="#kodeBarangModal" readonly></td>
                                         <td><input type="text" class="form-control" name="nama_barang[]"></td>
-                                        <td><input type="text" class="form-control" name="qty_b[]"></td>
-                                        <td><input type="text" class="form-control" name="sat_b[]"></td>
-                                        <td><input type="text" class="form-control " name="qty_t[]"></td>
-                                        <td><input type="text" class="form-control" name="sat_t[]"></td>
-                                        <td><input type="text" class="form-control " name="qty_k[]"></td>
-                                        <td><input type="text" class="form-control" name="sat_k[]"></td>
+                                        <td><input type="text" class="form-control" name="qty[]"></td>
+                                        <td><input type="text" class="form-control" name="satuan[]"></td>
                                         <td><input type="text" class="form-control harga" name="harga[]"></td>
                                         <td><input type="text" class="form-control jumlah" name="jumlah[]" readonly></td>
                                         <td></td>
@@ -209,7 +201,7 @@
                         <tbody>
                             <?php if (!empty($bahan)) : ?>
                                 <?php foreach ($bahan as $b) : ?>
-                                    <tr data-satt="<?= $b['sat_t'] ?>" data-satb="<?= $b['sat_b'] ?>" data-satk="<?= $b['sat_k'] ?>">
+                                    <tr data-satuan="<?= $b['sat_b'] ?>">
                                         <td><?= $b['kode_bahan'] ?></td>
                                         <td><?= $b['nama_bahan'] ?></td>
                                         <td><?= number_format($b['harga_beli'], 0, ',', '.'); ?></td>
@@ -353,14 +345,10 @@
         // Menambahkan baris
         $('#add-row-btn').click(function() {
             var row = '<tr>' +
-                '<td><input type="text" class="form-control" name="kode_barang[]" data-bs-toggle="modal" data-bs-target="#kodeBarangModal" readonly></td>' +
+                '<td><input type="text" class="form-control" name="id_kode_barang[]" data-bs-toggle="modal" data-bs-target="#kodeBarangModal" readonly></td>' +
                 '<td><input type="text" class="form-control" name="nama_barang[]"></td>' +
-                '<td><input type="text" class="form-control qty" name="qty_b[]"></td>' +
-                '<td><input type="text" class="form-control" name="sat_b[]"></td>' +
-                '<td><input type="text" class="form-control qty" name="qty_t[]"></td>' +
-                '<td><input type="text" class="form-control" name="sat_t[]"></td>' +
-                '<td><input type="text" class="form-control qty" name="qty_k[]"></td>' +
-                '<td><input type="text" class="form-control" name="sat_k[]"></td>' +
+                '<td><input type="text" class="form-control qty" name="qty[]"></td>' +
+                '<td><input type="text" class="form-control" name="satuan[]"></td>' +
                 '<td><input type="text" class="form-control harga" name="harga[]"></td>' +
                 '<td><input type="text" class="form-control jumlah" name="jumlah[]" readonly></td>' +
                 '<td></td>' +
@@ -375,7 +363,7 @@
         });
 
         // Menyimpan referensi baris yang sedang dipilih
-        $('#detail-barang-body').on('click', 'input[name="kode_barang[]"]', function() {
+        $('#detail-barang-body').on('click', 'input[name="id_kode_barang[]"]', function() {
             selectedRow = $(this).closest('tr'); // Simpan referensi baris yang diklik
         });
 
@@ -385,18 +373,14 @@
             const kodeBarang = $(this).find('td:eq(0)').text();
             const namaBarang = $(this).find('td:eq(1)').text();
             const hargaBarang = $(this).find('td:eq(2)').text();
-            const sat_b = $(this).data('satb'); // Mendapatkan data satuan sat_b dari atribut data-satb
-            const sat_t = $(this).data('satt'); // Mendapatkan data satuan sat_t dari atribut data-satt
-            const sat_k = $(this).data('satk'); // Mendapatkan data satuan sat_k dari atribut data-satk
+            const satuan = $(this).data('satuan'); // Mendapatkan data satuan satuan dari atribut data-satb
 
             // Mengisi data ke baris yang sedang dipilih di tabel utama
             if (selectedRow) {
-                selectedRow.find('input[name="kode_barang[]"]').val(kodeBarang);
+                selectedRow.find('input[name="id_kode_barang[]"]').val(kodeBarang);
                 selectedRow.find('input[name="nama_barang[]"]').val(namaBarang);
                 selectedRow.find('input[name="harga[]"]').val(hargaBarang);
-                selectedRow.find('input[name="sat_b[]"]').val(sat_b); // Mengisi input satuan sat_b
-                selectedRow.find('input[name="sat_t[]"]').val(sat_t); // Mengisi input satuan sat_t
-                selectedRow.find('input[name="sat_k[]"]').val(sat_k); // Mengisi input satuan sat_k
+                selectedRow.find('input[name="satuan[]"]').val(satuan); // Mengisi input satuan
             }
 
             // Menutup modal

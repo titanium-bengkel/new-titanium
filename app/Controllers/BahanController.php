@@ -75,20 +75,20 @@ class BahanController extends BaseController
         $GenerateId = $poBahanModel->generateId();
 
         // Mengambil dan memproses input qty dan harga dengan str_replace untuk menghilangkan format angka yang salah
-        $qty_b = array_map(function ($qty_b) {
-            return (float) str_replace(',', '', $qty_b); // Remove commas for thousands
-        }, $this->request->getPost('qty_b'));
+        $qty = array_map(function ($qty) {
+            return (float) str_replace(',', '', $qty); // Remove commas for thousands
+        }, $this->request->getPost('qty'));
 
         $harga = array_map(function ($harga) {
             return (float) str_replace([',', '.'], '', $harga); // Remove commas and periods
         }, $this->request->getPost('harga'));
 
-        // Menghitung jumlah, total qty_b, dan total jumlah
-        $jumlah = array_map(function ($qty_b, $harga) {
-            return $qty_b * $harga;
-        }, $qty_b, $harga);
+        // Menghitung jumlah, total qty, dan total jumlah
+        $jumlah = array_map(function ($qty, $harga) {
+            return $qty * $harga;
+        }, $qty, $harga);
 
-        $total_qty_b = array_sum($qty_b);
+        $total_qty_b = array_sum($qty);
         $total_jumlah = array_sum($jumlah);
 
         // Convert inputs to uppercase where applicable
@@ -108,26 +108,19 @@ class BahanController extends BaseController
         $poBahanModel->insert($data);
 
         // Mengambil input tambahan qty_t, sat_t, qty_k, dan sat_k
-        $kode_barang = $this->request->getPost('kode_barang');
+        $id_kode_barang = $this->request->getPost('id_id_kode_barang');
         $nama_barang = $this->request->getPost('nama_barang');
-        $sat_b = $this->request->getPost('sat_b');
-        $qty_t = $this->request->getPost('qty_t');
-        $sat_t = $this->request->getPost('sat_t');
-        $qty_k = $this->request->getPost('qty_k');
-        $sat_k = $this->request->getPost('sat_k');
+        $satuan = $this->request->getPost('satuan');
+        $qty = $this->request->getPost('qty');
         $ceklis = $this->request->getPost('ceklis');
 
-        if ($kode_barang) {
-            foreach ($kode_barang as $index => $kode) {
+        if ($id_kode_barang) {
+            foreach ($id_kode_barang as $index => $kode) {
                 $barangData = [
                     'id_kode_barang' => strtoupper($kode),
                     'nama_barang' => strtoupper($nama_barang[$index]),
-                    'qty_b' => $qty_b[$index],
-                    'sat_b' => strtoupper($sat_b[$index]),
-                    'qty_t' => $qty_t[$index],
-                    'sat_t' => strtoupper($sat_t[$index]),
-                    'qty_k' => $qty_k[$index],
-                    'sat_k' => strtoupper($sat_k[$index]),
+                    'qty' => $qty[$index],
+                    'satuan' => strtoupper($satuan[$index]),
                     'harga' => $harga[$index],
                     'jumlah' => $jumlah[$index],
                     'id_po_bahan' => strtoupper($data['id_po_bahan']),
@@ -182,7 +175,7 @@ class BahanController extends BaseController
             $totalJumlah = 0;
 
             foreach ($detailBarang as $detail) {
-                $totalQty_b += $detail['qty_b']; // Hanya menghitung qty_b
+                $totalQty_b += $detail['qty']; // Hanya menghitung qty_b
                 $totalJumlah += $detail['jumlah']; // Menghitung total jumlah
             }
 
