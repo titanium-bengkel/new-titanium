@@ -244,9 +244,9 @@
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>No.Order</th>
-                                <th>tanggal</th>
-                                <th>Type mobil</th>
+                                <th>No. Penerimaan</th>
+                                <th>Tanggal</th>
+                                <th>Type Mobil</th>
                                 <th>Nopol</th>
                                 <th>Warna</th>
                                 <th>Tahun</th>
@@ -254,21 +254,37 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (!empty($po)) : ?>
-                                <?php foreach ($po as $data) : ?>
-                                    <tr data-pemilik="<?= $data->customer_name ?>">
-                                        <td><?= $data->id_terima_po ?></td>
-                                        <td><?= date('d-m-Y', strtotime($data->tgl_klaim)) ?></td>
-                                        <td><?= $data->jenis_mobil ?></td>
-                                        <td><?= $data->no_kendaraan ?></td>
-                                        <td><?= $data->warna ?></td>
-                                        <td><?= $data->tahun_kendaraan ?></td>
-                                        <td><?= $data->asuransi ?></td>
+                            <?php if (!empty($penerimaan)) : ?>
+                                <?php foreach ($penerimaan as $data) : ?>
+                                    <tr
+                                        data-pemilik="<?= $data['nama_pemilik'] ?>"
+                                        data-gudang="<?= $data['gudang'] ?>"
+                                        data-nopol="<?= $data['nopol'] ?>"
+                                        data-jenis="<?= $data['jenis_mobil'] ?>"
+                                        data-idKode="<?= $data['id_kode_barang'] ?>"
+                                        data-namaBarang="<?= $data['nama_barang'] ?>"
+                                        data-qty="<?= $data['qty'] ?>"
+                                        data-satuan="<?= $data['satuan'] ?>"
+                                        data-hpp="<?= $data['harga'] ?>"
+                                        data-repair="<?= $data['no_repair_order'] ?>"
+                                        data-Terima="<?= $data['id_penerimaan'] ?>"
+                                        data-tgl_masuk="<?= $data['tgl_masuk'] ?>"
+                                        data-warna="<?= $data['warna'] ?>"
+                                        data-tahun_kendaraan="<?= $data['tahun_kendaraan'] ?>"
+                                        data-asuransi="<?= $data['asuransi'] ?>">
+
+                                        <td><?= $data['no_repair_order'] ?></td>
+                                        <td><?= date('d-m-Y', strtotime($data['tgl_masuk'])) ?></td>
+                                        <td><?= $data['jenis_mobil'] ?></td>
+                                        <td><?= $data['nopol'] ?></td>
+                                        <td><?= $data['warna'] ?></td>
+                                        <td><?= $data['tahun_kendaraan'] ?? '-' ?></td> <!-- Data ini tidak ada di penerimaan -->
+                                        <td><?= $data['asuransi'] ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else : ?>
                                 <tr>
-                                    <td colspan="6">Data PO tidak tersedia.</td>
+                                    <td colspan="7">Data penerimaan tidak tersedia.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -288,6 +304,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -315,10 +332,6 @@
                 '<td><input type="text" name="nama_barang[]" class="form-control form-control-sm"></td>' +
                 '<td><input type="text" name="qty_B[]" class="form-control form-control-sm"></td>' +
                 '<td><input type="text" name="sat_B[]" class="form-control form-control-sm"></td>' +
-                // '<td><input type="text" name="qty_T[]" class="form-control form-control-sm"></td>' +
-                // '<td><input type="text" name="sat_T[]" class="form-control form-control-sm"></td>' +
-                // '<td><input type="text" name="qty_K[]" class="form-control form-control-sm"></td>' +
-                // '<td><input type="text" name="sat_K[]" class="form-control form-control-sm"></td>' +
                 '<td><input type="text" name="hpp[]" class="form-control form-control-sm"></td>' +
                 '<td></td>' +
                 '<td><input type="checkbox" class="form-check-input pilih-checkbox"></td>' +
@@ -361,39 +374,125 @@
     });
 
     // Menambahkan event listener ke semua baris tabel dalam modal
-    $(document).ready(function() {
-        // Fungsi untuk menangani klik pada baris tabel
-        $('#repair tbody tr').on('click', function() {
-            // Ambil data dari atribut data-pemilik
-            var customerName = $(this).data('pemilik');
+    // $(document).ready(function() {
+    //     // Fungsi untuk menangani klik pada baris tabel
+    //     $('#repair tbody tr').on('click', function() {
+    //         // Ambil data dari atribut data-pemilik
+    //         var nama_pemilik = $(this).data('pemilik');
+    //         var gudang = $(this).data('gudang');
 
-            // Ambil data dari kolom dalam baris yang diklik
-            var noOrder = $(this).find('td:eq(0)').text();
-            var tgl_masuk = $(this).find('td:eq(1)').text(); // Format dd-mm-yyyy
-            var jenisMobil = $(this).find('td:eq(2)').text();
-            var nopol = $(this).find('td:eq(3)').text();
-            var warna = $(this).find('td:eq(4)').text();
-            var tahun = $(this).find('td:eq(5)').text();
-            var asuransi = $(this).find('td:eq(6)').text();
+    //         // Ambil data dari kolom dalam baris yang diklik
+    //         var noOrder = $(this).find('td:eq(0)').text();
+    //         var tgl_masuk = $(this).find('td:eq(1)').text(); // Format dd-mm-yyyy
+    //         var jenisMobil = $(this).find('td:eq(2)').text();
+    //         var nopol = $(this).find('td:eq(3)').text();
+    //         var warna = $(this).find('td:eq(4)').text();
+    //         var tahun = $(this).find('td:eq(5)').text();
+    //         var asuransi = $(this).find('td:eq(6)').text();
 
-            // Konversi format tanggal dari dd-mm-yyyy menjadi yyyy-mm-dd
-            var parts = tgl_masuk.split('-');
-            var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[0]; // yyyy-mm-dd
+    //         // Konversi format tanggal dari dd-mm-yyyy menjadi yyyy-mm-dd
+    //         var parts = tgl_masuk.split('-');
+    //         var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[0]; // yyyy-mm-dd
 
-            // Isi data ke dalam input field
-            $('#no_ro').val(noOrder);
-            $('#tanggal_masuk').val(formattedDate); // Isi tanggal masuk dengan format yyyy-mm-dd
-            $('#jenis_mobil').val(jenisMobil);
-            $('#nopol').val(nopol);
-            $('#warna').val(warna);
-            $('#tahun').val(tahun);
-            $('#asuransi').val(asuransi);
-            $('#nama_pemilik').val(customerName); // Isi nama pemilik ke input field
+    //         // Isi data ke dalam input field
+    //         $('#no_ro').val(noOrder);
+    //         $('#tanggal_masuk').val(formattedDate); // Isi tanggal masuk dengan format yyyy-mm-dd
+    //         $('#jenis_mobil').val(jenisMobil);
+    //         $('#nopol').val(nopol);
+    //         $('#warna').val(warna);
+    //         $('#tahun').val(tahun);
+    //         $('#asuransi').val(asuransi);
+    //         $('#nama_pemilik').val(nama_pemilik); // Isi nama pemilik ke input field
+    //         $('#gudang_keluar').val(gudang);
+    //         $('#gudang_masuk').val(gudang);
 
-            // Tutup modal
+    //         // Tutup modal
+    //         $('#repair').modal('hide');
+    //     });
+    // });
+
+    document.querySelectorAll('#repair tbody tr').forEach(row => {
+        row.addEventListener('click', () => {
+            // Ambil modal dan data dari dataset baris
+            const modal = document.querySelector('#repair');
+            const dataPemilik = row.dataset.pemilik;
+            const dataRepair = row.dataset.repair;
+            const dataGudang = row.dataset.gudang;
+            const dataNopol = row.dataset.nopol;
+            const dataJenis = row.dataset.jenis;
+            const dataIdKode = row.dataset.idkode;
+            const dataNamaBarang = row.dataset.namabarang;
+            const dataQty = row.dataset.qty;
+            const dataSatuan = row.dataset.satuan;
+            const dataHpp = row.dataset.hpp;
+            const dataTglmasuk = row.dataset.tgl_masuk;
+            const dataWarna = row.dataset.warna;
+            const dataTahun = row.dataset.tahun_kendaraan;
+            const dataAsuransi = row.dataset.asuransi;
+
+            // Masukkan data ke form (jika diperlukan)
+            document.querySelector('#no_ro').value = dataRepair;
+            document.querySelector('#nama_pemilik').value = dataPemilik;
+            document.querySelector('#gudang_masuk').value = dataGudang;
+            document.querySelector('#gudang_keluar').value = dataGudang;
+            document.querySelector('#nopol').value = dataNopol;
+            document.querySelector('#tanggal_masuk').value = dataTglmasuk;
+            document.querySelector('#warna').value = dataWarna;
+            document.querySelector('#tahun').value = dataTahun;
+            document.querySelector('#asuransi').value = dataAsuransi;
+            document.querySelector('#jenis_mobil').value = dataJenis;
+
+            // Tambahkan data ke tabel detail
+            const tableBody = document.querySelector('#repair_material_detail');
+            let rowUpdated = false;
+
+            // Periksa apakah id_kode_barang sudah ada di tabel detail
+            tableBody.querySelectorAll('tr').forEach(existingRow => {
+                const existingIdKode = existingRow.querySelector('input[name="id_kode_barang[]"]').value;
+
+                if (existingIdKode === dataIdKode) {
+                    // Jika ditemukan, perbarui baris yang ada
+                    existingRow.querySelector('input[name="nama_barang[]"]').value = dataNamaBarang;
+                    existingRow.querySelector('input[name="qty[]"]').value = parseInt(existingRow.querySelector('input[name="qty[]"]').value) + parseInt(dataQty);
+                    existingRow.querySelector('input[name="satuan[]"]').value = dataSatuan;
+                    existingRow.querySelector('input[name="harga[]"]').value = dataHpp;
+                    existingRow.querySelector('input[name="nilai[]"]').value = parseInt(existingRow.querySelector('input[name="qty[]"]').value) * dataHpp;
+                    rowUpdated = true;
+                }
+            });
+
+            // Jika tidak ada baris yang diperbarui, tambahkan baris baru
+            if (!rowUpdated) {
+                const newRow = `
+            <tr>
+                <td><input type="text" name="id_kode_barang[]" class="form-control form-control-sm" value="${dataIdKode}" readonly></td>
+                <td><input type="text" name="nama_barang[]" class="form-control form-control-sm" value="${dataNamaBarang}" readonly></td>
+                <td><input type="number" name="qty[]" class="form-control form-control-sm" value="${dataQty}"></td>
+                <td><input type="text" name="satuan[]" class="form-control form-control-sm" value="${dataSatuan}" readonly></td>
+                <td><input type="text" name="harga[]" class="form-control form-control-sm" value="${dataHpp}" readonly></td>
+                <td><input type="text" name="nilai[]" class="form-control form-control-sm" value="${dataQty * dataHpp}" readonly></td>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td><button type="button" class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button></td>
+            </tr>
+            `;
+                tableBody.insertAdjacentHTML('beforeend', newRow);
+            }
+
+            // Tutup modal setelah klik baris
             $('#repair').modal('hide');
         });
     });
+
+    // Event listener untuk menghapus baris di tabel detail
+    document.querySelector('#repair_material_detail').addEventListener('click', e => {
+        if (e.target.classList.contains('delete-row')) {
+            const row = e.target.closest('tr');
+            row.remove();
+        }
+    });
+
+
+
 
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -474,24 +573,24 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    // Menambahkan event listener untuk input pencarian
-    document.getElementById('search-barang').addEventListener('input', function() {
-        const searchValue = this.value.toLowerCase(); // Ambil nilai input dan ubah ke huruf kecil
-        const rows = document.querySelectorAll('#kodeBarangModal tbody tr'); // Seleksi semua baris di dalam modal
+        // Menambahkan event listener untuk input pencarian
+        document.getElementById('search-barang').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase(); // Ambil nilai input dan ubah ke huruf kecil
+            const rows = document.querySelectorAll('#kodeBarangModal tbody tr'); // Seleksi semua baris di dalam modal
 
-        rows.forEach(row => {
-            const kodePart = row.cells[0].innerText.toLowerCase(); // Kolom Kode
-            const namaPart = row.cells[1].innerText.toLowerCase(); // Kolom Nama
+            rows.forEach(row => {
+                const kodePart = row.cells[0].innerText.toLowerCase(); // Kolom Kode
+                const namaPart = row.cells[1].innerText.toLowerCase(); // Kolom Nama
 
-            // Tampilkan baris jika nilai input cocok dengan Kode atau Nama
-            if (kodePart.includes(searchValue) || namaPart.includes(searchValue)) {
-                row.style.display = ''; // Tampilkan baris
-            } else {
-                row.style.display = 'none'; // Sembunyikan baris
-            }
+                // Tampilkan baris jika nilai input cocok dengan Kode atau Nama
+                if (kodePart.includes(searchValue) || namaPart.includes(searchValue)) {
+                    row.style.display = ''; // Tampilkan baris
+                } else {
+                    row.style.display = 'none'; // Sembunyikan baris
+                }
+            });
         });
     });
-});
 </script>
 
 <?= $this->endSection() ?>

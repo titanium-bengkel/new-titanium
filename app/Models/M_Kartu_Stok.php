@@ -9,7 +9,18 @@ class M_Kartu_Stok extends Model
     protected $table      = 'kartu_stok';
     protected $primaryKey = 'id';
 
-    protected $allowedFields = ['nomor', 'transaksi', 'debit', 'credit', 'saldo', 'tanggal', 'id_kode_barang', 'nama_barang', 'gudang', 'nopol'];
+    protected $allowedFields = [
+        'nomor',
+        'transaksi',
+        'debit',
+        'credit',
+        'saldo',
+        'tanggal',
+        'id_kode_barang',
+        'nama_barang',
+        'gudang',
+        'nopol'
+    ];
 
     protected $useTimestamps = false;
 

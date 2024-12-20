@@ -25,6 +25,7 @@ class M_Part_Terima extends Model
         'warna',
         'nama_pemilik',
         'nopol',
+        'no_rangka',
         'pembayaran',
         'ppn',
         'term',
@@ -32,7 +33,8 @@ class M_Part_Terima extends Model
         'total_jumlah',
         'nilai_ppn',
         'netto',
-        'user_id'
+        'user_id',
+        'created_at'
     ];
 
 
@@ -142,5 +144,11 @@ class M_Part_Terima extends Model
 
         $query = $builder->get();
         return $query->getResultArray(); // Mengembalikan hasil sebagai array
+    }
+    public function getSparepartsByPenerimaan($id_penerimaan)
+    {
+        return $this->where('id_penerimaan', $id_penerimaan)
+            ->where('is_sent', 1)
+            ->findAll();
     }
 }

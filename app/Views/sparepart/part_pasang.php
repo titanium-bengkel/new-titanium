@@ -2,7 +2,7 @@
 <?= $this->extend('layout/template'); ?>
 
 <?= $this->section('content') ?>
-<h3>Laporan Sparepart Sisa (Sparepart Masuk Yang Belum Terpasang)</h3>
+<h3>Sparepart Terpasang</h3>
 
 <!-- Table Pre-order -->
 <section class="section">
@@ -54,22 +54,22 @@
                                 </tr>
                             </thead>
                             <tbody class="text-center">
-                                <?php if (!empty($partsBelumPasang)) : ?>
+                                <?php if (!empty($getPartPasang)) : ?>
                                     <?php
                                     $previousDate = '';
                                     $index = 1;
-                                    foreach ($partsBelumPasang as $detail) :
-                                        $currentDate = $detail['tgl_terima'];
+                                    foreach ($getPartPasang as $detail) :
+                                        $currentDate = $detail['tgl_pasang'];
 
                                         // Jika tanggal berbeda, tambahkan baris kosong
                                         if ($previousDate != '' && $previousDate != $currentDate) : ?>
                                             <tr>
-                                                <td colspan="11" style="height: 10px; background-color: dark;"></td>
+                                                <td colspan="10" style="height: 10px; background-color: dark;"></td>
                                             </tr>
                                         <?php endif; ?>
                                         <tr>
                                             <td><?= $index ?></td>
-                                            <td><?= $detail['tgl_terima'] ?></td>
+                                            <td><?= $detail['tgl_pasang'] ?></td>
                                             <td><?= $detail['jenis_mobil'] ?></td>
                                             <td><?= $detail['no_repair_order'] ?></td>
                                             <td><?= $detail['nopol'] ?></td>
@@ -90,7 +90,7 @@
                                     <?php endforeach; ?>
                                 <?php else : ?>
                                     <tr>
-                                        <td colspan="11">Data tidak tersedia.</td>
+                                        <td colspan="10">Data tidak tersedia.</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>

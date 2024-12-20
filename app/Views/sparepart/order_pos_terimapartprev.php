@@ -31,7 +31,7 @@
             <div class="card">
                 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                        <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">List Penerimaan Sparepart</a>
+                        <a href="<?= base_url('/terima_part') ?>" class="breadcrumb-link text-primary fw-bold">List Penerimaan Sparepart</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
                         <span class="breadcrumb-current text-muted">Add Penerimaan Sparepart</span>
                     </div>
@@ -56,13 +56,8 @@
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="supplier">Supplier</label>
                             </div>
-                            <div class="col-lg-9 col-7 mb-3">
+                            <div class="col-lg-10 col-7 mb-3">
                                 <input type="text" id="supplier" class="form-control" name="supplier" value="<?= $sparepart['supplier'] ?>">
-                            </div>
-                            <div class="col-lg-1 col-2 mb-3">
-                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#supp">
-                                    <i class="fas fa-search"></i>
-                                </button>
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="jatuh_tempo">Jatuh Tempo</label>
@@ -89,21 +84,16 @@
                                     </select>
                                 </fieldset>
                             </div>
-
                         </div>
+
 
                         <h5>Data</h5>
                         <div class="form-group row align-items-center">
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="no_preor">No. PO/Nopol</label>
                             </div>
-                            <div class="col-lg-9 col-7 mb-3">
+                            <div class="col-lg-10 col-7 mb-3">
                                 <input type="text" id="no_preor" class="form-control" name="no_preor" value="<?= $sparepart['no_preor'] ?>">
-                            </div>
-                            <div class="col-lg-1 col-2 mb-3">
-                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#no-ken">
-                                    <i class="fas fa-search"></i>
-                                </button>
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="alamat">Alamat</label>
@@ -160,44 +150,52 @@
                                         <th>Jumlah</th>
                                         <th>No PO</th>
                                         <th>PO ID</th>
-                                        <th>Pilih</th>
+                                        <!-- <th>Pilih</th> -->
+                                        <!-- <th>Pasang</th> -->
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="detail-barang-body" style="text-align: center;">
                                     <?php if (!empty($detail_terima)) : ?>
-                                        <?php foreach ($detail_terima as $detail) : ?>
+                                        <?php foreach ($detail_terima as $index => $detail) : ?>
                                             <tr>
                                                 <td>
-                                                    <input type="text" class="form-control form-control-sm" name="id_kode_barang[]" value="<?= $detail['id_kode_barang'] ?>" required>
+                                                    <?= $detail['id_kode_barang'] ?>
                                                 </td>
                                                 <td>
-                                                    <input type="text" class="form-control form-control-sm" name="nama_barang[]" value="<?= $detail['nama_barang'] ?>" required>
+                                                    <?= $detail['nama_barang'] ?>
+                                                <td>
+                                                    <?= $detail['qty'] ?>
                                                 </td>
                                                 <td>
-                                                    <input type="number" class="form-control form-control-sm" name="qty[]" value="<?= $detail['qty'] ?>" min="0" required>
+                                                    <?= $detail['satuan'] ?>
                                                 </td>
                                                 <td>
-                                                    <input type="text" class="form-control form-control-sm" name="satuan[]" value="<?= $detail['satuan'] ?>" required>
+                                                    <?= number_format($detail['harga'], 0, ',', '.') ?>
                                                 </td>
                                                 <td>
-                                                    <input type="text" class="form-control form-control-sm" name="harga[]" value="<?= number_format($detail['harga'], 0, ',', '.') ?>" required>
+                                                    <?= number_format($detail['disc'], 0, ',', '.') ?>
                                                 </td>
                                                 <td>
-                                                    <input type="text" class="form-control form-control-sm" name="disc[]" value="<?= number_format($detail['disc'], 0, ',', '.') ?>" required>
+                                                    <?= number_format($detail['jumlah'], 0, ',', '.') ?>
                                                 </td>
                                                 <td>
-                                                    <input type="text" class="form-control form-control-sm" name="jumlah[]" value="<?= number_format($detail['jumlah'], 0, ',', '.') ?>" readonly>
+                                                    <?= $detail['no_po'] ?>
                                                 </td>
-                                                <td>
-                                                    <input type="text" class="form-control form-control-sm" name="no_po[]" value="<?= $detail['no_po'] ?>" required>
-                                                </td>
-                                                <td>
-                                                    <input type="text" class="form-control form-control-sm" name="po_id[]" value="<?= $detail['po_id'] ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="checkbox" class="form-check-input pilih-checkbox" name="is_sent[]" value="<?= $detail['is_sent']; ?>" <?= $detail['is_sent'] == 1 ? 'checked disabled' : ''; ?>>
-                                                </td>
+                                                <td><?= $index + 1 ?></td>
+                                                <!-- <td>
+                                                    <div class="ms-auto">
+                                                        <?php if ($detail['is_pasang'] == 0): ?>
+                                                            <button type="button" class="btn btn-primary btn-sm" id="pasangPart" data-id="<?= $detail['id'] ?>">
+                                                                Pasang
+                                                            </button>
+                                                        <?php else: ?>
+                                                            <button type="button" class="btn btn-success btn-sm" disabled>
+                                                                Terpasang
+                                                            </button>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </td> -->
                                                 <td>
                                                     <div class="btn-group" role="group">
                                                         <button type="button" class="btn btn-sm" onclick="return confirm('Apakah Anda yakin ingin mengedit data ini?')">
@@ -213,7 +211,7 @@
                                         <?php endforeach; ?>
                                     <?php else : ?>
                                         <tr>
-                                            <td colspan="11">Tidak ada data barang.</td>
+                                            <td colspan="12">Tidak ada data barang.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -223,7 +221,7 @@
                                         <td style="text-align: center;"><?= $total_qty; ?></td>
                                         <td colspan="3">Total Jumlah</td>
                                         <td style="text-align: center;"><?= number_format($total_jumlah, 0, ',', '.'); ?></td>
-                                        <td colspan="4"></td>
+                                        <td colspan="5"></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -243,109 +241,68 @@
 </section>
 <!-- Horizontal Input end -->
 
+<script>
+    document.getElementById('pasangPart').addEventListener('click', function() {
+        const button = this; // Referensi tombol
+        const id = button.getAttribute('data-id');
 
-<!-- modal detail barang -->
-<div class="modal fade" id="kodeBarangModal" tabindex="-1" aria-labelledby="myModalLabel1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel1">Cari Bahan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="search-barang" class="form-label">Cari</label>
-                    </div>
-                    <div class="col-md-8">
-                        <input type="text" id="search-barang" class="form-control" name="search">
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>Kode</th>
-                                <th>Nama</th>
-                                <th>Harga</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (!empty($barang)) : ?>
-                                <?php foreach ($barang as $b) : ?>
-                                    <tr data-kode="<?= $b->kode ?>" data-nama="<?= $b->nama ?>" data-harga="<?= $b->hargabeli_B ?>">
-                                        <td><?= $b->kode ?></td>
-                                        <td><?= $b->nama ?></td>
-                                        <td><?= $b->hargabeli_B ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else : ?>
-                                <tr>
-                                    <td colspan="3">Data supplier tidak tersedia.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Submit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Sparepart akan terpasang dan data tidak dapat kembali setelah dikonfirmasi.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Iya, Lanjutkan',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const url = '/pasangSparepartv2/' + encodeURIComponent(id);
 
+                fetch(url, {
+                        method: 'POST', // Menggunakan POST
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            mobilId: 123
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Sparepart Terpasang!',
+                                data.message,
+                                'success'
+                            );
 
-<!-- modal supplier -->
-<div class="modal fade text-left" id="supp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close rounded-pill" data-bs-dismiss="modal" aria-label="Close">
-                    <i data-feather="x"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="search-input">Cari</label>
-                    </div>
-                    <div class="col-md-8">
-                        <input type="text" id="search-input" class="form-control" name="search">
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered mb-0">
-                        <thead>
-                            <tr>
-                                <th>Kode</th>
-                                <th>Nama Supplier</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn" data-bs-dismiss="modal">
-                    <i class="bx bx-x d-block d-sm-none"></i>
-                    <span class="d-none d-sm-block">Close</span>
-                </button>
-                <button type="button" class="btn btn-primary ms-1" data-bs-dismiss="modal">
-                    <i class="bx bx-check d-block d-sm-none"></i>
-                    <span class="d-none d-sm-block">Accept</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
+                            // Ubah tombol menjadi "Terpasang" dan matikan
+                            button.textContent = 'Terpasang';
+                            button.classList.add('btn-success'); // Tambahkan kelas success untuk indikasi
+                            button.disabled = true; // Nonaktifkan tombol
+                        } else {
+                            Swal.fire(
+                                'Gagal!',
+                                data.message,
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Terjadi Kesalahan', 'Gagal mengirim data ke server', 'error');
+                    });
+            } else if (result.isDismissed) {
+                Swal.fire(
+                    'Aksi Dibatalkan!',
+                    'Tidak ada perubahan yang dilakukan.',
+                    'error'
+                );
+            }
+        });
+    });
+</script>
 
 
 

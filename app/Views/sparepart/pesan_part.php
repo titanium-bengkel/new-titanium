@@ -17,29 +17,29 @@
                 <div class="card-header d-flex align-items-center justify-content-start flex-wrap" style="padding: 20px;">
                     <div class="d-flex align-items-center ms-md-auto w-100 w-md-auto">
                         <div class="d-flex align-items-center w-100 justify-content-start">
-                            <a href="<?= base_url('beli_part') ?>" class="btn btn-primary btn-sm me-2" style="width: 60px;">Add</a>
+                            <a href="<?= base_url('beli_part') ?>" class="btn btn-primary btn-sm me-2">Add Pemesanan</a>
                             <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
                         </div>
                     </div>
                 </div>
                 <!-- table head dark -->
                 <div class="table-responsive" style=" font-size: 12px; margin:20px" ;>
-                    <table class="table table-bordered mb-0">
-                        <thead class="thead-dark">
+                    <table class="table table-bordered table-striped table-hover mb-0">
+                        <thead class="thead-dark table-secondary">
                             <tr>
                                 <th style="text-align: center;">#</th>
-                                <th style="text-align: center;">OK</th>
+                                <th style="text-align: center;">Status</th>
                                 <th style="text-align: center;">No. PO</th>
-                                <th style="text-align: center;">No. Repair Order</th>
+                                <th style="text-align: center;">Work Order</th>
                                 <th style="text-align: center;">Tanggal</th>
-                                <th style="text-align: center;">Nama Supplier</th>
+                                <th style="text-align: center;">Supplier</th>
                                 <th style="text-align: center;">Nopol</th>
                                 <th style="text-align: center;">Asuransi</th>
                                 <th style="text-align: center;">Unit</th>
                                 <th style="text-align: center;">Jumlah</th>
                                 <th style="text-align: center;">No. Faktur</th>
                                 <th style="text-align: center;">Keterangan</th>
-                                <th style="text-align: center;">User</th>
+                                <th style="text-align: center;">User ID</th>
                                 <th style="text-align: center;">Action</th>
                             </tr>
                         </thead>
@@ -50,27 +50,30 @@
                                         <td><?= $key + 1; ?></td>
                                         <td>
                                             <?php if ($item['all_sent']): ?>
-                                                <span class="badge bg-success">Oke</span>
+                                                <span class="badge bg-success" style="font-size: 14px; padding: 5px 10px;">
+                                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                                </span>
                                             <?php endif; ?>
                                         </td>
+
 
                                         <td>
                                             <a href="<?= base_url('beli_partprev/' . $item['id_pesan']); ?>">
                                                 <?= $item['id_pesan']; ?>
                                             </a>
                                         </td>
-                                        <td><?= $item['no_repair_order']; ?></td>
+                                        <td><?= $item['wo']; ?></td>
                                         <td><?= $item['tanggal']; ?></td>
                                         <td><?= $item['supplier']; ?></td>
-                                        <td><?= $item['no_kendaraan']; ?></td>
+                                        <td><?= $item['nopol']; ?></td>
                                         <td><?= $item['asuransi']; ?></td>
-                                        <td><?= $item['jenis_mobil']; ?> <?= $item['warna']; ?> <?= $item['no_kendaraan']; ?> <?= $item['nama_pemilik']; ?></td>
+                                        <td><?= $item['jenis_mobil']; ?> <?= $item['warna']; ?> <?= $item['nopol']; ?> <?= $item['customer']; ?></td>
                                         <td><?= number_format($item['total_jumlah'], 0, ',', '.'); ?></td>
                                         <td><?= $item['no_faktur']; ?></td>
                                         <td><?= $item['keterangan']; ?></td>
                                         <td><?= $item['username']; ?></td>
                                         <td>
-                                            <button type="button" class="btn btn-danger btn-sm delete-user-btn" style="padding: 1px 3px; font-size: 10px;" data-url="<?= base_url('sparepart/delete/' . $item['id_pesan']); ?>">
+                                            <button type="button" class="btn btn-sm delete-user-btn" style="padding: 1px 3px; font-size: 10px;" data-url="<?= base_url('sparepart/delete/' . $item['id_pesan']); ?>">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </td>
@@ -115,32 +118,6 @@
     }
 </script>
 
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get the current date
-        const now = new Date();
-        const currentMonth = now.getMonth() + 1; // Months are 0-based in JavaScript
-        const currentYear = now.getFullYear();
-
-        // Set the current month in the select
-        const monthSelect = document.getElementById('selectMonth');
-        monthSelect.value = currentMonth;
-
-        // Set the current year and populate the year select
-        const yearSelect = document.getElementById('selectYear');
-        for (let year = 2020; year <= 2030; year++) {
-            const option = document.createElement('option');
-            option.value = year;
-            option.text = year;
-            if (year === currentYear) {
-                option.selected = true;
-            }
-            yearSelect.appendChild(option);
-        }
-    });
-</script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Event listener untuk tombol delete
@@ -169,26 +146,5 @@
             });
         });
     });
-
-    // Cek apakah ada pesan sukses atau error di session
-    <?php if (session()->has('berhasil')): ?>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: '<?= session('berhasil') ?>',
-            showConfirmButton: false,
-            timer: 3000
-        });
-    <?php elseif (session()->has('error')): ?>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            title: '<?= session('error') ?>',
-            showConfirmButton: false,
-            timer: 3000
-        });
-    <?php endif; ?>
 </script>
 <?= $this->endSection() ?>

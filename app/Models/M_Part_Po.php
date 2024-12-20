@@ -18,19 +18,18 @@ class M_Part_Po extends Model
         'gudang',
         'jatuh_tempo',
         'keterangan',
-        'no_repair_order',
+        'wo',
+        'no_rangka',
         'asuransi',
         'jenis_mobil',
         'warna',
-        'nama_pemilik',
-        'no_kendaraan',
+        'customer',
+        'nopol',
         'total_qty',
         'total_jumlah',
         'user_id',
         'oke'
     ];
-
-
 
     public function updateNoFaktur($id_pesan, $no_faktur)
     {

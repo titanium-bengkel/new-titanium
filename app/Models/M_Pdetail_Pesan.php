@@ -17,13 +17,14 @@ class M_Pdetail_Pesan extends Model
         'satuan',
         'harga',
         'jumlah',
-        'qty_beli',
-        'qty_sisa',
         'no_faktur',
         'tgl_faktur',
         'id_pesan',
         'is_sent',
-        'is_checked'
+        'is_checked',
+        'wo',
+        'no_rangka',
+        'nopol'
     ];
 
     // Fungsi untuk menghitung jumlah berdasarkan qty dan harga
@@ -37,9 +38,10 @@ class M_Pdetail_Pesan extends Model
             ->where('is_sent', 0)
             ->findAll();
     }
-    public function updateIsSent($id_kode_barang, $isSent)
+    public function updateIsSent($id_kode_barang, $nopol, $isSent)
     {
-        return $this->where('id_kode_barang', $id_kode_barang) // Sesuaikan dengan nama kolom yang benar
+        return $this->where('id_kode_barang', $id_kode_barang) // Validasi berdasarkan id_kode_barang
+            ->where('nopol', $nopol) // Validasi berdasarkan nopol
             ->set(['is_sent' => $isSent])
             ->update();
     }

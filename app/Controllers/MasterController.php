@@ -1128,15 +1128,17 @@ class MasterController extends BaseController
         $sparepartModel = new M_Barang_Sparepart();
         $kategori = $this->m_Group->getKategori();
         $groups = $this->m_Group->getGroups();
+        $totalPart = $sparepartModel->getTotalStok();
         $data = [
             'title' => 'Sparepart',
             'sparepart' => $sparepartModel->orderBy('id_part', 'DESC')->findAll(),
             'kategori' => $kategori,
             'groups' => $groups,
+            'totalPart' => $totalPart,
 
 
         ];
-        return view('master/mastersparepart', $data);
+        return view('master/view_sparepart', $data);
     }
 
 
@@ -1149,17 +1151,11 @@ class MasterController extends BaseController
         $data = [
             'kode_part'      => strtoupper($this->request->getPost('kode_part')),
             'nama_part'      => strtoupper($this->request->getPost('nama_part')),
-            'kode_group'     => strtoupper($this->request->getPost('kode_group')),
-            'kode_kategori'  => strtoupper($this->request->getPost('kode_kategori')),
             'satuan'         => strtoupper($this->request->getPost('satuan')),
-            'isi'            => $this->request->getPost('isi'),  // Pastikan 'isi' berupa integer
             'harga_beliawal' => $this->request->getPost('harga_beliawal'),
-            'harga_belibaru' => $this->request->getPost('harga_belibaru'),
             'harga_jualawal'     => $this->request->getPost('harga_jualawal'),
-            'harga_jualbaru'     => $this->request->getPost('harga_jualbaru'),
             'stok'           => $this->request->getPost('stok_minimal'),
             'tanggal'        => $this->request->getPost('tanggal'),
-
         ];
 
         // Simpan data ke database
@@ -1181,14 +1177,9 @@ class MasterController extends BaseController
         $data = [
             'kode_part'      => strtoupper($this->request->getPost('kode_part')),
             'nama_part'      => strtoupper($this->request->getPost('nama_part')),
-            'kode_group'     => strtoupper($this->request->getPost('kode_group')),
-            'kode_kategori'  => strtoupper($this->request->getPost('kode_kategori')),
             'satuan'         => strtoupper($this->request->getPost('satuan')),
-            'isi'            => $this->request->getPost('isi'),  // Pastikan 'isi' berupa integer
             'harga_beliawal' => $this->request->getPost('harga_beliawal'),
-            'harga_belibaru' => $this->request->getPost('harga_belibaru'),
             'harga_jualawal' => $this->request->getPost('harga_jualawal'),
-            'harga_jualbaru' => $this->request->getPost('harga_jualbaru'),
             'stok'           => $this->request->getPost('stok_minimal'),
             'tanggal'        => $this->request->getPost('tanggal'),
         ];
@@ -1206,15 +1197,13 @@ class MasterController extends BaseController
 
     public function deletesparepart($id_part)
     {
-        // Inisialisasi model
         $sparepartModel = new M_Barang_Sparepart();
 
-        // Hapus data sparepart berdasarkan ID_$id_part
         if ($sparepartModel->delete($id_part)) {
-            // Jika berhasil, redirect ke halaman yang diinginkan
+
             return redirect()->to('master/mastersparepart')->with('success', 'Data sparepart berhasil dihapus.');
         } else {
-            // Jika gagal, tampilkan error
+
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus data.');
         }
     }

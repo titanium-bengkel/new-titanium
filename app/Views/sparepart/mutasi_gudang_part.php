@@ -47,6 +47,7 @@
                                             <th style="text-align: center;">No</th>
                                             <th style="text-align: center;">Kode Barang</th>
                                             <th style="text-align: center;">Nama Barang</th>
+                                            <th style="text-align: center;">Wo</th>
                                             <th style="text-align: center;">Nopol</th>
                                             <th style="text-align: center;">Harga</th>
                                             <th style="text-align: center;">Stok Awal</th>
@@ -63,6 +64,7 @@
                                                     <td><?= $index + 1 ?></td>
                                                     <td><?= $data['id_kode_barang'] ?></td>
                                                     <td><?= $data['nama_barang'] ?></td>
+                                                    <td><?= $data['wo'] ?></td>
                                                     <td><?= $data['nopol'] ?></td>
                                                     <td>Rp.<?= number_format($data['harga'], 0, '', '.') ?></td>
                                                     <td><?= $data['stok_awal'] ?></td>
@@ -88,7 +90,7 @@
                                             <?php endforeach; ?>
                                         <?php else : ?>
                                             <tr>
-                                                <td colspan="9">Data tidak tersedia</td>
+                                                <td colspan="10">Data tidak tersedia</td>
                                             </tr>
                                         <?php endif; ?>
                                     </tbody>

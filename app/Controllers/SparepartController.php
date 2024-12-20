@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\M_Barang_Sparepart;
 use App\Models\M_Po;
 use App\Models\M_RepairOrder;
 use App\Models\M_Part_Po;
@@ -26,29 +27,23 @@ class SparepartController extends BaseController
 {
     public function permintaan_sparepart($id_terima_po = null)
     {
-        // Inisialisasi model yang diperlukan
         $partbahanModel = new M_Part_Po();
         $Pomodel = new M_Po();
         $SparepartPoModel = new M_SparepartPo();
         $supplierModel = new M_Supplier();
-        $repairOrderModel = new M_RepairOrder(); // Inisialisasi M_RepairOrder
+        $repairOrderModel = new M_RepairOrder();
 
-        // Ambil data PO yang belum terkirim sparepart (is_sent = 0)
         $poData = $Pomodel->getFilteredDataSparepartNotSent();
 
-        // Ambil semua data Repair Order tanpa filter is_sent
         $repairOrderData = $repairOrderModel->findAll();
 
-        // Gabungkan data PO dan Repair Order
         $combinedData = array_merge($poData, $repairOrderData);
 
-        // Ambil sparepart dan detail berdasarkan id_terima_po
         $sparepart = [];
         $detailPO = [];
-        $filteredCombinedData = []; // Array untuk menyimpan hanya data yang memiliki sparepart
+        $filteredCombinedData = [];
 
         if ($id_terima_po) {
-            // Jika id_terima_po diberikan, ambil data sesuai dengan id tersebut
             $sparepart = $SparepartPoModel->where('id_terima_po', $id_terima_po)
                 ->where('jenis_part', 'NON-SUPPLY')
                 ->where('is_sent', '0')
@@ -58,7 +53,6 @@ class SparepartController extends BaseController
                 $detailPO[$id_terima_po] = $SparepartPoModel->getDetailByIdTerimaPo($id_terima_po);
             }
         } else {
-            // Jika tidak ada id_terima_po, ambil data untuk semua PO dan Repair Order
             foreach ($combinedData as $data) {
                 $sparepart = $SparepartPoModel->where('id_terima_po', $data['id_terima_po'])
                     ->where('jenis_part', 'NON-SUPPLY')
@@ -74,11 +68,11 @@ class SparepartController extends BaseController
 
         $data = [
             'title' => 'Permintaan Sparepart',
-            'poData' => $filteredCombinedData, // Hanya data yang memiliki entri di M_SparepartPo
+            'poData' => $filteredCombinedData,
             'detailPO' => $detailPO,
             'suppliers' => $supplierModel->findAll(),
             'id_pesan' => $partbahanModel->generateId(),
-            'spareparts' => $sparepart, // Menggunakan data sparepart yang terfilter
+            'spareparts' => $sparepart,
             'SparepartPoModel' => $SparepartPoModel
         ];
 
@@ -126,10 +120,10 @@ class SparepartController extends BaseController
             'supplier'          => strtoupper($this->request->getPost('supplier')),
             'jatuh_tempo'       => $this->request->getPost('jatuh_tempo'),
             'keterangan'        => strtoupper($this->request->getPost('keterangan')),
-            'no_repair_order'   => strtoupper($this->request->getPost('no_ro')),
-            'nama_pemilik'      => strtoupper($this->request->getPost('nama_pemilik')),
+            'wo'   => strtoupper($this->request->getPost('no_ro')),
+            'customer'      => strtoupper($this->request->getPost('nama_pemilik')),
             'asuransi'          => strtoupper($this->request->getPost('asuransi')),
-            'no_kendaraan'      => strtoupper($this->request->getPost('no_kendaraan')),
+            'nopol'      => strtoupper($this->request->getPost('no_kendaraan')),
             'jenis_mobil'       => strtoupper($this->request->getPost('jenis_mobil')),
             'warna'             => strtoupper($this->request->getPost('warna')),
             'user_id'           => $user_id,
@@ -172,6 +166,8 @@ class SparepartController extends BaseController
                             'qty'            => $qtyInput,
                             'harga'          => $harga,
                             'jumlah'         => $jumlah,
+                            'wo'             => strtoupper($this->request->getPost('no_ro')),
+                            'nopol'          => strtoupper($this->request->getPost('no_kendaraan')),
                         ];
                         $modelPdetailPesan->insert($dataDetailPesan);
                     }
@@ -296,7 +292,7 @@ class SparepartController extends BaseController
 
         $data = [
             'title' => 'Pemesanan Sparepart PO',
-            'sparepart' => $partmerge
+            'sparepart' => $partmerge,
         ];
 
         return view('sparepart/pesan_part', $data);
@@ -307,16 +303,21 @@ class SparepartController extends BaseController
     public function add_part()
     {
         $partbahanModel = new M_Part_Po();
+        $poM = new M_Po();
+        $supM = new M_Supplier();
+        $partM = new M_Barang_Sparepart();
 
-        $supplierData = $partbahanModel->getAllSupplier();
-        $barangData = $partbahanModel->getAllBarang();
-        $poData = $partbahanModel->getAllPO();
+        $po = $poM->findAll();
+        $sup = $supM->findAll();
+        $part = $partM->findAll();
+
+
         $data = [
             'title' => 'Pemesanan Sparepart PO',
             'generatedId' => $partbahanModel->generateId(),
-            'supplier' => $supplierData,
-            'barang' => $barangData,
-            'po' => $poData,
+            'supplier' => $sup,
+            'sparepart' => $part,
+            'po' => $po
         ];
         return view('sparepart/beli_part', $data);
     }
@@ -380,7 +381,10 @@ class SparepartController extends BaseController
         $sparepartModel = new M_Part_Terima();
         $userModel = new UserModel();
 
-        $sparepartsData = $sparepartModel->findAll();
+        $sparepartsData = $sparepartModel
+            ->where('gudang !=', 'GUDANG SUPPLY ASURANSI')
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
 
         foreach ($sparepartsData as &$item) {
             $user = $userModel->find($item['user_id']);
@@ -450,6 +454,7 @@ class SparepartController extends BaseController
         $detailPesanModel = new M_Pdetail_Pesan();
         $modelJurnal = new M_ReportJurnal();
         $modelKasKecil = new M_KasKecil;
+        $barangSparepartModel = new M_Barang_Sparepart();
         $GenerateIdT = $terimaPartModel->generateIdTerima();
 
         // Mengambil data dari request
@@ -540,6 +545,7 @@ class SparepartController extends BaseController
                     'harga' => $harga[$index],
                     'debit' => $qty[$index],
                     'stok' => $qty[$index],
+                    'wo' => $this->request->getPost('no_repair_order'),
                     'nopol' => $this->request->getPost('nopol'),
                     'gudang' => $this->request->getPost('gudang'),
                     'id_penerimaan' => $this->request->getPost('id_penerimaan'),
@@ -572,6 +578,12 @@ class SparepartController extends BaseController
                     'jumlah' => $jumlah,
                     'no_po' => $no_po[$index],
                     'id_penerimaan' => $this->request->getPost('id_penerimaan'),
+                    'no_repair_order' => $this->request->getPost('no_repair_order'),
+                    'asuransi' => strtoupper($this->request->getPost('asuransi')),
+                    'jenis_mobil' => strtoupper($this->request->getPost('jenis_mobil')),
+                    'nopol' => $this->request->getPost('nopol'),
+                    'supplier' => strtoupper($this->request->getPost('supplier')),
+                    'tgl_terima' => $this->request->getPost('tanggal'),
                     'is_sent' => $isSent,
                 ];
 
@@ -585,9 +597,10 @@ class SparepartController extends BaseController
                     ]);
                 }
 
+                $nopol = $this->request->getPost('nopol'); // Pastikan $nopol diambil dari input
                 // Update is_sent di M_Pdetail_Pesan
                 if ($isSent === 1) {
-                    $detailPesanModel->updateIsSent($kode, 1);
+                    $detailPesanModel->updateIsSent($kode, $nopol, 1);
                 }
 
                 // Simpan atau update data gudang untuk setiap item
@@ -595,6 +608,16 @@ class SparepartController extends BaseController
                     $this->saveOrUpdateGudang($gudangModel, $gudangData);
                 } else {
                     return redirect()->back()->with('error', 'Model gudang tidak ditemukan.');
+                }
+            }
+
+            foreach ($kode_barang as $index => $kode) {
+                $barangSparepartList = $barangSparepartModel->where('kode_part', $kode)->findAll();
+
+                foreach ($barangSparepartList as $barangSparepart) {
+                    $barangSparepartModel->update($barangSparepart['id_part'], [
+                        'stok' => $barangSparepart['stok'] + $qty[$index],
+                    ]);
                 }
             }
         }
@@ -753,30 +776,29 @@ class SparepartController extends BaseController
         // Tambahkan pengecekan berdasarkan id_kode_barang, nama_barang, dan nopol
         $existingData = $model->where('id_kode_barang', $data['id_kode_barang'])
             ->where('nama_barang', $data['nama_barang'])
-            ->where('nopol', $data['nopol'])
+            ->where('wo', $data['wo'])
             ->first();
 
         if ($existingData) {
-            // Jika data dengan id_kode_barang, nama_barang, dan nopol sama, update stok dan debit
+            // Jika data dengan id_kode_barang, nama_barang, dan wo sama, update stok dan debit
             $data['debit'] += $existingData['debit'];
             $data['stok'] += $existingData['stok'];
             $model->update($existingData['id'], $data);
         } else {
-            // Periksa lagi jika id_kode_barang dan nama_barang sama, tapi nopol berbeda
+            // Periksa lagi jika id_kode_barang dan nama_barang sama, tapi wo berbeda
             $existingSameItem = $model->where('id_kode_barang', $data['id_kode_barang'])
                 ->where('nama_barang', $data['nama_barang'])
                 ->first();
 
-            if ($existingSameItem && $existingSameItem['nopol'] !== $data['nopol']) {
-                // Jika ada item dengan id_kode_barang dan nama_barang yang sama, tetapi nopol berbeda, buat data baru
+            if ($existingSameItem && $existingSameItem['wo'] !== $data['wo']) {
+                // Jika ada item dengan id_kode_barang dan nama_barang yang sama, tetapi wo berbeda, buat data baru
                 $model->insert($data);
             } else {
-                // Jika id_kode_barang dan nama_barang berbeda, atau nopol sama tetapi barang berbeda, buat data baru
+                // Jika id_kode_barang dan nama_barang berbeda, atau wo sama tetapi barang berbeda, buat data baru
                 $model->insert($data);
             }
         }
     }
-
 
 
     public function add_terimapart_preview($id_penerimaan)
@@ -793,13 +815,19 @@ class SparepartController extends BaseController
             $detailTerimaModel = new M_Pdetail_Terima();
             $detailTerima = $detailTerimaModel->where('id_penerimaan', $id_penerimaan)->findAll();
 
-            // Hitung total qty dan total jumlah
+            // Inisialisasi total qty dan total jumlah
             $totalQty = 0;
             $totalJumlah = 0;
 
-            foreach ($detailTerima as $detail) {
-                $totalQty += $detail['qty'];
-                $totalJumlah += $detail['jumlah'];
+            if ($detailTerima) {
+                foreach ($detailTerima as $detail) {
+                    $totalQty += $detail['qty'];
+                    $totalJumlah += $detail['jumlah'];
+                }
+            } else {
+                // Jika data tidak ditemukan, berikan peringatan atau set default
+                $totalQty = 0;
+                $totalJumlah = 0;
             }
             $data = [
                 'title' => 'Penerimaan Sparepart',
@@ -815,6 +843,76 @@ class SparepartController extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
     }
+
+
+    public function pasangSparepartv2($id)
+    {
+        $partM = new M_Pdetail_Terima();
+        $barangSparepartModel = new M_Barang_Sparepart();
+        $gdStokModel = new M_Gd_Stok();
+
+        // Ambil data id_kode_barang dan qty langsung dari database
+        $dataParts = $partM->select('id_kode_barang, qty')->where('id', $id)->findAll();
+
+        if (empty($dataParts)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Data part tidak ditemukan untuk ID: ' . $id
+            ]);
+        }
+
+        $data = [
+            'is_pasang' => '1',
+            'tgl_pasang' => date('Y-m-d') // Format tanggal hari ini
+        ];
+
+        // Update status pemasangan di M_Pdetail_Terima
+        if ($partM->update($id, $data)) {
+            foreach ($dataParts as $part) {
+                $kode = $part['id_kode_barang'];
+                $qty = $part['qty'];
+
+                // Ambil data barang dari M_Gd_Stok berdasarkan id_kode_barang dan wo
+                $gdStokData = $gdStokModel->where('id_kode_barang', $kode)->findAll();
+
+                if (empty($gdStokData)) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => "Data stok tidak ditemukan untuk id_kode_barang: $kode"
+                    ]);
+                }
+
+                foreach ($gdStokData as $stokBarang) {
+                    // Validasi stok mencukupi
+                    if ($stokBarang['stok'] < $qty) {
+                        return $this->response->setJSON([
+                            'success' => false,
+                            'message' => "Stok tidak mencukupi untuk id_kode_barang: $kode"
+                        ]);
+                    }
+
+                    // Perbarui stok dan masukkan ke credit
+                    $stokBaru = $stokBarang['stok'] - $qty;
+                    $gdStokModel->update($stokBarang['id'], [
+                        'stok' => $stokBaru,
+                        'credit' => $stokBarang['credit'] + $qty
+                    ]);
+                }
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Sparepart berhasil terpasang dan stok diperbarui.'
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Gagal memperbarui status pemasangan. Silakan coba lagi.'
+            ]);
+        }
+    }
+
+
 
     public function updateTerima()
     {
@@ -843,40 +941,40 @@ class SparepartController extends BaseController
         return redirect()->to(base_url('/order_pos_terimapartprev/' . $id_penerimaan))->with('message', 'Data berhasil diperbarui.');
     }
 
-    public function createDetailTambah()
-    {
-        $detailTerimaModel = new M_Pdetail_Terima();
+    // public function createDetailTambah()
+    // {
+    //     $detailTerimaModel = new M_Pdetail_Terima();
 
-        // Mendapatkan id_penerimaan dari form
-        $id_penerimaan = $this->request->getPost('id_penerimaan');
-        if (!$id_penerimaan) {
-            return redirect()->back()->with('error', 'ID Terima PO tidak ditemukan.');
-        }
+    //     // Mendapatkan id_penerimaan dari form
+    //     $id_penerimaan = $this->request->getPost('id_penerimaan');
+    //     if (!$id_penerimaan) {
+    //         return redirect()->back()->with('error', 'ID Terima PO tidak ditemukan.');
+    //     }
 
-        // Data yang akan disimpan
-        $harga = $this->request->getPost('harga');
-        $disc = $this->request->getPost('disc') ?: 0; // Default diskon 0 jika tidak ada
-        $qty = $this->request->getPost('qty');
+    //     // Data yang akan disimpan
+    //     $harga = $this->request->getPost('harga');
+    //     $disc = $this->request->getPost('disc') ?: 0; // Default diskon 0 jika tidak ada
+    //     $qty = $this->request->getPost('qty');
 
-        $jumlah = $qty * ($harga - $disc); // Perhitungan jumlah
+    //     $jumlah = $qty * ($harga - $disc); // Perhitungan jumlah
 
-        $data = [
-            'id_kode_barang'  => $this->request->getPost('id_kode_barang'),
-            'nama_barang'  => $this->request->getPost('nama_barang'),
-            'qty'          => $qty,
-            'satuan'       => $this->request->getPost('satuan'),
-            'harga'        => $harga,
-            'disc'         => $disc,
-            'jumlah'       => $jumlah,
-            'id_penerimaan' => $id_penerimaan // Simpan ID Terima PO
-        ];
+    //     $data = [
+    //         'id_kode_barang'  => $this->request->getPost('id_kode_barang'),
+    //         'nama_barang'  => $this->request->getPost('nama_barang'),
+    //         'qty'          => $qty,
+    //         'satuan'       => $this->request->getPost('satuan'),
+    //         'harga'        => $harga,
+    //         'disc'         => $disc,
+    //         'jumlah'       => $jumlah,
+    //         'id_penerimaan' => $id_penerimaan // Simpan ID Terima PO
+    //     ];
 
-        // Insert data ke dalam database
-        $detailTerimaModel->insert($data);
+    //     // Insert data ke dalam database
+    //     $detailTerimaModel->insert($data);
 
-        // Redirect dengan pesan sukses
-        return redirect()->to('/order_pos_terimapartprev/' . $id_penerimaan)->with('message', 'Barang berhasil ditambahkan');
-    }
+    //     // Redirect dengan pesan sukses
+    //     return redirect()->to('/order_pos_terimapartprev/' . $id_penerimaan)->with('message', 'Barang berhasil ditambahkan');
+    // }
 
     public function delete_terima($id)
     {
@@ -1218,18 +1316,35 @@ class SparepartController extends BaseController
         return view('sparepart/repair_material_part', $data);
     }
 
+    public function getSparepartTerima()
+    {
+        $id_penerimaan = $this->request->getGet('id_penerimaan');
+
+        if (!$id_penerimaan) {
+            return $this->response->setStatusCode(400, 'ID Pesan tidak ditemukan');
+        }
+
+        $pdetailTerimaModel = new M_Pdetail_Terima();
+        $data = $pdetailTerimaModel->getSparepartsByTerima($id_penerimaan);
+
+        return $this->response->setJSON($data);
+    }
+
 
     public function add_repair_material()
     {
         $partRepairModel = new M_Part_Repair();
         $barangData = $partRepairModel->getAllBarangSparepart();
         $poData = $partRepairModel->getAllPO();
+        $penerimaan = $partRepairModel->getpenerimaanJoinedDataWithIsSent();
 
         $data = [
             'title' => 'RM Sparepart',
             'generateIdrepair' => $partRepairModel->generateId(),
             'barang' => $barangData,
             'po' => $poData,
+            'penerimaan' => $penerimaan,
+
         ];
         return view('sparepart/repair_material_add', $data);
     }
@@ -1303,6 +1418,10 @@ class SparepartController extends BaseController
                 'sat_B' => strtoupper($sat_B[$index]),
                 'qty_B' => $qty_B[$index],
                 'hpp' => $hpp[$index],
+                'no_repair_order' => strtoupper($this->request->getPost('no_ro')),
+                'nopol' => strtoupper($this->request->getPost('nopol')),
+                'asuransi' => strtoupper($this->request->getPost('asuransi')),
+                'jenis_mobil' => strtoupper($this->request->getPost('jenis_mobil')),
             ];
             $detailRepairModel->insert($detail);
 
@@ -1399,10 +1518,6 @@ class SparepartController extends BaseController
     }
 
 
-
-
-
-
     public function prev_repair_preview($id_material)
     {
         $partRepairModel = new M_Part_Repair();
@@ -1417,14 +1532,10 @@ class SparepartController extends BaseController
 
             // Calculate total quantities and HPP
             $totalQtyB = 0;
-            $totalQtyT = 0;
-            $totalQtyK = 0;
             $totalHpp = 0;
 
             foreach ($detailData as $detail) {
                 $totalQtyB += $detail['qty_B'];
-                $totalQtyT += $detail['qty_T'];
-                $totalQtyK += $detail['qty_K'];
                 $totalHpp += $detail['hpp'];
             }
 
@@ -1433,8 +1544,6 @@ class SparepartController extends BaseController
                 'repair' => $repairData,
                 'detail_repair' => $detailData,
                 'total_qty_B' => $totalQtyB,
-                'total_qty_T' => $totalQtyT,
-                'total_qty_K' => $totalQtyK,
                 'total_hpp' => $totalHpp,
             ];
 
@@ -2007,18 +2116,29 @@ class SparepartController extends BaseController
     // ---------------------------------------------------------------------------------------------------------------------
     public function sparepart_sisa()
     {
-        $partTerimaModel = new M_Part_Terima();
-        $partTerima = $partTerimaModel->getPartTerimaWithDetailsisa();
+        $partModel = new M_Pdetail_Terima();
+        $partsBelumPasang = $partModel->getPartBelumpasang();
+
         $data = [
             'title' => 'Sparepart Sisa',
-            'part' => $partTerima,
+            'partsBelumPasang' => $partsBelumPasang,
         ];
         return view('sparepart/part_sisa', $data);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
 
+    public function sparepart_terpasang()
+    {
+        $partModel = new M_Pdetail_Terima();
+        $getPartPasang = $partModel->getPartPasang();
 
+        $data = [
+            'title' => 'Sparepart Terpasang',
+            'getPartPasang' => $getPartPasang,
+        ];
+        return view('sparepart/part_pasang', $data);
+    }
 
     // ---------------------------------------------------------------------------------------------------------------------
     public function stok_sparepart()

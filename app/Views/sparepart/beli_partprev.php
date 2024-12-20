@@ -28,20 +28,18 @@
 
 <!-- Horizontal Input start -->
 <section id="horizontal-input">
-    <div style="margin-top: 15px; margin-bottom: 10px; font-size: 12px; padding: 10px 20px; border-radius: 8px; display: inline-block;">
-        <div style="font-size: 14px; font-weight: bold;">
-            <a href="<?= base_url('/index') ?>" style="text-decoration: none; color: #007bff;">Dashboard</a>
-            <span style="color: #6c757d; margin: 0 8px;">/</span>
-            <span style="color: #6c757d; font-weight: 500;">Pemesanan PO</span>
-        </div>
-    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <h5 class="ms-3 mb-3 mt-4">Data Pemesanan</h5>
-                <hr>
+                <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
+                    <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                        <a href="<?= base_url('pesan_part') ?>" class="breadcrumb-link text-primary fw-bold">Pemesanan Part</a>
+                        <span class="breadcrumb-divider text-muted mx-3">/</span>
+                        <span class="breadcrumb-current text-muted">Detail Pemesanan</span>
+                    </div>
+                    <h5 class="page-title mb-0 fw-bold">Detail Pemesanan</h5>
+                </header>
                 <div class="card-body">
-                    <!-- Section ID -->
                     <h5>ID</h5>
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-3">
@@ -83,13 +81,13 @@
                             <label class="col-form-label" for="no_ro">No. Repair Order</label>
                         </div>
                         <div class="col-lg-10 col-7 mb-3">
-                            <input type="text" id="no_ro" class="form-control" name="no_ro" value="<?= $sparepart['no_repair_order'] ?>" readonly>
+                            <input type="text" id="no_ro" class="form-control" name="no_ro" value="<?= $sparepart['wo'] ?>" readonly>
                         </div>
                         <div class="col-lg-2 col-3 mb-3">
                             <label class="col-form-label" for="nama_pemilik">Customer</label>
                         </div>
                         <div class="col-lg-10 col-7 mb-3">
-                            <input type="text" id="nama_pemilik" class="form-control" name="nama_pemilik" value="<?= $sparepart['nama_pemilik'] ?>" readonly>
+                            <input type="text" id="nama_pemilik" class="form-control" name="nama_pemilik" value="<?= $sparepart['customer'] ?>" readonly>
                         </div>
                         <div class="col-lg-2 col-3 mb-3">
                             <label class="col-form-label" for="asuransi">Asuransi</label>
@@ -113,26 +111,23 @@
                             <label class="col-form-label" for="no_kendaraan">Nopol</label>
                         </div>
                         <div class="col-lg-10 col-7 mb-3">
-                            <input type="text" id="no_kendaraan" class="form-control" name="no_kendaraan" value="<?= $sparepart['no_kendaraan'] ?>" readonly>
+                            <input type="text" id="no_kendaraan" class="form-control" name="no_kendaraan" value="<?= $sparepart['nopol'] ?>" readonly>
                         </div>
                     </div>
 
                     <!-- Section Detail Barang -->
-                    <h5>Detail Barang</h5>
+                    <h5>Detail Part</h5>
                     <div class="table-responsive">
-                        <table class="table table-bordered my-table-class">
-                            <thead>
+                        <table class="table table-bordered table-striped table-hover text-center">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
-                                    <th>Kode Barang</th>
-                                    <th>Nama Barang</th>
+                                    <th>Kode Part</th>
+                                    <th>Nama Part</th>
                                     <th>Qty</th>
                                     <th>Satuan</th>
                                     <th>Harga</th>
                                     <th>Jumlah</th>
-                                    <th>Qty Beli</th>
-                                    <th>Qty Sisa</th>
                                     <th>No Faktur</th>
-                                    <th>Tgl Faktur</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -142,12 +137,9 @@
                                         <td><?= esc($barang['nama_barang']) ?></td>
                                         <td><?= esc($barang['qty']) ?></td>
                                         <td><?= esc($barang['satuan']) ?></td>
-                                        <td><?= number_format($barang['harga'], 0, ',', '.') ?></td> <!-- Format Rupiah -->
-                                        <td><?= number_format($barang['jumlah'], 0, ',', '.') ?></td> <!-- Format Rupiah -->
-                                        <td><?= esc($barang['qty_beli']) ?></td>
-                                        <td><?= esc($barang['qty_sisa']) ?></td>
+                                        <td><?= number_format($barang['harga'], 0, ',', '.') ?></td>
+                                        <td><?= number_format($barang['jumlah'], 0, ',', '.') ?></td>
                                         <td><?= esc($barang['no_faktur']) ?></td>
-                                        <td><?= esc($barang['tgl_faktur']) ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>

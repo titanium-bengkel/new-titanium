@@ -19,6 +19,14 @@ class M_Pdetail_Repair extends Model
         'qty_K',
         'sat_K',
         'hpp',
-        'id_material'
+        'id_material',
+        'no_repair_order',
+        'no_rangka',
+        'asuransi',
+        'jenis_mobil',
+        'nopol',
+        'supplier',
+        'created_at',
+        'updated_at'
     ];
 }

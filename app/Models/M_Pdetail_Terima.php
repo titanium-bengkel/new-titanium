@@ -20,7 +20,18 @@ class M_Pdetail_Terima extends Model
         'no_po',
         'po_id',
         'id_penerimaan',
-        'is_sent'
+        'no_repair_order',
+        'no_rangka',
+        'asuransi',
+        'jenis_mobil',
+        'nopol',
+        'supplier',
+        'tgl_terima',
+        'tgl_pasang',
+        'is_sent',
+        'is_pasang',
+        'created_at',
+        'updated_at'
     ];
     // Aktifkan fitur otomatis timestamps
     protected $useTimestamps = true;
@@ -77,4 +88,22 @@ class M_Pdetail_Terima extends Model
     {
         return $this->where('id_pesan', $id_pesan)->findAll(); // Ambil semua sparepart berdasarkan id_pesan
     }
+
+    public function getPartBelumpasang()
+    {
+        return $this->where('is_pasang', 0)->findAll();
+    }
+
+    public function getPartPasang()
+    {
+        return $this->where('is_pasang', 1)->findAll();
+    }
+
+    public function getSparepartTerima($id_penerimaan)
+    {
+        return $this->where('id_penerimaan', $id_penerimaan)
+            ->where('is_pasang', 0)
+            ->findAll();
+    }
+
 }

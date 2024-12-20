@@ -14,6 +14,7 @@ class M_Gd_Stok extends Model
         'id_kode_barang',
         'nama_barang',
         'keterangan',
+        'wo',
         'nopol',
         'stok_awal',
         'harga',

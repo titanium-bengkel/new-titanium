@@ -17,10 +17,10 @@
                 <div class="card-body">
                     <!-- Section ID -->
                     <form action="<?= base_url('create_partadd'); ?>" method="post">
-                        <h5>ID</h5>
+                        <h5>Detail Pemesanan</h5>
                         <div class="form-group row align-items-center">
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="id_pesan">No. Penerima</label>
+                                <label class="col-form-label" for="id_pesan">Nomor</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="text" id="id_pesan" class="form-control" name="id_pesan" value="<?= $generatedId; ?>" readonly>
@@ -42,12 +42,12 @@
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
-                            <div class="col-lg-2 col-3 mb-3">
+                            <!-- <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="jatuh_tempo">Jatuh tempo</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="date" id="jatuh_tempo" class="form-control" name="jatuh_tempo" onkeydown="return false" onclick="this.showPicker()" required>
-                            </div>
+                            </div> -->
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="keterangan">Keterangan</label>
                             </div>
@@ -57,13 +57,13 @@
                         </div>
 
                         <!-- Section Data -->
-                        <h5>Data</h5>
+                        <h5>Detail Work Order</h5>
                         <div class="form-group row align-items-center">
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="no_ro">No.Repair Order</label>
+                                <label class="col-form-label" for="wo">WO</label>
                             </div>
                             <div class="col-lg-9 col-7 mb-3">
-                                <input type="text" id="no_ro" class="form-control" name="no_ro">
+                                <input type="text" id="wo" class="form-control" name="wo">
                             </div>
                             <div class="col-lg-1 col-2 mb-3">
                                 <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#repair">
@@ -71,7 +71,7 @@
                                 </button>
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="nama_pemilik">Customer Name</label>
+                                <label class="col-form-label" for="nama_pemilik">Customer</label>
                             </div>
                             <div class="col-lg-10 col-7 mb-3">
                                 <input type="text" id="nama_pemilik" class="form-control" name="nama_pemilik">
@@ -83,7 +83,7 @@
                                 <input type="text" id="asuransi" class="form-control" name="asuransi">
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="jenis_mobil">Jenis mobil</label>
+                                <label class="col-form-label" for="jenis_mobil">Jenis Mobil</label>
                             </div>
                             <div class="col-lg-10 col-7 mb-3">
                                 <input type="text" id="jenis_mobil" class="form-control" name="jenis_mobil">
@@ -113,8 +113,6 @@
                                         <th>Satuan</th>
                                         <th>Harga</th>
                                         <th>Jumlah</th>
-                                        <th>No Faktur</th>
-                                        <th>Tgl Faktur</th>
                                         <th>Pilih All <input type="checkbox" id="pilih-all"></th>
                                         <th>Action</th>
                                     </tr>
@@ -127,18 +125,15 @@
                                         <td><input type="text" class="form-control" name="satuan[]"></td>
                                         <td><input type="text" class="form-control harga" name="harga[]"></td>
                                         <td><input type="text" class="form-control jumlah" name="jumlah[]" readonly></td>
-                                        <td></td>
-                                        <td></td>
                                         <td>
                                             <input type="checkbox" class="form-check-input pilih-checkbox" name="pilih_checkbox[]" value="0" onchange="this.value=this.checked ? 1 : 0">
                                         </td>
-
-
                                         <td>
                                             <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-minus"></i></button>
                                         </td>
                                     </tr>
                                 </tbody>
+
                                 <tfoot>
                                     <tr>
                                         <td colspan="2">Total Qty</td>
@@ -168,10 +163,10 @@
 
 <!-- Modal supplier -->
 <div class="modal fade" id="supp" tabindex="-1" aria-labelledby="myModalLabel1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel1">Cari Supplier</h5>
+            <div class="modal-header bg-gradient-ltr">
+                <h5 class="modal-title text-white" id="myModalLabel1">Cari Supplier</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -184,8 +179,8 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead>
+                    <table class="table table-bordered table-hover table-striped text-center">
+                        <thead class="table-secondary">
                             <tr>
                                 <th>Kode</th>
                                 <th>Nama Supplier</th>
@@ -209,43 +204,42 @@
                 </div>
             </div>
         </div>
-        <div class="modal-footer p-2">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Submit</button>
+        <div class="modal-footer bg-light mb-5">
+            <!-- Null -->
         </div>
     </div>
 </div>
 
-<!-- Modal Repair Order -->
+<!-- Modal Order -->
 <div class="modal fade text-left" id="repair" tabindex="-1" aria-labelledby="repairLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="repairLabel">Repair Order</h5>
+            <div class="modal-header bg-gradient-ltr">
+                <h5 class="modal-title text-white" id="repairLabel">Data Order</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label for="search-input" class="form-label">Cari</label>
+                        <label for="search-wo" class="form-label">Cari</label>
                     </div>
                     <div class="col-md-8">
-                        <input type="text" id="search-input" class="form-control" name="search">
+                        <input type="text" id="search-wo" class="form-control" name="search">
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead>
+                    <table class="table table-bordered table-hover table-striped text-center" style="font-size: 12px;">
+                        <thead class="table-secondary">
                             <tr>
-                                <th>No. Order</th>
-                                <th>Type Mobil</th>
+                                <th>WO</th>
+                                <th>Car Model</th>
                                 <th>Nopol</th>
                                 <th>Warna</th>
                                 <th>Tahun</th>
                                 <th>Asuransi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="order-list">
                             <?php if (!empty($po)) : ?>
                                 <?php foreach ($po as $data) : ?>
                                     <tr data-pemilik="<?= esc($data['customer_name']) ?>">
@@ -266,17 +260,41 @@
                     </table>
                 </div>
             </div>
+            <div class="modal-footer bg-light mb-5">
+                <!-- Null -->
+            </div>
         </div>
     </div>
 </div>
 <!-- End -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ambil elemen pencarian dan daftar baris pada tabel
+        const searchInput = document.getElementById('search-wo');
+        const tableBody = document.getElementById('order-list');
+        const tableRows = tableBody.getElementsByTagName('tr');
+
+        // Fungsi untuk menyaring baris berdasarkan input pencarian
+        searchInput.addEventListener('input', function() {
+            const searchTerm = searchInput.value.toLowerCase(); // Ambil input pencarian dan ubah jadi huruf kecil
+            Array.from(tableRows).forEach(row => {
+                const rowText = row.textContent.toLowerCase(); // Ambil seluruh teks dalam baris
+                // Tampilkan atau sembunyikan baris berdasarkan pencocokan
+                row.style.display = rowText.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    });
+</script>
+
+
+
 
 <!-- modal detail barang -->
 <div class="modal fade" id="kodeBarangModal" tabindex="-1" aria-labelledby="myModalLabel1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel1">Cari Bahan</h5>
+                <h5 class="modal-title" id="myModalLabel1">Data Sparepart</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -312,29 +330,14 @@
                                 </tr>
                             <?php endif; ?>
                         </tbody>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Submit</button>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- js tgl -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var today = new Date();
-        var day = String(today.getDate()).padStart(2, '0');
-        var month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
-        var year = today.getFullYear();
-        var todayString = year + '-' + month + '-' + day;
 
-        document.getElementById('tanggal').value = todayString;
-    });
-</script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function formatNumber(number) {
@@ -357,8 +360,8 @@
     }
 
     $(document).ready(function() {
-        // Menambahkan baris
         $('#add-row-btn').click(function() {
+            // Menambahkan baris baru dengan input baru
             var row = '<tr>' +
                 '<td><input type="text" class="form-control" name="kode_barang[]" data-bs-toggle="modal" data-bs-target="#kodeBarangModal" readonly></td>' +
                 '<td><input type="text" class="form-control" name="nama_barang[]"></td>' +
@@ -366,15 +369,15 @@
                 '<td><input type="text" class="form-control" name="satuan[]"></td>' +
                 '<td><input type="text" class="form-control harga" name="harga[]"></td>' +
                 '<td><input type="text" class="form-control jumlah" name="jumlah[]" readonly></td>' +
-                '<td></td>' +
-                '<td></td>' +
-                '<td><input type="checkbox" class="form-check-input pilih-checkbox " value="0" onchange="this.value=this.checked ? 1 : 0"></td>' +
-                '<td>' +
-                '<button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-minus"></i></button>' +
-                '</td>' +
+                '<td><input type="checkbox" class="form-check-input pilih-checkbox" name="pilih_checkbox[]" value="0" onchange="this.value=this.checked ? 1 : 0"></td>' +
+                '<td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-minus"></i></button></td>' +
                 '</tr>';
+
+            // Menambahkan baris ke tbody
             $('#detail-barang-body').append(row);
-            updateRemoveButtonStatus();
+
+            // Menambahkan event listener untuk tombol remove (hapus) yang baru
+            updateRemoveButtonStatus(); // Memperbarui status tombol remove (jika ada logika lain)
         });
 
         // Menyimpan referensi baris yang sedang dipilih
@@ -388,7 +391,7 @@
             const kodeBarang = $(this).find('td:eq(0)').text();
             const namaBarang = $(this).find('td:eq(1)').text();
             const hargaBarang = $(this).find('td:eq(2)').text();
-            const satuanBarang = $(this).data('satuan'); // Mendapatkan data satuan dari atribut data-satuan
+            const satuanBarang = $(this).data('satuan');
 
             // Mengisi data ke baris yang sedang dipilih di tabel utama
             if (selectedRow) {
@@ -491,7 +494,7 @@
             var asuransi = $(this).find('td:eq(5)').text();
 
             // Isi data ke dalam input field
-            $('#no_ro').val(noOrder);
+            $('#wo').val(noOrder);
             $('#jenis_mobil').val(jenisMobil);
             $('#no_kendaraan').val(nopol);
             $('#warna').val(warna);

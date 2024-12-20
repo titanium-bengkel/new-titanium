@@ -39,7 +39,6 @@
                     <h5 class="page-title mb-0 fw-bold">Add Penerimaan Sparepart NON-SUPPLY</h5>
                 </header>
                 <div class="card-body">
-                    <h5>ID</h5>
                     <form action="<?= base_url('/sparepart/create_part') ?>" method="post">
                         <div class="form-group row align-items-center">
                             <div class="col-lg-2 col-3 mb-3">
@@ -53,6 +52,20 @@
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="date" id="tanggal" class="form-control" name="tanggal" onkeydown="return false" onclick="this.showPicker()" required>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center">
+                            <h5>Data Po</h5>
+                            <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="no_preor">No. PO</label>
+                            </div>
+                            <div class="col-lg-9 col-7 mb-3">
+                                <input type="text" id="no_preor" class="form-control" name="no_preor" readonly>
+                            </div>
+                            <div class="col-lg-1 col-2 mb-3">
+                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#no_po">
+                                    <i class="fas fa-search"></i>
+                                </button>
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="kode_supplier" hidden>Kode Supplier</label>
@@ -90,34 +103,24 @@
                             <div class="col-lg-10 col-7 mb-3">
                                 <fieldset class="form-group">
                                     <select class="form-select" id="gudang" name="gudang">
-                                        <option disabled selected>--Pilih--</option>
+                                        <!-- <option disabled selected>--Pilih--</option> -->
                                         <option>GUDANG STOK SPAREPART</option>
-                                        <option>GUDANG SUPPLY ASURANSI</option>
+                                        <!-- <option>GUDANG SUPPLY ASURANSI</option>
                                         <option>GUDANG WAITING</option>
-                                        <option>GUDANG SALVAGE</option>
+                                        <option>GUDANG SALVAGE</option> -->
                                     </select>
                                 </fieldset>
                             </div>
-                        </div>
-
-                        <h5>Data</h5>
-                        <div class="form-group row align-items-center">
-                            <input type="text" id="no_repair_order" class="form-control" name="no_repair_order" hidden>
                             <input type="text" id="asuransi" class="form-control" name="asuransi" hidden>
                             <input type="text" id="jenis_mobil" class="form-control" name="jenis_mobil" hidden>
                             <input type="text" id="warna" class="form-control" name="warna" hidden>
                             <input type="text" id="nama_pemilik" class="form-control" name="nama_pemilik" hidden>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="no_preor">No. PO/Nopol</label>
+                                <label class="col-form-label" for="no_repair_order">Repair Order</label>
                             </div>
-                            <div class="col-lg-9 col-7 mb-3">
-                                <input type="text" id="no_preor" class="form-control" name="no_preor" readonly>
-                            </div>
-                            <div class="col-lg-1 col-2 mb-3">
-                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#no_po">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
+                            <div class="col-lg-10 col-9 mb-3">
+                                <input type="text" id="no_repair_order" class="form-control" name="no_repair_order">
+                            </div>  
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="kota">Kota</label>
                             </div>
@@ -315,12 +318,12 @@
                         <tbody>
                             <?php if (!empty($part_po)) : ?>
                                 <?php foreach ($part_po as $a) : ?>
-                                    <tr data-noRepair="<?= $a->no_repair_order ?>" data-asuransi="<?= $a->asuransi ?>" data-mobil="<?= $a->jenis_mobil ?>" data-warna="<?= $a->warna ?>" data-kode="<?= $a->kode_supplier ?> data-supplier=" <?= $a->supplier ?>">
+                                    <tr data-noRepair="<?= $a->wo ?>" data-asuransi="<?= $a->asuransi ?>" data-mobil="<?= $a->jenis_mobil ?>" data-warna="<?= $a->warna ?>" data-kode="<?= $a->kode_supplier ?>" data-supplier=" <?= $a->supplier ?>" data-nama_pemilik=" <?= $a->customer ?>">
                                         <td><?= esc($a->id_pesan) ?></td>
                                         <td><?= esc($a->tanggal) ?></td>
                                         <td><?= esc($a->kode_supplier) ?></td>
                                         <td><?= esc($a->supplier) ?></td>
-                                        <td><?= esc($a->no_kendaraan) ?></td>
+                                        <td><?= esc($a->nopol) ?></td>
                                         <td><?= esc($a->total_jumlah) ?></td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -532,11 +535,14 @@
                 const nopol = this.cells[4].innerText;
                 const totalJumlah = this.cells[5].innerText;
 
+
                 const noRepair = this.getAttribute('data-noRepair');
                 const asuransi = this.getAttribute('data-asuransi');
                 const mobil = this.getAttribute('data-mobil');
                 const warna = this.getAttribute('data-warna');
                 const alamat = this.getAttribute('data-alamat'); // Sesuaikan jika alamat diambil dari data yang berbeda
+                const namaPemilik = this.getAttribute('data-nama_pemilik');
+
 
                 // Isi input field dengan data yang diambil
                 document.getElementById('no_preor').value = idPesan;
@@ -548,6 +554,7 @@
                 document.getElementById('jenis_mobil').value = mobil;
                 document.getElementById('warna').value = warna;
                 document.getElementById('alamat').value = alamat;
+                document.getElementById('nama_pemilik').value = namaPemilik;
 
                 // Tutup modal setelah data terisi
                 const modal = bootstrap.Modal.getInstance(document.getElementById('no_po'));
@@ -568,7 +575,7 @@
 
                     data.forEach(sparepart => {
                         const row = `
-                          <tr>
+                        <tr>
                             <td>
                                 <input type="text" class="form-control" name="kode_barang[]" value="${sparepart.id_kode_barang}" readonly>
                             </td>
@@ -667,6 +674,20 @@
                 row.style.display = nama.includes(searchValue) ? '' : 'none';
             });
         });
+    });
+</script>
+
+
+<!-- script tanggal otomatis jangan di hapus ngentod -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var today = new Date();
+        var day = String(today.getDate()).padStart(2, '0');
+        var month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+        var year = today.getFullYear();
+        var todayString = year + '-' + month + '-' + day;
+
+        document.getElementById('tanggal').value = todayString;
     });
 </script>
 
