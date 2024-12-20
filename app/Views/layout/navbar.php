@@ -274,12 +274,12 @@
                             <li class="submenu-item  ">
                                 <a href="<?= base_url('master/pengerjaan') ?>" class="submenu-link">Pengerjaan</a>
                             </li>
-                            <li class="submenu-item  ">
+                            <!-- <li class="submenu-item  ">
                                 <a href="<?= base_url('master/alokasibarang') ?>" class="submenu-link">Alokasi Barang</a>
                             </li>
                             <li class="submenu-item  ">
                                 <a href="<?= base_url('master/jasa') ?>" class="submenu-link">Jasa</a>
-                            </li>
+                            </li> -->
                             <li class="submenu-item  ">
                                 <a href="<?= base_url('master/asuransi') ?>" class="submenu-link">Asuransi</a>
                             </li>

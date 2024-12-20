@@ -22,7 +22,7 @@ class M_Pdetail_Pesan extends Model
         'id_pesan',
         'is_sent',
         'is_checked',
-        'wo',
+        'no_repair_order',
         'no_rangka',
         'nopol'
     ];

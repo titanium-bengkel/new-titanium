@@ -1,7 +1,11 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content') ?>
 
+<!-- SweetAlert2 and Flatpickr CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <script>
     <?php if (session()->getFlashdata('success')) : ?>
         Swal.fire({
@@ -25,7 +29,8 @@
         });
     <?php endif; ?>
 </script>
-<!-- Table Repair Order -->
+
+<!-- Main Section -->
 <section id="horizontal-input">
     <div class="col-12">
         <div class="row" id="table-head">
@@ -38,56 +43,63 @@
                     </div>
                     <h5 class="page-title mb-0 fw-bold">Repair Order</h5>
                 </header>
-                <div class="card-header d-flex align-items-center justify-content-between p-3">
-                    <div class="d-flex gap-2">
-                        <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <!-- Dropdown Bulan -->
-                        <select id="bulan" class="form-select" style="width: auto;">
-                            <option value="01">Januari</option>
-                            <option value="02">Februari</option>
-                            <option value="03">Maret</option>
-                            <option value="04">April</option>
-                            <option value="05">Mei</option>
-                            <option value="06">Juni</option>
-                            <option value="07">Juli</option>
-                            <option value="08">Agustus</option>
-                            <option value="09">September</option>
-                            <option value="10">Oktober</option>
-                            <option value="11">November</option>
-                            <option value="12">Desember</option>
-                        </select>
+                <div class="card-header py-3 px-4 border-muted" style="font-size: 12px;">
+                    <div class="d-flex flex-column">
+                        <!-- Top: Buttons and Period Input -->
+                        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                            <!-- Left: Buttons -->
+                            <div class="d-flex align-items-center gap-3 flex-wrap">
+                                <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">
+                                    <i class="fas fa-file-excel"></i> Export to Excel
+                                </a>
+                            </div>
 
-                        <!-- Dropdown Tahun -->
-                        <select id="tahun" class="form-select" style="width: auto;">
-                            <option value="2022">2022</option>
-                            <option value="2023">2023</option>
-                            <option value="2024">2024</option>
-                            <option value="2025">2025</option>
-                        </select>
+                            <!-- Right: Period Input (Pojok Kanan Atas) -->
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="start-date" class="form-label mb-0 text-muted fw-bold">Periode:</label>
+                                <input type="text" id="start-date" class="form-control form-control-sm rounded-2 w-auto" style="width: 120px;" placeholder="Start Date" readonly />
+                                <span class="mx-1 text-muted fw-bold">to</span>
+                                <input type="text" id="end-date" class="form-control form-control-sm rounded-2 w-auto" style="width: 120px;" placeholder="End Date" readonly />
+                                <button class="btn btn-primary btn-sm rounded-2" id="filter-btn">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                            </div>
+                        </div>
 
-                        <!-- Dropdown Bengkel -->
-                        <select id="bengkelSelect" class="form-select" style="width: auto;">
-                            <option value="Bengkel" disabled selected>--Pilih Bengkel--</option>
-                            <option value="Titanium">Titanium</option>
-                            <option value="Tandem">Tandem</option>
-                            <option value="K3 Karoseri">K3 Karoseri</option>
-                        </select>
+                        <!-- Bottom: Search and Rows Per Page -->
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <!-- Left: Search -->
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="text" id="search-bar" class="form-control form-control-sm rounded-2" placeholder="Search data..." />
+                                <button class="btn btn-outline-secondary btn-sm rounded-2" id="search-btn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+
+                            <!-- Right: Rows Per Page -->
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="rows-per-page" class="form-label mb-0 text-muted fw-bold">Tampilkan:</label>
+                                <select id="rows-per-page" class="form-select form-select-sm rounded-2 w-auto">
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="all">All</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <!-- table head dark -->
-                <div class="table-responsive" style="text-align: center; margin: 20px; font-size: 12px;">
-                    <table class="table table-bordered mb-0" id="repairOrdersTable">
-                        <thead class="thead-dark">
+                <!-- Table -->
+                <div class="table-responsive" style="font-size: 11px; margin: 20px;">
+                    <table class="table table-bordered table-striped table-hover mb-0" id="repairOrdersTable">
+                        <thead class="table-secondary">
                             <tr>
                                 <th class="text-center">#</th>
                                 <th class="text-center">No. Klaim</th>
                                 <th class="text-center">Tgl. Klaim</th>
                                 <th class="text-center">Tgl. Acc</th>
                                 <th class="text-center">Tgl. Masuk</th>
-                                <th class="text-center">Progres Pengerjaan</th>
+                                <th class="text-center">Progres</th>
                                 <th class="text-center">Status Bayar</th>
                                 <th class="text-center">Est. Keluar</th>
                                 <th class="text-center">Nopol</th>
@@ -95,64 +107,12 @@
                                 <th class="text-center">Asuransi</th>
                                 <th class="text-center">Customer</th>
                                 <th class="text-center">Harga Acc</th>
+                                <th class="text-center">Bengkel</th>
                                 <th class="text-center">User ID</th>
-                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="text-center">
-                            <?php
-                            if (!empty($repairOrders)) :
-                                foreach ($repairOrders as $index => $order) :
-                                    // Tentukan nilai Harga Acc sesuai dengan kondisi asuransi
-                                    $harga_acc = ($order['asuransi'] === 'UMUM/PRIBADI' && !empty($order['total_biaya'])) ? $order['total_biaya'] : $order['harga_acc'];
-                            ?>
-                                    <tr>
-                                        <td><?= $index + 1 ?></td>
-                                        <td><a href="<?= base_url('order_repair/' . $order['id_terima_po']) ?>"><?= esc($order['id_terima_po']) ?></a></td>
-                                        <td><?= !empty($order['tgl_klaim']) ? date('Y-m-d', strtotime($order['tgl_klaim'])) : '-'; ?></td>
-                                        <td>
-                                            <?php if ($order['asuransi'] === 'UMUM/PRIBADI'): ?>
-                                                -
-                                            <?php else: ?>
-                                                <?= !empty($order['tgl_acc']) ? date('Y-m-d', strtotime($order['tgl_acc'])) : '-'; ?>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?= !empty($order['tgl_masuk']) ? date('Y-m-d', strtotime($order['tgl_masuk'])) : '-'; ?></td>
-                                        <td><?= esc($order['progres_pengerjaan']) ?></td>
-                                        <td>
-                                            <?php if ($order['status_bayar'] === 'Belum Bayar') : ?>
-                                                <span class="badge bg-warning text-dark">Belum Bayar</span>
-                                            <?php elseif ($order['status_bayar'] === 'Sudah Bayar OR') : ?>
-                                                <span class="badge bg-primary text-dark">Sudah Bayar OR</span>
-                                            <?php elseif ($order['status_bayar'] === 'Sudah Bayar') : ?>
-                                                <span class="badge bg-secondary text-dark">Sudah Bayar</span>
-                                            <?php elseif ($order['status_bayar'] === 'Pernah Bayar') : ?>
-                                                <span class="badge bg-danger text-dark">Pernah Bayar</span>
-                                            <?php elseif ($order['status_bayar'] === 'Lunas') : ?>
-                                                <span class="badge bg-success">Lunas</span>
-                                            <?php else : ?>
-                                                <?= esc($order['status_bayar']) ?>
-                                            <?php endif; ?>
-                                        </td>
+                        <tbody id="repairOrdersTableBody" class="text-center">
 
-
-                                        <td><?= !empty($order['tgl_keluar']) ? date('Y-m-d', strtotime($order['tgl_keluar'])) : '-'; ?></td>
-                                        <td><?= esc($order['no_kendaraan']) ?></td>
-                                        <td><?= esc($order['jenis_mobil']) ?></td>
-                                        <td><?= esc($order['asuransi']) ?></td>
-                                        <td><?= esc($order['customer_name']) ?></td>
-                                        <td class="harga-acc"><?= !empty($harga_acc) ? esc(number_format($harga_acc, 0, ',', '.')) : '-'; ?></td>
-                                        <td><?= esc($order['username']) ?></td>
-                                        <td>
-                                            <button type="button" class="btn btn-sm delete-user-btn"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else : ?>
-                                <tr>
-                                    <td colspan="15">No data available.</td>
-                                </tr>
-                            <?php endif; ?>
                         </tbody>
                         <tfoot class="text-center">
                             <tr>
@@ -174,124 +134,168 @@
 </section>
 <!-- Table Repair Order end -->
 
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 
 <script>
+    // Data from PHP
+    const repairOrders = <?= json_encode($repairOrders); ?>; // Assuming the PHP variable contains repair order data
+    let filteredData = [...repairOrders]; // Data that will be filtered based on date
+    let rowsPerPage = 20; // Default number of rows per page
+
+    // Initialize Flatpickr for date range picker
+    document.addEventListener("DOMContentLoaded", function() {
+        flatpickr("#start-date", {
+            dateFormat: "Y-m-d",
+            defaultDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1), // Default start date is the first day of the current month
+        });
+
+        flatpickr("#end-date", {
+            dateFormat: "Y-m-d",
+            defaultDate: new Date(), // Default end date is today's date
+        });
+
+        // Handle filter button click event
+        document.getElementById('filter-btn').addEventListener('click', function() {
+            const startDate = new Date(document.getElementById('start-date').value);
+            const endDate = new Date(document.getElementById('end-date').value);
+
+            // Filter the data based on the selected date range
+            filteredData = repairOrders.filter(item => {
+                const tglKlaim = new Date(item.tgl_klaim);
+                return tglKlaim >= startDate && tglKlaim <= endDate;
+            });
+
+            applySearch(); // Apply search after filter
+        });
+
+        // Handle rows per page change event
+        document.getElementById('rows-per-page').addEventListener('change', function() {
+            rowsPerPage = this.value === 'all' ? filteredData.length : parseInt(this.value);
+            updateTable(); // Update the table with new number of rows per page
+        });
+
+        // Handle search button click event
+        document.getElementById('search-btn').addEventListener('click', applySearch);
+    });
+
+    // Function to apply search filter
+    function applySearch() {
+        const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+
+        // Filter the data based on the search term
+        filteredData = filteredData.filter(item => {
+            return Object.values(item).some(value =>
+                String(value).toLowerCase().includes(searchTerm)
+            );
+        });
+
+        updateTable(); // Update the table with the filtered data
+    }
+
+    function updateTable() {
+        const tableBody = document.getElementById('repairOrdersTableBody');
+        tableBody.innerHTML = ''; // Clear the existing table content
+
+        let totalPerPageEstimasi = 0; // Total untuk halaman saat ini
+        let totalPerPageAcc = 0; // Total untuk halaman saat ini
+        let grandTotalEstimasi = 0; // Total untuk semua data
+        let grandTotalAcc = 0; // Total untuk semua data
+
+        // Loop semua data untuk menghitung grand total
+        filteredData.forEach(item => {
+            if (item.asuransi === 'UMUM/PRIBADI') {
+                grandTotalEstimasi += item.harga_estimasi ? parseFloat(item.harga_estimasi) : 0;
+            } else {
+                grandTotalAcc += item.harga_acc ? parseFloat(item.harga_acc) : 0;
+            }
+        });
+
+        // Data yang akan ditampilkan pada halaman ini (maksimal 20 data)
+        const dataToDisplay = filteredData.slice(0, rowsPerPage);
+        dataToDisplay.forEach((item, index) => {
+            // Perhitungan total untuk halaman ini
+            let hargaEstimasi = 0;
+            let hargaAcc = 0;
+
+            if (item.asuransi === 'UMUM/PRIBADI') {
+                hargaEstimasi = item.harga_estimasi ? parseFloat(item.harga_estimasi) : 0;
+                totalPerPageEstimasi += hargaEstimasi;
+            } else {
+                hargaAcc = item.harga_acc ? parseFloat(item.harga_acc) : 0;
+                totalPerPageAcc += hargaAcc;
+            }
+
+            // Buat baris tabel
+            const row = `<tr class="text-center">
+            <td>${index + 1}</td>
+            <td><a href="<?= base_url('order_repair') ?>/${item.id_terima_po}">${item.id_terima_po}</a></td>
+            <td>${item.tgl_klaim || '-'}</td>
+            <td>${item.tgl_acc || '-'}</td>
+            <td>${item.tgl_masuk || '-'}</td>
+            <td>${item.progres_pengerjaan}</td>
+            <td>${getStatusBadge(item.status_bayar)}</td>
+            <td>${item.tgl_keluar || '-'}</td>
+            <td>${item.no_kendaraan}</td>
+            <td>${item.jenis_mobil}</td>
+            <td>${item.asuransi}</td>
+            <td>${item.customer_name}</td>
+            <td class="harga-acc">${hargaAcc ? hargaAcc.toLocaleString('id-ID') : (hargaEstimasi ? hargaEstimasi.toLocaleString('id-ID') : '-')}</td>
+            <td>${item.bengkel}</td>
+            <td>${item.username}</td>
+        </tr>`;
+
+            tableBody.innerHTML += row;
+        });
+
+        // Update total untuk halaman ini dan grand total
+        document.getElementById('totalPerPage').innerText = (totalPerPageEstimasi + totalPerPageAcc).toLocaleString('id-ID');
+        document.getElementById('grandTotal').innerText = (grandTotalEstimasi + grandTotalAcc).toLocaleString('id-ID');
+    }
+
+
+    // Function to get the status badge for each item
+    function getStatusBadge(status) {
+        if (!status) {
+            // Jika status null atau kosong, return string kosong untuk tidak menampilkan apa-apa
+            return '';
+        }
+
+        switch (status) {
+            case 'Belum Bayar':
+                return '<span class="badge bg-warning text-dark">Belum Bayar</span>';
+            case 'Sudah Kwitansi OR':
+                return '<span class="badge bg-primary text-dark">Sudah Kwitansi OR</span>';
+            case 'Sudah Kwitansi':
+                return '<span class="badge bg-secondary text-dark">Sudah Kwitansi</span>';
+            case 'Pernah Bayar':
+                return '<span class="badge bg-danger text-dark">Pernah Bayar</span>';
+            case 'Lunas':
+                return '<span class="badge bg-success">Lunas</span>';
+            default:
+                return status; // Jika ada status lain yang tidak terdefinisi
+        }
+    }
+
+
+    // Function to export the table data to an Excel file
     function exportToExcel() {
         const table = document.getElementById('repairOrdersTable');
         const wb = XLSX.utils.table_to_book(table, {
-            sheet: "List Repair Orders"
+            sheet: "Repair Orders"
         });
 
-        // Format nama file
+        // Generate a file name with the current date and time
         const date = new Date();
         const formattedDate = date.toISOString().replace(/[-:.]/g, "").slice(0, 14);
-        const fileName = `List_Repair_Orders_${formattedDate}.xlsx`;
+        const fileName = `Repair_Orders_${formattedDate}.xlsx`;
 
-        // Unduh file Excel
+        // Download the Excel file
         XLSX.writeFile(wb, fileName);
     }
-</script>
-<script>
-    $(document).ready(function() {
-        $('.table').DataTable({
-            "paging": true,
-            "pageLength": 20,
-            "lengthMenu": [20, 50, 100],
-            "ordering": true,
-            "language": {
-                "lengthMenu": "Show _MENU_ entries",
-                "paginate": {
-                    "first": "First",
-                    "last": "Last",
-                    "next": "Next",
-                    "previous": "Previous"
-                },
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries"
-            },
-            "pagingType": "full_numbers"
-        });
-    });
-</script>
-<script>
-    // Initialize dropdowns on page load
-    document.getElementById('bulan').value = new Date().getMonth() + 1; // default to current month
-    document.getElementById('tahun').value = new Date().getFullYear(); // default to current year
 
-    function updateTable() {
-        const selectedBengkel = document.getElementById('bengkelSelect').value;
-        const selectedMonth = document.getElementById('bulan').value;
-        const selectedYear = document.getElementById('tahun').value;
-
-        // Fetch all rows in the table body
-        const tableRows = document.querySelectorAll('#repairOrdersTable tbody tr');
-
-        tableRows.forEach(row => {
-            const tglKlaimCell = row.cells[2].textContent.trim(); // Tgl. Klaim cell
-            const bengkelCell = row.cells[10].textContent.trim(); // Bengkel (asuransi) cell
-
-            const tglKlaim = tglKlaimCell ? new Date(tglKlaimCell) : null;
-            const rowMonth = tglKlaim ? (tglKlaim.getMonth() + 1).toString().padStart(2, '0') : '';
-            const rowYear = tglKlaim ? tglKlaim.getFullYear().toString() : '';
-
-            // Show or hide rows based on filters
-            if (
-                (selectedBengkel === "Bengkel" || bengkelCell === selectedBengkel) &&
-                (selectedMonth === "" || rowMonth === selectedMonth) &&
-                (selectedYear === "" || rowYear === selectedYear)
-            ) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-
-    // Event listeners to call updateTable() when any dropdown changes
-    document.getElementById('bulan').addEventListener('change', updateTable);
-    document.getElementById('tahun').addEventListener('change', updateTable);
-    document.getElementById('bengkelSelect').addEventListener('change', updateTable);
-
-    // Initialize table on page load
+    // Initial call to load the table when the page is loaded
     updateTable();
 </script>
-<script>
-    // JavaScript untuk menghitung Total Per Halaman dan Grand Total
-    document.addEventListener("DOMContentLoaded", function() {
-        function formatCurrency(amount) {
-            return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
-
-        function calculateTotals() {
-            let totalPerPage = 0;
-            let grandTotal = 0;
-
-            // Ambil semua elemen dengan kelas "harga-acc"
-            const hargaAccElements = document.querySelectorAll('.harga-acc');
-
-            hargaAccElements.forEach(el => {
-                // Ambil nilai Harga Acc dari teks elemen, hapus tanda titik, dan ubah ke integer
-                const hargaAcc = parseInt(el.textContent.replace(/\./g, '').trim()) || 0;
-
-                // Tambahkan ke total per halaman
-                totalPerPage += hargaAcc;
-            });
-
-            // Untuk contoh ini, grand total diatur sama dengan total per halaman
-            grandTotal = totalPerPage;
-
-            // Update hasil perhitungan ke elemen footer
-            document.getElementById('totalPerPage').innerHTML = `<strong>${formatCurrency(totalPerPage)}</strong>`;
-            document.getElementById('grandTotal').innerHTML = `<strong>${formatCurrency(grandTotal)}</strong>`;
-        }
-
-        // Panggil fungsi untuk menghitung total setelah konten dimuat
-        calculateTotals();
-    });
-</script>
-
 
 <?= $this->endSection() ?>

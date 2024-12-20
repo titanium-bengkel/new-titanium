@@ -41,7 +41,7 @@
                 <div class="card-body">
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-1 ">
-                            <label class="col-form-label">Bengkel</label>
+                            <label class="col-form-label">Cabang</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-1 d-flex align-items-center">
                             <div class="form-check me-3">
@@ -138,17 +138,17 @@
                         </div>
                     </div>
                     <hr>
-                    <h5 class="text-center mb-3">Data Customer</h5>
+                    <h5 class="text-center mb-3">Data Pelanggan</h5>
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="customer-name">Customer Name</label>
+                            <label class="col-form-label" for="customer-name">Nama Pelanggan</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="customer-name" class="form-control" name="customer_name" value="<?= isset($po['customer_name']) ? esc($po['customer_name']) : '' ?>">
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="no-contact">No. Contact</label>
+                            <label class="col-form-label" for="no-contact">Kontak</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="no-contact" class="form-control" name="no_contact" value="<?= isset($po['no_contact']) ? esc($po['no_contact']) : '' ?>">
@@ -203,17 +203,53 @@
                     <h5 class="text-center mb-3">Nilai Estimasi</h5>
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="harga-estimasi">Nilai Jasa</label>
+                            <label class="col-form-label" for="nilai-jasa">Nilai Jasa</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
-                            <input type="text" id="harga-estimasi" class="form-control" name="harga_estimasi" value="<?= isset($hargaEstimasi) ? esc(number_format($hargaEstimasi, 0, ',', '.')) : '' ?>" readonly>
+                            <input type="text" id="nilai-jasa" class="form-control" name="nilai_jasa" readonly>
                         </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Ambil elemen total harga dan input nilai jasa
+                                const totalHargaElement = document.getElementById('total-harga');
+                                const nilaiJasaInput = document.getElementById('nilai-jasa'); // Menggunakan ID 'nilai-jasa'
+
+                                if (totalHargaElement && nilaiJasaInput) {
+                                    // Ambil teks dari total harga, hapus format dan konversi ke angka
+                                    const totalHargaText = totalHargaElement.textContent || totalHargaElement.innerText;
+                                    const totalHarga = parseInt(totalHargaText.replace(/\./g, '').trim(), 10);
+
+                                    // Format ulang dan masukkan ke input nilai jasa
+                                    nilaiJasaInput.value = totalHarga.toLocaleString('id-ID');
+                                }
+                            });
+                        </script>
+
                         <div class="col-lg-2 col-3 mb-3">
                             <label class="col-form-label" for="harga-estimasi">Nilai Sparepart</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
-                            <input type="text" id="harga-estimasi" class="form-control" name="harga_estimasi" value="<?= isset($hargaEstimasi) ? esc(number_format($hargaEstimasi, 0, ',', '.')) : '' ?>" readonly>
+                            <input type="text" id="nilai-sparepart" class="form-control" name="nilai_sparepart" readonly>
                         </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Ambil elemen total harga sparepart dan input nilai sparepart
+                                const totalHargaSparepartElement = document.getElementById('total-harga-sparepart');
+                                const nilaiSparepartInput = document.getElementById('nilai-sparepart');
+
+                                if (totalHargaSparepartElement && nilaiSparepartInput) {
+                                    // Ambil teks dari total harga sparepart, hapus format titik dan konversi ke angka
+                                    const totalHargaSparepartText = totalHargaSparepartElement.textContent || totalHargaSparepartElement.innerText;
+                                    const totalHargaSparepart = parseInt(totalHargaSparepartText.replace(/\./g, '').trim(), 10);
+
+                                    // Pastikan totalHargaSparepart valid dan bukan NaN
+                                    if (!isNaN(totalHargaSparepart)) {
+                                        // Format ulang dan masukkan ke input nilai sparepart (format Indonesia)
+                                        nilaiSparepartInput.value = totalHargaSparepart.toLocaleString('id-ID');
+                                    }
+                                }
+                            });
+                        </script>
                         <div class="col-lg-2 col-3 mb-3">
                             <label class="col-form-label" for="harga-estimasi">Nilai Estimasi</label>
                         </div>
@@ -459,7 +495,7 @@
                                     <?php endforeach; ?>
                                     <tr>
                                         <td colspan="3"><strong>Total Harga</strong></td>
-                                        <td><strong><?= number_format($totalHarga, 0, ',', '.') ?></strong></td>
+                                        <td><strong id="total-harga"><?= number_format($totalHarga, 0, ',', '.') ?></strong></td>
                                         <td></td>
                                     </tr>
                                 <?php else : ?>
@@ -468,6 +504,7 @@
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
+
                         </table>
                     </div>
                 </div>
@@ -613,7 +650,7 @@
                                     <tr>
                                         <td colspan="4" class="text-right"><strong>Total:</strong></td>
                                         <td><strong><?= $totalQty ?></strong></td>
-                                        <td><strong><?= number_format($totalHarga, 0, ',', '.') ?></strong></td>
+                                        <td id="total-harga-sparepart"><strong><?= number_format($totalHarga, 0, ',', '.') ?></strong></td>
                                         <td colspan="9"></td>
                                     </tr>
                                 <?php else : ?>
@@ -954,8 +991,8 @@
             <form action="<?= base_url('createAccAsuransi') ?>" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="id_terima_po" value="<?= esc($po['id_terima_po']) ?>">
 
-                <div class="modal-header" style="color: #fff; border-bottom: 1px solid #dee2e6;">
-                    <h5 class="modal-title" id="asuransiModalLabel">Detail Asuransi</h5>
+                <div class="modal-header bg-gradient-ltr" style="color: #fff; border-bottom: 1px solid #dee2e6;">
+                    <h5 class="modal-title text-white" id="asuransiModalLabel">Detail Asuransi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -1093,12 +1130,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer" style="border-top: 1px solid #dee2e6;">
-                    <button type="submit" class="btn btn-primary btn-sm">
-                        Simpan
-                    </button>
-                    <button type="button" class="btn btn-secondary btn-sm ms-2" data-bs-dismiss="modal">
+                <div class="modal-footer bg-light" style="border-top: 1px solid #dee2e6;">
+                    <button type="button" class="btn btn-secondary ms-2" data-bs-dismiss="modal">
                         Batal
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Simpan
                     </button>
                 </div>
             </form>

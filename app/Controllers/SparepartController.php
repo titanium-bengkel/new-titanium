@@ -88,7 +88,7 @@ class SparepartController extends BaseController
     public function create_part_po()
     {
         // Ambil user_id dari sesi
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -125,6 +125,7 @@ class SparepartController extends BaseController
             'asuransi'          => strtoupper($this->request->getPost('asuransi')),
             'nopol'      => strtoupper($this->request->getPost('no_kendaraan')),
             'jenis_mobil'       => strtoupper($this->request->getPost('jenis_mobil')),
+            'no_rangka'         => strtoupper($this->request->getPost('no_rangka')),
             'warna'             => strtoupper($this->request->getPost('warna')),
             'user_id'           => $user_id,
         ];
@@ -166,8 +167,9 @@ class SparepartController extends BaseController
                             'qty'            => $qtyInput,
                             'harga'          => $harga,
                             'jumlah'         => $jumlah,
-                            'wo'             => strtoupper($this->request->getPost('no_ro')),
+                            'wo' => strtoupper($this->request->getPost('no_ro')),
                             'nopol'          => strtoupper($this->request->getPost('no_kendaraan')),
+                            'no_rangka'          => strtoupper($this->request->getPost('no_rangka')),
                         ];
                         $modelPdetailPesan->insert($dataDetailPesan);
                     }
@@ -195,7 +197,7 @@ class SparepartController extends BaseController
         $jenis_part = $this->request->getPost('jenis_part');
 
         // Mendapatkan user_id dari sesi
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan di session');
         }
@@ -442,7 +444,7 @@ class SparepartController extends BaseController
 
     public function create_terima()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -1124,7 +1126,7 @@ class SparepartController extends BaseController
 
     public function create_partadd()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -1353,7 +1355,7 @@ class SparepartController extends BaseController
 
     public function createRepairPart()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }

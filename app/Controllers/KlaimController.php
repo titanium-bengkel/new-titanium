@@ -30,19 +30,15 @@ class KlaimController extends BaseController
 
     public function preorder()
     {
-        // Membuat instance model M_Po
         $poM = new M_Po();
 
-        // Mengambil data PO dengan urutan menurun berdasarkan created_at
         $poData = $poM->orderBy('tgl_klaim', 'DESC')->findAll();
 
-        // Menyiapkan data untuk dikirim ke view
         $data = [
             'title' => 'Pre-Order',
             'po' => $poData
         ];
 
-        // Mengirim data ke view klaim/preorder
         return view('klaim/preorder', $data);
     }
 
@@ -187,7 +183,7 @@ class KlaimController extends BaseController
             'jenis_mobil' => strtoupper($this->request->getPost('jenis-mobil')),
             'warna' => strtoupper($this->request->getPost('warna')),
             'no_polis' => strtoupper($this->request->getPost('no-polis')),
-            'no_rangka' => $this->request->getPost('no-rangka'),
+            'no_rangka' => strtoupper($this->request->getPost('no_rangka')),
             'tahun_kendaraan' => $this->request->getPost('tahun-kendaraan'),
             'panel' => $this->request->getPost('panel'),
             'no_contact' => $this->request->getPost('no-contact'),
@@ -231,21 +227,19 @@ class KlaimController extends BaseController
             $warnaModel->insert(['warna' => $warna]);
         }
 
-        // Simpan data PO
         if (!$poModel->createPo($data)) {
             $errors = $poModel->errors();
             log_message('error', 'Gagal menyimpan data PO: ' . print_r($errors, true));
             return redirect()->back()->with('error', 'Gagal menyimpan data PO.');
         }
 
-        // Jika berhasil
         return redirect()->to(base_url('/order_posprev/' . $newIdTerimaPo))->with('success', 'Pre Order Berhasil Ditambahkan.');
     }
 
 
     public function updatePO($id_terima_po)
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -296,7 +290,8 @@ class KlaimController extends BaseController
             'alamat' => strtoupper($this->request->getPost('alamat')),
             'kota' => strtoupper($this->request->getPost('kota')),
             'asuransi' => strtoupper($this->request->getPost('asuransi')),
-            'tgl_klaim' => $this->request->getPost('tanggal_masuk'),
+            'tgl_klaim' => $this->request->getPost('tanggal_klaim'),
+            'jam_klaim' => $this->request->getPost('jam_klaim'),
             'harga_estimasi' => $harga_estimasi,
             'keterangan' => strtoupper($this->request->getPost('keterangan')),
             'status' => $status_order,
@@ -347,7 +342,7 @@ class KlaimController extends BaseController
                 'id_terima_po' => $id_terima_po,
                 'tgl_klaim' => $updatedPO['tgl_klaim'],
                 'tgl_acc' => $updatedPO['tgl_acc'],
-                'tgl_masuk' => $updatedPO['tgl_klaim'],
+                'tgl_masuk' => date('Y-m-d'),
                 'no_kendaraan' => strtoupper($updatedPO['no_kendaraan']),
                 'jenis_mobil' => strtoupper($updatedPO['jenis_mobil']),
                 'warna' => strtoupper($updatedPO['warna']),
@@ -366,7 +361,6 @@ class KlaimController extends BaseController
                 'total_biaya' => $updatedPO['total_biaya'],
                 'user_id' => $user_id,
                 'harga_estimasi' => $updatedPO['harga_estimasi'],
-                'harga_acc' => $updatedPO['harga_acc'],
                 'bengkel' => strtoupper($bengkel)
             ];
 
@@ -379,7 +373,7 @@ class KlaimController extends BaseController
             }
 
             // Jika berhasil
-            return redirect()->to('klaim/preorder')->with('success', 'Pre Order berhasil dipindahkan ke Repair Order.');
+            return redirect()->to('repair_order')->with('success', 'Pre Order berhasil dipindahkan ke Repair Order.');
         }
 
         return redirect()->to('klaim/preorder')->with('success', 'Pre Order berhasil diperbarui.');
@@ -389,7 +383,7 @@ class KlaimController extends BaseController
 
     public function createPengerjaanPo()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan di session');
         }
@@ -414,7 +408,7 @@ class KlaimController extends BaseController
         $data = [
             'kode_pengerjaan' => $this->request->getPost('kodePengerjaan'),
             'nama_pengerjaan' => $this->request->getPost('pengerjaan'),
-            'harga' => $this->request->getPost('harga'),
+            'harga' => str_replace('.', '', $this->request->getPost('harga')),
             'id_terima_po' => $id_terima_po
         ];
 
@@ -448,7 +442,7 @@ class KlaimController extends BaseController
     }
     public function updatePengerjaanPo()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan di session');
         }
@@ -458,7 +452,7 @@ class KlaimController extends BaseController
         $kode_pengerjaan = $this->request->getPost('kodePengerjaan');
 
         if (!$id_terima_po || !$kode_pengerjaan) {
-            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'ID Terima PO atau Kode Pengerjaan tidak ditemukan.');
+            return redirect()->back()->with('error', 'ID Terima PO atau Kode Pengerjaan tidak ditemukan.');
         }
 
         // Inisialisasi model M_Po dan M_PengerjaanPo
@@ -468,13 +462,13 @@ class KlaimController extends BaseController
         // Mengambil data PO berdasarkan id_terima_po
         $poData = $poModel->where('id_terima_po', $id_terima_po)->first();
         if (!$poData) {
-            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Data PO tidak ditemukan.');
+            return redirect()->back()->with('error', 'Data PO tidak ditemukan.');
         }
 
         // Mengumpulkan data yang akan diupdate dari form
         $data = [
             'nama_pengerjaan' => $this->request->getPost('pengerjaan'),
-            'harga' => $this->request->getPost('harga'),
+            'harga' => str_replace('.', '', $this->request->getPost('harga')),
         ];
 
         // Debug data yang akan diupdate
@@ -523,7 +517,7 @@ class KlaimController extends BaseController
 
     public function deletePengerjaanPo($idPengerjaanPo = null)
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan di session');
         }
@@ -563,7 +557,7 @@ class KlaimController extends BaseController
             // Update biaya_pengerjaan di tabel po
             $poModel->where('id_terima_po', $id_terima_po)->set(['biaya_pengerjaan' => $totalHarga])->update();
 
-            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('success', 'Pengerjaan berhasil dihapus.');
+            return redirect()->back()->with('success', 'Pengerjaan berhasil dihapus.');
         } catch (\Exception $e) {
             log_message('error', 'Error saat menghapus data pengerjaan: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
@@ -575,7 +569,7 @@ class KlaimController extends BaseController
     public function createSparepartPo()
     {
         // Mendapatkan user_id dari sesi
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan di session');
         }
@@ -653,7 +647,7 @@ class KlaimController extends BaseController
     public function updateSparepartPo($id_sparepart_po)
     {
         // Mendapatkan user_id dari sesi
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan di session');
         }
@@ -725,7 +719,7 @@ class KlaimController extends BaseController
             // Update biaya_sparepart di tabel po
             $poModel->where('id_terima_po', $id_terima_po)->set(['biaya_sparepart' => $totalBiayaSparepart])->update();
 
-            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('success', 'Data sparepart berhasil diperbarui.');
+            return redirect()->back()->with('success', 'Data sparepart berhasil diperbarui.');
         } catch (\Exception $e) {
             log_message('error', 'Error saat memperbarui data sparepart: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
@@ -749,7 +743,7 @@ class KlaimController extends BaseController
     public function deleteSparepartPo($id)
     {
         // Mendapatkan user_id dari sesi
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan di session');
         }
@@ -783,7 +777,7 @@ class KlaimController extends BaseController
             // Update biaya_sparepart di tabel po
             $poModel->where('id_terima_po', $id_terima_po)->set(['biaya_sparepart' => $totalBiayaSparepart])->update();
 
-            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('success', 'Data sparepart berhasil dihapus.');
+            return redirect()->back()->with('success', 'Data sparepart berhasil dihapus.');
         } catch (\Exception $e) {
             log_message('error', 'Error saat menghapus data sparepart: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
@@ -792,7 +786,7 @@ class KlaimController extends BaseController
 
     public function createGambarPo()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to(base_url('/order_posprev'))->with('error', 'User ID tidak ditemukan di session');
         }
@@ -808,7 +802,7 @@ class KlaimController extends BaseController
         $deskripsiArray = $this->request->getPost('deskripsi');
 
         if (empty($gambarFiles['gambar'])) {
-            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Tidak ada file gambar yang diunggah.');
+            return redirect()->back()->with('error', 'Tidak ada file gambar yang diunggah.');
         }
 
         $gambarArray = $gambarFiles['gambar'];
@@ -825,18 +819,18 @@ class KlaimController extends BaseController
 
         foreach ($gambarArray as $index => $gambarFile) {
             if (!$gambarFile->isValid()) {
-                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'File tidak valid.');
+                return redirect()->back()->with('error', 'File tidak valid.');
             }
 
             $fileExtension = $gambarFile->getClientExtension();
             $fileMimeType = $gambarFile->getClientMimeType();
 
             if (!in_array($fileExtension, $allowedExtensions) || !in_array($fileMimeType, $allowedMimeTypes)) {
-                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Jenis file tidak diizinkan: ' . $gambarFile->getClientName());
+                return redirect()->back()->with('error', 'Jenis file tidak diizinkan: ' . $gambarFile->getClientName());
             }
 
             if ($gambarFile->getSize() > $maxFileSize) {
-                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Ukuran file terlalu besar: ' . $gambarFile->getClientName());
+                return redirect()->back()->with('error', 'Ukuran file terlalu besar: ' . $gambarFile->getClientName());
             }
 
             // Menyimpan file gambar
@@ -858,14 +852,14 @@ class KlaimController extends BaseController
             $gambarPoModel->insert($data);
         }
 
-        return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('success', 'Gambar berhasil diunggah.');
+        return redirect()->back()->with('success', 'Gambar berhasil diunggah.');
     }
 
 
 
     public function deleteGambarPo($id)
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan di session');
         }
@@ -891,9 +885,9 @@ class KlaimController extends BaseController
         try {
             $gambarPoModel->delete($id);
 
-            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('success', 'Gambar berhasil dihapus.');
+            return redirect()->back()->with('success', 'Gambar berhasil dihapus.');
         } catch (\Exception $e) {
-            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
     // Controller
@@ -927,7 +921,7 @@ class KlaimController extends BaseController
     public function createAccAsuransi()
     {
         // Ambil user_id dari session
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan di session');
         }
@@ -983,10 +977,10 @@ class KlaimController extends BaseController
                 // Menyimpan nama file ke dalam data
                 $data['file_lampiran'] = $fileName;
             } else {
-                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'File upload tidak valid atau sudah dipindahkan.');
+                return redirect()->back()->with('error', 'File upload tidak valid atau sudah dipindahkan.');
             }
         } else {
-            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Tidak ada file yang diupload.');
+            return redirect()->back()->with('error', 'Tidak ada file yang diupload.');
         }
 
         // Simpan data ke database
@@ -1004,14 +998,14 @@ class KlaimController extends BaseController
             ]);
 
             if ($updateStatus) {
-                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('success', 'Asuransi Berhasil Di Approve.');
+                return redirect()->back()->with('success', 'Asuransi Berhasil Di Approve.');
             } else {
                 log_message('error', 'Gagal mengupdate status di tabel PO dengan ID Terima PO: ' . $id_terima_po);
-                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Gagal mengupdate status di tabel PO.');
+                return redirect()->back()->with('error', 'Gagal mengupdate status di tabel PO.');
             }
         } else {
             log_message('error', 'Gagal menyimpan data asuransi.');
-            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Gagal menyimpan data asuransi.');
+            return redirect()->back()->with('error', 'Gagal menyimpan data asuransi.');
         }
     }
 
@@ -1019,7 +1013,7 @@ class KlaimController extends BaseController
     public function updateAccAsuransi()
     {
         // Ambil user_id dari session
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan di session');
         }
@@ -1267,7 +1261,7 @@ class KlaimController extends BaseController
 
     public function updatePiutang($nomor)
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -1424,7 +1418,7 @@ class KlaimController extends BaseController
     {
         $repairOrderModel = new M_RepairOrder();
 
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -1445,6 +1439,7 @@ class KlaimController extends BaseController
             'no_polis'         => strtoupper($this->request->getPost('no-polis')),
             'tgl_klaim'        => $this->request->getPost('tanggal-masuk'),
             'tgl_keluar'       => $this->request->getPost('tanggal-estimasi'),
+            'jam_keluar'       => $this->request->getPost('jam_keluar'),
             'harga_estimasi'   => str_replace(['.', ','], ['', '.'], $this->request->getPost('harga-estimasi')),
             'keterangan'       => strtoupper($this->request->getPost('keterangan')),
             'progres_pengerjaan' => strtoupper(implode(',', (array) $this->request->getPost('progres_pengerjaan'))),
@@ -1465,6 +1460,48 @@ class KlaimController extends BaseController
             }
         } else {
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        }
+    }
+    public function buttonExit($id_terima_po)
+    {
+        // Memuat model Repair Order
+        $repairOrderModel = new M_RepairOrder();
+
+        // Cek apakah user sudah login dan mendapatkan user_id
+        $user_id = session()->get('username');
+        if (!$user_id) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'User ID tidak ditemukan. Anda harus login terlebih dahulu.'
+            ]);
+        }
+
+        $data = [
+            'status' => 'Mobil Keluar',
+            'user_id' => $user_id
+        ];
+
+        $existingData = $repairOrderModel->where('id_terima_po', $id_terima_po)->first();
+
+        if ($existingData) {
+            // Lakukan update data status jika data ditemukan
+            if ($repairOrderModel->update($existingData['id_repair_order'], $data)) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Mobil berhasil keluar dan status diperbarui.'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Gagal memperbarui status mobil keluar. Silakan coba lagi.'
+                ]);
+            }
+        } else {
+            // Data tidak ditemukan
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Data dengan ID Terima PO tidak ditemukan.'
+            ]);
         }
     }
 
@@ -1640,7 +1677,7 @@ class KlaimController extends BaseController
 
     public function createKwitansi()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -1696,7 +1733,7 @@ class KlaimController extends BaseController
     // public function createKwitansi()
     // {
     //     // Get the user ID from the session
-    //     $user_id = session()->get('user_id');
+    //     $user_id = session()->get('username');
     //     if (!$user_id) {
     //         return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
     //     }
@@ -1753,7 +1790,7 @@ class KlaimController extends BaseController
 
     public function updateKwitansi($nomor)
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -1845,7 +1882,7 @@ class KlaimController extends BaseController
     public function deleteKwitansi($nomor)
     {
         // Mendapatkan ID pengguna dari sesi
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -1875,7 +1912,7 @@ class KlaimController extends BaseController
 
     public function createKwitansiOR()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -2105,7 +2142,7 @@ class KlaimController extends BaseController
     public function deleteKwitansiOR($nomor)
     {
         // Mendapatkan ID pengguna dari sesi
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -2368,7 +2405,7 @@ class KlaimController extends BaseController
 
     // public function addPembayaran()
     // {
-    //     $user_id = session()->get('user_id');
+    //     $user_id = session()->get('username');
     //     if (!$user_id) {
     //         return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
     //     }
@@ -2539,7 +2576,7 @@ class KlaimController extends BaseController
 
     public function addPembayaran()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }

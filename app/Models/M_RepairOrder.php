@@ -15,6 +15,7 @@ class M_RepairOrder extends Model
         'tgl_acc',
         'tgl_masuk',
         'tgl_keluar',
+        'jam_keluar',
         'status_bayar',
         'progres_pengerjaan',
         'user_id',

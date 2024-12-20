@@ -41,8 +41,8 @@
                 </header>
                 <div class="card-body">
                     <div class="form-group row align-items-center">
-                        <div class="col-lg-2 col-3 mb-1 ">
-                            <label class="col-form-label">Bengkel</label>
+                        <div class="col-lg-2 col-3 mb-1">
+                            <label class="col-form-label">Cabang</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-1 d-flex align-items-center">
                             <div class="form-check me-3">
@@ -65,20 +65,56 @@
                                     <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'VORTEX') ? 'checked' : '' ?>>
                                 <label class="form-check-label" for="bengkel-vortex">Vortex</label>
                             </div>
+                            <div class="d-flex ms-auto">
+                                <input type="date" id="tanggal-estimasi" class="form-control me-2" name="tanggal-estimasi" style=" max-width: 180px;" value="<?= isset($ro['tgl_keluar']) ? esc($ro['tgl_keluar']) : '' ?>">
+                                <input type="time" id="jam" name="jam_keluar" class="form-control me-2" style="max-width: 120px;" value="<?= isset($ro['jam_keluar']) ? esc($ro['jam_keluar']) : '' ?>">
+                                <button type="button" class="btn btn-primary btn-sm" id="mobilKeluarBtn" data-id_terima_po="<?= isset($ro['id_terima_po']) ? esc($ro['id_terima_po']) : '' ?>"><i class="fas fa-sign-out-alt"></i></button>
+                            </div>
+
+                            <!-- Countdown Timer Card -->
+                            <div id="countdown-card" style="
+                                position: fixed;
+                                top: 20px;
+                                right: 20px;
+                                width: 250px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f8f9fa;
+                                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+                                z-index: 9999;
+                                padding: 10px;
+                            ">
+                                <div id="countdown-timer" style="
+                                    text-align: center;
+                                    font-weight: bold;
+                                    font-size: 16px;
+                                    color: #333;
+                                "></div>
+                            </div>
+
                         </div>
                     </div>
-                    <h5>Kendaraan</h5>
+                    <hr>
+
+                    <h5 class="text-center mb-3">Data Kendaraan</h5>
                     <div class="form-group row align-items-center">
                         <input type="hidden" id="id-terima-po" name="id_terima_po" value="<?= isset($ro['id_terima_po']) ? esc($ro['id_terima_po']) : '' ?>">
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="pre-order-id">Pre-Order ID</label>
+                            <label class="col-form-label" for="pre-order-id">No. Order</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" class="form-control" value="<?= isset($ro['id_terima_po']) ? esc($ro['id_terima_po']) : '' ?>" readonly>
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="no-kendaraan">No. Kendaraan</label>
+                            <label class="col-form-label" for="no-rangka">No Rangka</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-3">
+                            <input type="text" id="no-rangka" class="form-control" name="no-rangka" value="<?= isset($ro['no_rangka']) ? esc($ro['no_rangka']) : '' ?>">
+                        </div>
+
+                        <div class="col-lg-2 col-3 mb-3">
+                            <label class="col-form-label" for="no-kendaraan">Nopol</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="no_kendaraan" class="form-control" name="no_kendaraan" value="<?= isset($ro['no_kendaraan']) ? esc($ro['no_kendaraan']) : '' ?>">
@@ -99,14 +135,7 @@
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="no-rangka">No Rangka</label>
-                        </div>
-                        <div class="col-lg-10 col-9 mb-3">
-                            <input type="text" id="no-rangka" class="form-control" name="no-rangka" value="<?= isset($ro['no_rangka']) ? esc($ro['no_rangka']) : '' ?>">
-                        </div>
-
-                        <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="tahun-kendaraan">Tahun Kendaraan</label>
+                            <label class="col-form-label" for="tahun-kendaraan">Tahun</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="tahun-kendaraan" class="form-control" name="tahun-kendaraan" value="<?= isset($ro['tahun_kendaraan']) ? esc($ro['tahun_kendaraan']) : '' ?>">
@@ -123,17 +152,17 @@
 
             <div class="card">
                 <div class="card-body">
-                    <h5>Customer</h5>
+                    <h5 class="text-center mb-3">Data Pelanggan</h5>
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="customer-name">Customer Name</label>
+                            <label class="col-form-label" for="customer-name">Nama Pelanggan</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="customer-name" class="form-control" name="customer-name" value="<?= isset($ro['customer_name']) ? esc($ro['customer_name']) : '' ?>">
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="no-contact">No Contact</label>
+                            <label class="col-form-label" for="no-contact">Kontak</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="no-contact" class="form-control" name="no-contact" value="<?= isset($ro['no_contact']) ? esc($ro['no_contact']) : '' ?>">
@@ -158,78 +187,100 @@
 
             <div class="card">
                 <div class="card-body">
-                    <h5>Asuransi</h5>
+                    <h5 class="text-center mb-3">Data Asuransi</h5>
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-3">
                             <label class="col-form-label" for="asuransi">Asuransi</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
-                            <input type="text" id="asuransi" class="form-control" name="asuransi" value="<?= isset($ro['asuransi']) ? esc($ro['asuransi']) : '' ?>" oninput="checkAsuransi()" readonly>
+                            <input type="text" id="asuransi" class="form-control" name="asuransi"
+                                value="<?= isset($ro['asuransi']) ? esc($ro['asuransi']) : '' ?>"
+                                oninput="updateNoPolisVisibility()" readonly>
                         </div>
-                        <div id="no-polis-section">
+                        <div id="no-polis-section" class="row">
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="no-polis">No Polis</label>
+                                <label class="col-form-label" for="no-polis" id="no-polis-label">No Polis</label>
                             </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="text" id="no-polis" class="form-control" name="no-polis" value="<?= isset($ro['no_polis']) ? esc($ro['no_polis']) : '' ?>" readonly>
+                            <div class="col-lg-10 col-9 mb-3" id="no-polis-container">
+                                <input type="text" id="no-polis" class="form-control" name="no-polis"
+                                    value="<?= isset($ro['no_polis']) ? esc($ro['no_polis']) : '' ?>" readonly>
                             </div>
                         </div>
-
-                        <script>
-                            function checkAsuransi() {
-                                var asuransi = document.getElementById("asuransi").value.toLowerCase();
-                                var noPolisSection = document.getElementById("no-polis-section");
-
-                                if (asuransi === "umum/pribadi") {
-                                    noPolisSection.style.display = "none";
-                                } else {
-                                    noPolisSection.style.display = "flex";
-                                }
-                            }
-
-                            window.onload = checkAsuransi;
-                        </script>
-
-                        <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="tanggal-masuk">Tanggal Masuk</label>
-                        </div>
-                        <div class="col-lg-10 col-9 mb-3">
-                            <input type="date" id="tanggal-masuk" class="form-control" name="tanggal-masuk"
-                                value="<?= isset($ro['tgl_klaim']) ? esc($ro['tgl_klaim']) : '' ?>"
-                                onkeydown="return false"
-                                onclick="this.showPicker()">
-                        </div>
-                        <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="tanggal-estimasi">Tanggal Estimasi</label>
-                        </div>
-                        <div class="col-lg-10 col-9 mb-3">
-                            <input type="date" id="tanggal-estimasi" class="form-control" name="tanggal-estimasi"
-                                value="<?= isset($ro['tgl_keluar']) ? esc($ro['tgl_keluar']) : '' ?>"
-                                onkeydown="return false"
-                                onclick="this.showPicker()" required>
-                        </div>
-
-                        <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="harga-estimasi">Harga Estimasi</label>
-                        </div>
-                        <div class="col-lg-10 col-9 mb-3">
-                            <input type="text" id="harga-estimasi" class="form-control" name="harga-estimasi" value="" readonly>
-                        </div>
-
-                        <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="harga-acc">Harga Acc</label>
-                        </div>
-                        <div class="col-lg-10 col-9 mb-3">
-                            <input type="text" id="harga-acc" class="form-control" name="harga-acc"
-                                value="<?= isset($ro['harga_acc']) ? number_format((float)$ro['harga_acc'], 0, ',', '.') : '' ?>" readonly>
-                        </div>
-
 
                         <div class="col-lg-2 col-3 mb-3">
                             <label class="col-form-label" for="keterangan">Keterangan</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <textarea class="form-control" id="keterangan" name="keterangan" rows="1"><?= isset($ro['keterangan']) ? esc($ro['keterangan']) : '' ?></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-center mb-3">Nilai Estimasi</h5>
+                    <div class="form-group row align-items-center">
+                        <div class="col-lg-2 col-3 mb-3">
+                            <label class="col-form-label" for="nilai-jasa">Nilai Jasa</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-3">
+                            <input type="text" id="nilai-jasa" class="form-control" name="nilai_jasa" readonly>
+                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Ambil elemen total harga dan input nilai jasa
+                                const totalHargaElement = document.getElementById('total-harga-pengerjaan');
+                                const nilaiJasaInput = document.getElementById('nilai-jasa'); // Menggunakan ID 'nilai-jasa'
+
+                                if (totalHargaElement && nilaiJasaInput) {
+                                    // Ambil teks dari total harga, hapus format dan konversi ke angka
+                                    const totalHargaText = totalHargaElement.textContent || totalHargaElement.innerText;
+                                    const totalHarga = parseInt(totalHargaText.replace(/\./g, '').trim(), 10);
+
+                                    // Format ulang dan masukkan ke input nilai jasa
+                                    nilaiJasaInput.value = totalHarga.toLocaleString('id-ID');
+                                }
+                            });
+                        </script>
+
+                        <div class="col-lg-2 col-3 mb-3">
+                            <label class="col-form-label" for="harga-estimasi">Nilai Sparepart</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-3">
+                            <input type="text" id="nilai-sparepart" class="form-control" name="nilai_sparepart" readonly>
+                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Ambil elemen total harga sparepart dan input nilai sparepart
+                                const totalHargaSparepartElement = document.getElementById('total-harga-sparepart');
+                                const nilaiSparepartInput = document.getElementById('nilai-sparepart');
+
+                                if (totalHargaSparepartElement && nilaiSparepartInput) {
+                                    // Ambil teks dari total harga sparepart, hapus format titik dan konversi ke angka
+                                    const totalHargaSparepartText = totalHargaSparepartElement.textContent || totalHargaSparepartElement.innerText;
+                                    const totalHargaSparepart = parseInt(totalHargaSparepartText.replace(/\./g, '').trim(), 10);
+
+                                    // Pastikan totalHargaSparepart valid dan bukan NaN
+                                    if (!isNaN(totalHargaSparepart)) {
+                                        // Format ulang dan masukkan ke input nilai sparepart (format Indonesia)
+                                        nilaiSparepartInput.value = totalHargaSparepart.toLocaleString('id-ID');
+                                    }
+                                }
+                            });
+                        </script>
+                        <div class="col-lg-2 col-3">
+                            <label class="col-form-label" for="harga-estimasi" hidden>Harga Estimasi</label>
+                        </div>
+                        <div class="col-lg-10 col-9">
+                            <input type="hidden" class="form-control" name="harga-estimasi" value="<?= isset($ro['harga_estimasi']) ? number_format((float)$ro['harga_estimasi'], 0, ',', '.') : '' ?>" readonly>
+                        </div>
+
+                        <div class="col-lg-2 col-3 mb-3">
+                            <label class="col-form-label" for="harga-acc">Nilai Acc</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-3">
+                            <input type="text" id="harga-estimasi" class="form-control" name="harga-acc"
+                                value="" readonly>
                         </div>
                     </div>
                 </div>
@@ -297,23 +348,40 @@
                             <label class="form-check-label" for="data-completed">Data Completed</label>
                         </div>
                     </div>
-                    <div class="mt-3">
+                    <div class="mt-3" style="position: relative;">
                         <button type="submit" class="btn btn-sm btn-primary">Simpan</button>
                         <button type="button" class="btn btn-sm btn-danger">Batal</button>
                         <a href="<?= base_url('cetakPKB/' . $ro['id_terima_po']) ?>" target="_blank" class="btn btn-secondary btn-sm">Cetak PKB</a>
-                        <!-- <a href="<?= base_url('cetak-spk-b/' . $id_terima_po) ?>" class="btn btn-sm btn-success">Cetak SPK B</a> -->
-
 
                         <?php if (isset($ro['progres_pengerjaan'])): ?>
-                            <?php if ($ro['progres_pengerjaan'] === 'Beres Pengerjaan'): ?>
+                            <?php if (in_array($ro['progres_pengerjaan'], ['Beres Pengerjaan', 'Menunggu Sparepart Tambahan', 'Menunggu Comment User', 'Data Completed'])): ?>
                                 <button type="button" class="btn btn-sm btn-warning" style="margin-left: 20px;"
-                                    onclick="handleKwitansiClick(<?= isset($ro['is_sent']) ? $ro['is_sent'] : 0; ?>)">Kwitansi</button>
+                                    onclick="handleKwitansiClick(<?= isset($ro['is_sent']) ? $ro['is_sent'] : 0; ?>)">
+                                    Kwitansi
+                                </button>
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>
+
+                    <script>
+                        function handleKwitansiClick(isSent) {
+                            if (isSent == 1) {
+                                Swal.fire({
+                                    title: "Peringatan!",
+                                    text: "Cetak Kwitansi Sudah Dilakukan",
+                                    icon: "warning",
+                                    confirmButtonText: "Tutup"
+                                });
+                            } else {
+                                // Jika is_sent 0, arahkan ke modal kwitansi
+                                $('#kwitansiModal').modal('show');
+                            }
+                        }
+                    </script>
                 </div>
             </div>
         </form>
+
 
         <!-- Modal Kwitansi -->
         <div class="modal fade" id="kwitansiModal" tabindex="-1" aria-labelledby="kwitansiModalLabel" aria-hidden="true">
@@ -336,24 +404,6 @@
                 </div>
             </div>
         </div>
-
-        <script>
-            function handleKwitansiClick(isSent) {
-                if (isSent == 1) {
-                    Swal.fire({
-                        title: "Peringatan!",
-                        text: "Cetak Kwitansi Sudah Dilakukan",
-                        icon: "warning",
-                        confirmButtonText: "Tutup"
-                    });
-                } else {
-                    // Jika is_sent 0, arahkan ke modal kwitansi
-                    $('#kwitansiModal').modal('show');
-                }
-            }
-        </script>
-
-
 
         <!-- Form Input Pengerjaan -->
         <div class="col-md-5">
@@ -432,12 +482,15 @@
                                             <td><?= esc($p['nama_pengerjaan']) ?></td>
                                             <td><?= number_format((float)$p['harga'], 0, ',', '.') ?></td>
                                             <td class="d-flex">
-                                                <a href="#" class="btn btn-sm me-2 btn-edit" data-kode-pengerjaan="<?= esc($p['kode_pengerjaan']) ?>">
+                                                <a href="#" class="btn btn-sm me-2 btn-edit" data-kode-pengerjaan="<?= esc($p['id_pengerjaan_po']) ?>">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="<?= base_url('deletePengerjaanPo/' . esc($p['kode_pengerjaan'])) ?>" class="btn btn-sm" onclick="return confirm('Are you sure you want to delete this item?')">
+                                                <a href="#"
+                                                    class="btn btn-sm btn-delete"
+                                                    data-url="<?= base_url('deletePengerjaanPo/' . esc($p['id_pengerjaan_po'])) ?>">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </a>
+
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -481,7 +534,7 @@
                 <div class="card-body">
                     <!-- Button to toggle the sparepart form -->
                     <button type="button" class="btn btn-success btn-sm" data-bs-toggle="collapse" data-bs-target="#collapseSparepart" id="toggleSparepartButton">
-                        Banding
+                        Add
                     </button>
                     <div id="collapseSparepart" class="collapse mt-2">
                         <!-- Form Sparepart -->
@@ -1015,6 +1068,104 @@
 </script>
 
 
+<!-- Pengerjaan Edit-->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mengatur event listener untuk tombol edit
+        document.querySelectorAll('.btn-edit').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const kodePengerjaan = this.getAttribute('data-kode-pengerjaan');
+
+                // Mengambil data dari server
+                fetch(`<?= base_url('getPengerjaanData/') ?>${kodePengerjaan}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Isi form dengan data yang diperoleh
+                        document.getElementById('kodePengerjaan').value = data.kode_pengerjaan;
+                        document.getElementById('pengerjaan').value = data.nama_pengerjaan;
+                        document.getElementById('harga').value = data.harga;
+
+                        // Set form action untuk edit
+                        document.getElementById('pengerjaanForm').action = `<?= base_url('updatePengerjaanPo') ?>/${data.kode_pengerjaan}`;
+
+                        // Buka accordion
+                        const accordion = document.getElementById('collapsePengerjaan');
+                        if (accordion.classList.contains('collapse')) {
+                            new bootstrap.Collapse(accordion, {
+                                toggle: true
+                            });
+                        }
+                    });
+            });
+        });
+    });
+</script>
+
+<!-- Sparepart Edit -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mengatur event listener untuk tombol edit sparepart
+        document.querySelectorAll('.btn-edit-sparepart').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const idSparepart = this.getAttribute('data-id-sparepart');
+
+                if (!idSparepart) {
+                    console.error('ID Sparepart tidak ditemukan.');
+                    return;
+                }
+
+                // Debugging: log ID sparepart
+                console.log('ID Sparepart:', idSparepart);
+
+                // Mengambil data dari server
+                fetch(`<?= base_url('getSparepartDataRepair/') ?>${idSparepart}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (!data) {
+                            console.error('Data kosong diterima dari server.');
+                            return;
+                        }
+
+                        // Debugging: log data yang diterima
+                        console.log('Data Received:', data);
+
+                        // Isi form dengan data yang diperoleh
+                        document.getElementById('kodeSparepart').value = data.id_kode_barang || '';
+                        document.getElementById('sparepartNama').value = data.nama_barang || '';
+                        document.getElementById('sparepartQty').value = data.qty || '';
+                        document.getElementById('hargaSparepart').value = data.harga || '';
+                        document.getElementById('kodePengerjaan').value = data.no_po || '';
+                        document.getElementById('jenisPart').value = data.is_sent ? 'Sent' : 'Not Sent';
+
+                        // Set form action untuk edit
+                        const form = document.getElementById('sparepartForm');
+                        if (form) {
+                            form.action = `<?= base_url('updateSparepartPo') ?>/${data.id}`;
+                        }
+
+                        // Buka accordion jika tidak terlihat
+                        const accordion = document.getElementById('collapseSparepart');
+                        if (accordion && accordion.classList.contains('collapse')) {
+                            new bootstrap.Collapse(accordion, {
+                                toggle: true
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        // Debugging: log error jika terjadi
+                        console.error('Error fetching data:', error);
+                    });
+            });
+        });
+    });
+</script>
 
 <script>
     // pengerjaan
@@ -1301,6 +1452,179 @@
     document.getElementById('collapseSparepart').addEventListener('hide.bs.collapse', function() {
         document.getElementById('toggleSparepartButton').style.display = 'inline-block';
     });
+</script>
+
+
+<!-- Hapus Pengerjaan -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tambahkan event listener untuk tombol delete
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Mencegah aksi default anchor tag
+
+                const url = this.getAttribute('data-url'); // Ambil URL dari data-url
+
+                // Tampilkan SweetAlert2
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Tindakan ini tidak dapat dibatalkan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Jika user menekan "Ya, hapus!", redirect ke URL penghapusan
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+<!-- Mobil Keluar -->
+<script>
+    // Ambil elemen tombol berdasarkan ID
+    document.getElementById('mobilKeluarBtn').addEventListener('click', function() {
+        // Ambil nilai id_terima_po dari atribut data-id_terima_po
+        const id_terima_po = this.getAttribute('data-id_terima_po');
+
+        // Menampilkan SweetAlert2 dengan pilihan Iya dan Batal
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Tindakan ini tidak bisa dibatalkan. Mobil akan keluar dan data tidak dapat kembali setelah dikonfirmasi.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Iya, Lanjutkan',
+            cancelButtonText: 'Batal',
+            reverseButtons: true // Agar tombol Batal di kiri dan Iya di kanan
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Jika klik Iya, kirim request POST ke route dengan id_terima_po
+                const url = '/buttonExit/' + encodeURIComponent(id_terima_po); // Ganti 'yourData' dengan id_terima_po
+
+                fetch(url, {
+                        method: 'POST', // Menggunakan POST
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest' // Biasanya digunakan untuk AJAX request
+                        },
+                        body: JSON.stringify({
+                            // Kirim data tambahan jika diperlukan
+                            mobilId: 123 // Ganti dengan data lain jika diperlukan
+                        })
+                    })
+                    .then(response => response.json()) // Mengambil response JSON
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Mobil Keluar!',
+                                data.message,
+                                'success'
+                            );
+                        } else {
+                            Swal.fire(
+                                'Gagal!',
+                                data.message,
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Terjadi Kesalahan', 'Gagal mengirim data ke server', 'error');
+                    });
+            } else if (result.isDismissed) {
+                // Jika klik Batal
+                Swal.fire(
+                    'Aksi Dibatalkan!',
+                    'Tidak ada perubahan yang dilakukan.',
+                    'error'
+                );
+            }
+        });
+    });
+</script>
+
+
+<script>
+    function updateNoPolisVisibility() {
+        var asuransi = document.getElementById('asuransi').value.trim().toLowerCase();
+        var noPolisSection = document.getElementById('no-polis-section');
+
+        // Sembunyikan atau tampilkan No Polis berdasarkan nilai Asuransi
+        if (asuransi === 'umum/pribadi') {
+            noPolisSection.style.display = 'none';
+        } else {
+            noPolisSection.style.display = 'flex';
+        }
+    }
+
+    // Jalankan saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+        updateNoPolisVisibility();
+    });
+
+    // Opsional: Jalankan saat input Asuransi berubah
+    document.getElementById('asuransi').addEventListener('input', updateNoPolisVisibility);
+</script>
+
+<script>
+    // Fungsi untuk memulai countdown
+    function startCountdown(seconds, onUpdate, onComplete) {
+        let remainingTime = seconds;
+
+        // Update awal
+        onUpdate(remainingTime);
+
+        // Interval untuk update setiap detik
+        const intervalId = setInterval(() => {
+            remainingTime--;
+            if (remainingTime > 0) {
+                onUpdate(remainingTime);
+            } else {
+                clearInterval(intervalId);
+                onComplete();
+            }
+        }, 1000);
+    }
+
+    // Ambil nilai tanggal estimasi
+    const estimasiInput = document.getElementById('tanggal-estimasi').value;
+    const estimasiDate = new Date(estimasiInput);
+    const now = new Date();
+
+    if (estimasiDate > now) {
+        // Hitung selisih waktu dalam detik
+        const timeDifferenceInSeconds = Math.floor((estimasiDate - now) / 1000);
+
+        // Panggil countdown
+        startCountdown(
+            timeDifferenceInSeconds,
+            (remainingTime) => {
+                const days = Math.floor(remainingTime / 86400);
+                const hours = Math.floor((remainingTime % 86400) / 3600);
+                const minutes = Math.floor((remainingTime % 3600) / 60);
+                const seconds = remainingTime % 60;
+
+                const countdownText = `Tersisa: ${days} hari ${hours} jam ${minutes} menit ${seconds} detik`;
+
+                // Perbarui tampilan countdown di dalam div
+                document.getElementById('countdown-timer').innerHTML = countdownText;
+            },
+            () => {
+                // Countdown selesai
+                document.getElementById('countdown-timer').innerHTML = 'Waktu habis!';
+            }
+        );
+    } else {
+        // Jika tanggal sudah lewat
+        document.getElementById('countdown-timer').innerHTML = 'Tanggal estimasi telah lewat!';
+    }
 </script>
 
 <?= $this->endSection() ?>

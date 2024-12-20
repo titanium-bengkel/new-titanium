@@ -30,7 +30,7 @@
                                 <th style="text-align: center;">#</th>
                                 <th style="text-align: center;">Status</th>
                                 <th style="text-align: center;">No. PO</th>
-                                <th style="text-align: center;">Work Order</th>
+                                <th style="text-align: center;">No. Order</th>
                                 <th style="text-align: center;">Tanggal</th>
                                 <th style="text-align: center;">Supplier</th>
                                 <th style="text-align: center;">Nopol</th>
@@ -71,7 +71,7 @@
                                         <td><?= number_format($item['total_jumlah'], 0, ',', '.'); ?></td>
                                         <td><?= $item['no_faktur']; ?></td>
                                         <td><?= $item['keterangan']; ?></td>
-                                        <td><?= $item['username']; ?></td>
+                                        <td><?= $item['user_id']; ?></td>
                                         <td>
                                             <button type="button" class="btn btn-sm delete-user-btn" style="padding: 1px 3px; font-size: 10px;" data-url="<?= base_url('sparepart/delete/' . $item['id_pesan']); ?>">
                                                 <i class="fas fa-trash-alt"></i>

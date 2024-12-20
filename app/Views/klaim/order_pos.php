@@ -63,7 +63,7 @@
                                 <label class="col-form-label" for="no-rangka">No. Rangka</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
-                                <input type="text" id="no-rangka" class="form-control" name="no-rangka">
+                                <input type="text" id="no-rangka" class="form-control" name="no_rangka">
                             </div>
                             <!-- No. Kendaraan -->
                             <div class="col-lg-2 col-3 mb-3">

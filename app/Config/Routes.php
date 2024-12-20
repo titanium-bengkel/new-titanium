@@ -27,11 +27,11 @@ $routes->setAutoRoute(true);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'AuthController::index');
+$routes->get('/index', 'Home::index');
 $routes->post('login', 'AuthController::login');
 $routes->get('logout', 'AuthController::logout');
 $routes->get('/profile', 'AuthController::profile');
 $routes->post('updateProfile', 'AuthController::updateProfile');
-$routes->get('/index', 'Home::index');
 $routes->get('dashboard_keuangan', 'Home::dsb_keuangan');
 
 //routes superadmin
@@ -124,6 +124,7 @@ $routes->post('addInvoice', 'KlaimController::addInvoice');
 $routes->post('addPembayaran', 'KlaimController::addPembayaran');
 
 $routes->get('repair_selesai', 'KlaimController::Repair_Selesai');
+$routes->post('buttonExit/(:any)', 'KlaimController::buttonExit/$1');
 
 
 

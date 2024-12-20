@@ -203,7 +203,7 @@
         dataToDisplay.forEach((item) => {
             if (item.status === 'Repair Order') return; // Skip 'Repair Order' status
 
-            const hargaEstimasi = item.harga_estimasi ? parseFloat(item.harga_estimasi) : 0;
+            const hargaEstimasi = item.total_biaya ? parseFloat(item.total_biaya) : 0;
             const hargaAcc = item.harga_acc ? parseFloat(item.harga_acc) : 0;
 
             grandTotalEstimasi += hargaEstimasi;
