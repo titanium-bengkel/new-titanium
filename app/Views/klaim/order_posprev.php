@@ -64,21 +64,31 @@
                                     <?= (isset($po['bengkel']) && esc($po['bengkel']) === 'Vortex') ? 'checked' : '' ?>>
                                 <label class="form-check-label" for="vortex">Vortex</label>
                             </div>
+                            <div class="d-flex ms-auto">
+                                <input type="date" id="tanggal" class="form-control me-2" name="tanggal_klaim" style="max-width: 180px;" value="<?= isset($po['tgl_klaim']) ? esc($po['tgl_klaim']) : '' ?>">
+                                <input type="time" id="jam" name="jam_klaim" class="form-control" style="max-width: 120px;" value="<?= isset($po['jam_klaim']) ? esc($po['jam_klaim']) : '' ?>">
+                            </div>
                         </div>
                     </div>
+                    <hr>
 
-                    <h5>Kendaraan</h5>
+                    <h5 class="text-center mb-3">Data Kendaraan</h5>
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="id-terima-po">Pre-Order ID</label>
+                            <label class="col-form-label" for="id-terima-po">No. Order</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
-                            <input type="hidden" id="id-terima-po" name="id_terima_po" value="<?= isset($po['id_terima_po']) ? esc($po['id_terima_po']) : '' ?>">
-                            <input type="text" class="form-control" value="<?= isset($po['id_po']) ? esc($po['id_po']) : '' ?>" readonly>
+                            <input type="text" class="form-control" value="<?= isset($po['id_terima_po']) ? esc($po['id_terima_po']) : '' ?>" readonly>
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="no-kendaraan">No. Kendaraan</label>
+                            <label class="col-form-label" for="no-rangka">No. Rangka</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-3">
+                            <input type="text" id="no-rangka" class="form-control" name="no_rangka" value="<?= isset($po['no_rangka']) ? esc($po['no_rangka']) : '' ?>">
+                        </div>
+                        <div class="col-lg-2 col-3 mb-3">
+                            <label class="col-form-label" for="no-kendaraan">Nopol</label>
                         </div>
                         <div class="col-lg-9 col-7 mb-3">
                             <input type="text" id="no_kendaraan" class="form-control" name="no_kendaraan" value="<?= isset($po['no_kendaraan']) ? esc($po['no_kendaraan']) : '' ?>">
@@ -114,14 +124,7 @@
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="no-rangka">No. Rangka</label>
-                        </div>
-                        <div class="col-lg-10 col-9 mb-3">
-                            <input type="text" id="no-rangka" class="form-control" name="no_rangka" value="<?= isset($po['no_rangka']) ? esc($po['no_rangka']) : '' ?>">
-                        </div>
-
-                        <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="tahun-kendaraan">Tahun Kendaraan</label>
+                            <label class="col-form-label" for="tahun-kendaraan">Tahun</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="tahun-kendaraan" class="form-control" name="tahun_kendaraan" value="<?= isset($po['tahun_kendaraan']) ? esc($po['tahun_kendaraan']) : '' ?>">
@@ -135,8 +138,7 @@
                         </div>
                     </div>
                     <hr>
-                    <h5>Data Customer</h5>
-                    <!-- Customer Section -->
+                    <h5 class="text-center mb-3">Data Customer</h5>
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-3">
                             <label class="col-form-label" for="customer-name">Customer Name</label>
@@ -167,8 +169,7 @@
                         </div>
                     </div>
                     <hr>
-                    <h5>Asuransi</h5>
-                    <!-- Asuransi Section -->
+                    <h5 class="text-center mb-3">Data Asuransi</h5>
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-3">
                             <label class="col-form-label" for="asuransi">Asuransi</label>
@@ -190,15 +191,31 @@
                             <input type="text" id="no-polis" class="form-control" name="no_polis" value="<?= isset($po['no_polis']) ? esc($po['no_polis']) : '' ?>">
                         </div>
 
-                        <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="tanggal-masuk">Tanggal Masuk</label>
-                        </div>
-                        <div class="col-lg-10 col-9 mb-3">
-                            <input type="date" id="tanggal-masuk" class="form-control" name="tanggal_masuk" value="<?= isset($po['tgl_klaim']) ? esc($po['tgl_klaim']) : '' ?>" onkeydown="return false" onclick="this.showPicker()">
-                        </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="harga-estimasi">Harga Estimasi</label>
+                            <label class="col-form-label" for="keterangan">Keterangan</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-3">
+                            <textarea class="form-control" id="keterangan" name="keterangan" rows="1"><?= isset($po['keterangan']) ? esc($po['keterangan']) : '' ?></textarea>
+                        </div>
+                    </div>
+                    <hr>
+                    <h5 class="text-center mb-3">Nilai Estimasi</h5>
+                    <div class="form-group row align-items-center">
+                        <div class="col-lg-2 col-3 mb-3">
+                            <label class="col-form-label" for="harga-estimasi">Nilai Jasa</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-3">
+                            <input type="text" id="harga-estimasi" class="form-control" name="harga_estimasi" value="<?= isset($hargaEstimasi) ? esc(number_format($hargaEstimasi, 0, ',', '.')) : '' ?>" readonly>
+                        </div>
+                        <div class="col-lg-2 col-3 mb-3">
+                            <label class="col-form-label" for="harga-estimasi">Nilai Sparepart</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-3">
+                            <input type="text" id="harga-estimasi" class="form-control" name="harga_estimasi" value="<?= isset($hargaEstimasi) ? esc(number_format($hargaEstimasi, 0, ',', '.')) : '' ?>" readonly>
+                        </div>
+                        <div class="col-lg-2 col-3 mb-3">
+                            <label class="col-form-label" for="harga-estimasi">Nilai Estimasi</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="harga-estimasi" class="form-control" name="harga_estimasi" value="<?= isset($hargaEstimasi) ? esc(number_format($hargaEstimasi, 0, ',', '.')) : '' ?>" readonly>
@@ -237,13 +254,6 @@
 
                             updateHargaEstimasi();
                         </script>
-
-                        <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="keterangan">Keterangan</label>
-                        </div>
-                        <div class="col-lg-10 col-9 mb-3">
-                            <textarea class="form-control" id="keterangan" name="keterangan" rows="1"><?= isset($po['keterangan']) ? esc($po['keterangan']) : '' ?></textarea>
-                        </div>
                     </div>
                     <hr>
                     <div class="form-group row align-items-center">
@@ -271,6 +281,7 @@
                             </select>
                         </div>
                     </div>
+
                     <h5>Checklist Progres</h5>
                     <div class="form-group">
                         <div class="form-check form-check-inline">
@@ -298,6 +309,17 @@
                             <label class="form-check-label" for="batal-mobil-masuk">Batal Mobil Masuk</label>
                         </div>
                     </div>
+
+                    <!-- JavaScript to change progress based on selected status order -->
+                    <script>
+                        document.getElementById('status-order').addEventListener('change', function() {
+                            if (this.value === 'Repair Order') {
+                                // Check the "Siap Masuk" radio button when "Repair Order" is selected
+                                document.getElementById('siap-masuk').checked = true;
+                            }
+                        });
+                    </script>
+
                     <div class="mt-3">
                         <div class="d-flex mt-3">
                             <button type="submit" class="btn btn-sm btn-primary me-2">Update</button>
@@ -348,7 +370,6 @@
                 </div>
             </div>
         </form>
-
 
         <!-- Form Input Pengerjaan -->
         <div class="col-md-5">
@@ -425,10 +446,12 @@
                                             <td><?= esc($p['nama_pengerjaan']) ?></td>
                                             <td><?= number_format((float)$p['harga'], 0, ',', '.') ?></td>
                                             <td class="d-flex">
-                                                <a href="#" class="btn btn-sm me-2 btn-edit" data-kode-pengerjaan="<?= esc($p['kode_pengerjaan']) ?>">
+                                                <a href="#" class="btn btn-sm me-2 btn-edit" data-kode-pengerjaan="<?= esc($p['id_pengerjaan_po']) ?>">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="<?= base_url('deletePengerjaanPo/' . esc($p['id_pengerjaan_po'])) ?>" class="btn btn-sm" onclick="return confirm('Are you sure you want to delete this item?')">
+                                                <a href="#"
+                                                    class="btn btn-sm btn-delete"
+                                                    data-url="<?= base_url('deletePengerjaanPo/' . esc($p['id_pengerjaan_po'])) ?>">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </a>
                                             </td>
@@ -1835,6 +1858,37 @@
     function getNumericValue(value) {
         return parseFloat(value.replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
     }
+</script>
+
+<!-- Hapus Pengerjaan -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tambahkan event listener untuk tombol delete
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Mencegah aksi default anchor tag
+
+                const url = this.getAttribute('data-url'); // Ambil URL dari data-url
+
+                // Tampilkan SweetAlert2
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Tindakan ini tidak dapat dibatalkan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Jika user menekan "Ya, hapus!", redirect ke URL penghapusan
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    });
 </script>
 
 

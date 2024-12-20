@@ -30,32 +30,22 @@ class KlaimController extends BaseController
 
     public function preorder()
     {
-        $poModel = new M_Po();
-        $poData = $poModel->getPoWithUsername();
-        $accData = $poModel->getPoWithAccAsuransi();
+        // Membuat instance model M_Po
+        $poM = new M_Po();
 
-        foreach ($poData as &$po_item) {
-            foreach ($accData as $acc_item) {
-                if ($po_item['id_terima_po'] === $acc_item['id_terima_po']) {
-                    $po_item['tgl_acc'] = $acc_item['tgl_acc'];
-                    $po_item['harga_acc'] = $acc_item['harga_acc'];
-                    break;
-                }
-            }
-        }
+        // Mengambil data PO dengan urutan menurun berdasarkan created_at
+        $poData = $poM->orderBy('tgl_klaim', 'DESC')->findAll();
 
-        $preOrderId = $poModel->generateIdTerimaPo();
-        $idPo = $poModel->generateIdPo();
-
+        // Menyiapkan data untuk dikirim ke view
         $data = [
             'title' => 'Pre-Order',
-            'preOrderId' => $preOrderId,
-            'idPo' => $idPo,
-            'po' => $poData,
+            'po' => $poData
         ];
 
+        // Mengirim data ke view klaim/preorder
         return view('klaim/preorder', $data);
     }
+
 
 
     public function input_order($id_terima_po = null)
@@ -67,7 +57,7 @@ class KlaimController extends BaseController
         $pengerjaanModel = new M_PengerjaanPo();
 
         // Generate new IDs
-        $preOrderId = $poModel->generateIdPo();
+        $preOrderId = $poModel->generateIdTerimaPo();
         $newPoId = $poModel->generateIdPo();
 
         // If $id_terima_po is provided, fetch the PO data
@@ -161,7 +151,7 @@ class KlaimController extends BaseController
 
     public function createPo()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -205,8 +195,8 @@ class KlaimController extends BaseController
             'alamat' => strtoupper($this->request->getPost('alamat')),
             'kota' => strtoupper($this->request->getPost('kota')),
             'asuransi' => strtoupper($this->request->getPost('asuransi')),
-            'tgl_klaim' => $this->request->getPost('tanggal-masuk'),
-            'harga_estimasi' => $this->request->getPost('harga-estimasi'),
+            'tgl_klaim' => $this->request->getPost('tanggal_klaim'),
+            'jam_klaim' => $this->request->getPost('jam_klaim'),
             'keterangan' => strtoupper($this->request->getPost('keterangan')),
             'status' => 'Pre-Order',
             'progres' => $progres,

@@ -13,6 +13,7 @@ class M_Po extends Model
         'id_terima_po',
         'tgl_klaim',
         'tgl_acc',
+        'jam_klaim',
         'status',
         'progres',
         'user_id',
@@ -154,7 +155,7 @@ class M_Po extends Model
     {
         $builder = $this->db->table($this->table);
         $builder->select('id_po');
-        $builder->like('id_po', 'EST' . date('Ym'), 'after');
+        $builder->like('id_po', 'PO' . date('Ym'), 'after');
         $builder->orderBy('id_po', 'DESC');
         $builder->limit(1);
         $query = $builder->get();
@@ -164,9 +165,9 @@ class M_Po extends Model
             $last_id = $result->id_po;
             $last_number = intval(substr($last_id, -3));
             $new_number = $last_number + 1;
-            $new_id = 'EST' . date('Ym') . str_pad($new_number, 3, '0', STR_PAD_LEFT);
+            $new_id = 'PO' . date('Ym') . str_pad($new_number, 3, '0', STR_PAD_LEFT);
         } else {
-            $new_id = 'EST' . date('Ym') . '001';
+            $new_id = 'PO' . date('Ym') . '001';
         }
 
         return $new_id;
@@ -296,9 +297,9 @@ class M_Po extends Model
     }
 
     public function countBengkelTitanium()
-{
-    return $this->where('bengkel', 'TITANIUM')
-                ->where('is_sent', 0)
-                ->countAllResults();
-}
+    {
+        return $this->where('bengkel', 'TITANIUM')
+            ->where('is_sent', 0)
+            ->countAllResults();
+    }
 }

@@ -70,7 +70,7 @@
                         </a>
                         <ul class="submenu">
                             <li class="submenu-item">
-                                <a href="<?= base_url('klaim/preorder') ?>" class="submenu-link">Est. Perbaikan</a>
+                                <a href="<?= base_url('klaim/preorder') ?>" class="submenu-link">Pre Order</a>
                             </li>
                             <li class="submenu-item">
                                 <a href="<?= base_url('orderlist_asuransi') ?>" class="submenu-link">Approval Asuransi</a>

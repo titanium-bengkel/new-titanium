@@ -21,7 +21,7 @@
                         <?= csrf_field() ?>
                         <div class="form-group row align-items-center">
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label">Bengkel</label>
+                                <label class="col-form-label">Cabang</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3 d-flex align-items-center">
                                 <div class="form-check me-3">
@@ -36,26 +36,38 @@
                                     <input type="radio" id="bengkel-k3karoseri" name="bengkel" value="K3 Karoseri" class="form-check-input">
                                     <label class="form-check-label" for="bengkel-k3karoseri">K3 Karoseri</label>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check me-3">
                                     <input type="radio" id="bengkel-vortex" name="bengkel" value="Vortex" class="form-check-input">
                                     <label class="form-check-label" for="bengkel-vortex">Vortex</label>
                                 </div>
+                                <!-- Inputan Tanggal dan Jam -->
+                                <div class="d-flex ms-auto">
+                                    <input type="date" id="tanggal" class="form-control me-2" name="tanggal_klaim" style="max-width: 180px;">
+                                    <input type="time" id="jam" name="jam_klaim" class="form-control" style="max-width: 120px;">
+                                </div>
                             </div>
+                            <hr>
 
-
-                            <h5>Kendaraan</h5>
+                            <h5 class="text-center mb-3">Data Kendaraan</h5>
 
                             <!-- Pre-Order ID -->
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="pre-order-id">Pre-Order ID</label>
+                            <div class=" col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="pre-order-id">No. Order</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
-                                <input type="text" id="pre-order-id" class="form-control" name="pre-order-id" value="<?= $preOrderId ?>" disabled>
+                                <input type="text" id="pre-order-id" class="form-control" name="pre-order-id" value="<?= $preOrderId ?>" readonly>
                             </div>
 
+                            <!-- No Rangka -->
+                            <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="no-rangka">No. Rangka</label>
+                            </div>
+                            <div class="col-lg-10 col-9 mb-3">
+                                <input type="text" id="no-rangka" class="form-control" name="no-rangka">
+                            </div>
                             <!-- No. Kendaraan -->
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="no-kendaraan">No. Kendaraan</label>
+                                <label class="col-form-label" for="no-kendaraan">Nopol</label>
                             </div>
                             <div class="col-lg-9 col-7 mb-3">
                                 <input type="text" id="no-kendaraan" class="form-control" name="no-kendaraan">
@@ -68,7 +80,7 @@
 
                             <!-- Jenis Mobil -->
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="jenis-mobil">Jenis Mobil</label>
+                                <label class="col-form-label" for="jenis-mobil">Car Model</label>
                             </div>
                             <div class="col-lg-9 col-7 mb-3">
                                 <input type="text" id="jenis-mobil" class="form-control" name="jenis-mobil">
@@ -92,17 +104,9 @@
                                 </button>
                             </div>
 
-                            <!-- No Rangka -->
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="no-rangka">No. Rangka</label>
-                            </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="text" id="no-rangka" class="form-control" name="no-rangka">
-                            </div>
-
                             <!-- Tahun Kendaraan -->
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="tahun-kendaraan">Tahun Kendaraan</label>
+                                <label class="col-form-label" for="tahun-kendaraan">Tahun</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="text" id="tahun-kendaraan" class="form-control" name="tahun-kendaraan">
@@ -115,7 +119,7 @@
                             </div>
                         </div>
                         <hr>
-                        <h5>Data Customer</h5>
+                        <h5 class="text-center mb-3">Data Customer</h5>
                         <div class="form-group row align-items-center">
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="customer-name">Customer Name</label>
@@ -143,53 +147,37 @@
                             </div>
                         </div>
                         <hr>
-                        <h5>Asuransi</h5>
+                        <h5 class="text-center mb-3">Data Asuransi</h5>
                         <?php
                         $asuransi = isset($_POST['asuransi']) ? trim($_POST['asuransi']) : '';
                         $hideNoPolis = (strtolower($asuransi) === 'Umum/Pribadi');
                         ?>
                         <div class="form-group row align-items-center">
-                            <div class="col-lg-2 col-3 mb-3">
+                            <div class="col-lg-2 col-3 mb-2">
                                 <label class="col-form-label" for="asuransi">Asuransi</label>
                             </div>
-                            <div class="col-lg-9 col-7 mb-3">
+                            <div class="col-lg-9 col-7 mb-2">
                                 <input type="text" id="asuransi" class="form-control" name="asuransi" readonly>
                             </div>
-                            <div class="col-lg-1 col-2 mb-3">
+                            <div class="col-lg-1 col-2 mb-2">
                                 <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#asur">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="form-group row align-items-center" id="form-group-no-polis">
-                            <div class="col-lg-2 col-3 mb-3">
+                            <div class="col-lg-2 col-3 mb-2">
                                 <label class="col-form-label" for="no-polis">No. Polis</label>
                             </div>
-                            <div class="col-lg-10 col-9 mb-3">
+                            <div class="col-lg-10 col-9 mb-2">
                                 <input type="text" id="no-polis" class="form-control" name="no-polis">
                             </div>
                         </div>
                         <div class="form-group row align-items-center">
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="tanggal-masuk">Tanggal Masuk</label>
-                            </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="date" id="tanggal-masuk" class="form-control" name="tanggal-masuk" onclick="openDatepicker(this);" required>
-                            </div>
-                        </div>
-                        <div class="form-group row align-items-center">
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="harga-estimasi">Harga Estimasi</label>
-                            </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="text" id="harga-estimasi" class="form-control" name="harga-estimasi" readonly>
-                            </div>
-                        </div>
-                        <div class="form-group row align-items-center">
-                            <div class="col-lg-2 col-3 mb-3">
+                            <div class="col-lg-2 col-3 mb-2">
                                 <label class="col-form-label" for="keterangan">Keterangan</label>
                             </div>
-                            <div class="col-lg-10 col-9 mb-3">
+                            <div class="col-lg-10 col-9 mb-2">
                                 <textarea class="form-control" id="keterangan" name="keterangan" rows="1"></textarea>
                             </div>
                         </div>
@@ -234,262 +222,8 @@
                             </div>
                         </div>
                         <div class="mt-3">
-                            <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
-                            <a href="<?= base_url('klaim/preorder') ?>" type="button" class="btn btn-danger btn-sm">Batal</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- Form Input Pengerjaan -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <!-- Button Accordion -->
-                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="collapse" data-bs-target="#collapsePengerjaan" id="togglePengerjaanButton">
-                        Add
-                    </button>
-                    <!-- Form Pengerjaan -->
-                    <div id="collapsePengerjaan" class="collapse mt-2">
-                        <form id="pengerjaanForm" method="post" action="<?= base_url('createPengerjaanPo') ?>">
-                            <div class="row mb-2">
-                                <div class="col-sm-5">
-                                    <label for="kodePengerjaan" class="col-form-label">Kode Pengerjaan</label>
-                                </div>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control form-control-sm" id="kodePengerjaan" name="kodePengerjaan" readonly>
-                                </div>
-                                <div class="col-sm-2">
-                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#pengerjaanModal">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-sm-5">
-                                    <label for="pengerjaan" class="col-form-label">Pengerjaan</label>
-                                </div>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm" id="pengerjaan" name="pengerjaan">
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-sm-5">
-                                    <label for="harga" class="col-form-label">Harga</label>
-                                </div>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm" id="harga" name="harga">
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div>
-                                    <button type="submit" class="btn btn-success btn-sm">Submit</button>
-                                    <button type="button" class="btn btn-danger btn-sm" id="cancelPengerjaanButton">Batal</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- Tabel Pengerjaan -->
-                    <div class="table-responsive mt-2">
-                        <table class="table table-bordered text-center">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Kode Pengerjaan</th>
-                                    <th>Pengerjaan</th>
-                                    <th>Harga</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($pengerjaanList)) : ?>
-                                    <?php foreach ($pengerjaanList as $index => $p) : ?>
-                                        <tr>
-                                            <td><?= $index + 1 ?></td>
-                                            <td><?= $p->kode_pengerjaan ?></td>
-                                            <td><?= $p->nama_pengerjaan ?></td>
-                                            <td><?= $p->harga ?></td>
-                                            <td><a href="#"><i class="fas fa-trash-alt"></i></a></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php else : ?>
-                                    <tr>
-                                        <td colspan="5">Tidak ada data pengerjaan.</td>
-                                    </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sperpat -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <!-- Button Accordion untuk Sparepart -->
-                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="collapse" data-bs-target="#collapseSparepart" id="toggleSparepartButton">
-                        Add
-                    </button>
-                    <!-- Sperpat -->
-                    <div id="collapseSparepart" class="collapse mt-2">
-                        <form id="sparepartForm">
-                            <div class="row mb-2">
-                                <div class="col-sm-5">
-                                    <label for="kodeSparepart" class="col-form-label">Kode Sparepart</label>
-                                </div>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control form-control-sm" id="kodeSparepart">
-                                </div>
-                                <div class="col-sm-2">
-                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#kodepart">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-sm-5">
-                                    <label for="sparepart" class="col-form-label">Qty</label>
-                                </div>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm" id="sparepart">
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-sm-5">
-                                    <label for="hargaSparepart" class="col-form-label">Harga</label>
-                                </div>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm" id="hargaSparepart">
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-sm-5">
-                                    <label for="kodeSparepartPengerjaan" class="col-form-label">Pengerjaan</label>
-                                </div>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control form-control-sm" id="kodeSparepartPengerjaan">
-                                </div>
-                                <div class="col-sm-2">
-                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-sm-5">
-                                    <label for="sparepartNama" class="col-form-label">Nama</label>
-                                </div>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm" id="sparepartNama">
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-sm-5">
-                                    <label for="jenisPart" class="col-form-label">Jenis Part</label>
-                                </div>
-                                <div class="col-sm-6">
-                                    <fieldset class="form-group">
-                                        <select class="form-select form-select-sm" id="jenisPart">
-                                            <option>NON-SUPPLY</option>
-                                            <option>SUPPLY</option>
-                                            <option>BORONG</option>
-                                            <option>TIDAK JADI GANTI</option>
-                                        </select>
-                                    </fieldset>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div>
-                                    <button type="submit" class="btn btn-success btn-sm">Submit</button>
-                                    <button type="button" class="btn btn-danger btn-sm" id="cancelSparepartButton">Batal</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class=" table-responsive">
-                        <table class="table table-bordered mt-2">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Nama</th>
-                                    <th>Jenis</th>
-                                    <th>Qty</th>
-                                    <th>Harga</th>
-                                    <th>Kode Pengerjaan</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($data)) : ?>
-                                    <tr>
-                                        <td colspan="7" class="text-center">Tidak ada data sparepart.</td>
-                                    </tr>
-                                <?php else : ?>
-                                    <?php foreach ($data as $item) : ?>
-                                        <tr>
-                                            <td><?= $item['nomor'] ?></td>
-                                            <td><?= $item['nama'] ?></td>
-                                            <td><?= $item['jenis'] ?></td>
-                                            <td><?= $item['qty'] ?></td>
-                                            <td><?= $item['harga'] ?></td>
-                                            <td><?= $item['kode_pengerjaan'] ?></td>
-                                            <td><a href="#"><i class="fas fa-trash-alt"></i></a></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- bukti gambar -->
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <button type="button" class="btn btn-success btn-sm" id="uploadButton">
-                        Upload foto
-                    </button>
-                    <form action="" id="uploadGambarForm">
-                        <div class="table-responsive text-center">
-                            <table class="table table-bordered mt-2">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Keterangan</th>
-                                        <th>Foto</th>
-                                        <th>Deskripsi</th>
-                                        <th>Act</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (!empty($gambarData)) : ?>
-                                        <?php foreach ($gambarData as $index => $gambar) : ?>
-                                            <tr>
-                                                <td><?= $index + 1 ?></td>
-                                                <td><?= htmlspecialchars($gambar['keterangan']) ?></td>
-                                                <td>
-                                                    <img src="<?= base_url('uploads/' . htmlspecialchars($gambar['gambar'])) ?>" alt="<?= htmlspecialchars($gambar['keterangan']) ?>" style="max-width: 200px;">
-                                                </td>
-                                                <td><?= htmlspecialchars($gambar['deskripsi']) ?></td>
-                                                <td>
-                                                    <a href="<?= base_url('delete-gambar/' . $gambar['id_gambar_po']) ?>" class="btn btn-sm " onclick="return confirm('Apakah Anda yakin ingin menghapus gambar ini?');">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php else : ?>
-                                        <tr>
-                                            <td colspan="5">Tidak ada gambar yang di-upload.</td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <a href="<?= base_url('klaim/preorder') ?>" type="button" class="btn btn-danger">Batal</a>
                         </div>
                     </form>
                 </div>
@@ -1204,5 +938,30 @@
     });
 </script>
 
+
+<!-- jam dan Tanggal -->
+
+<script>
+    // Fungsi untuk mengatur tanggal dan waktu otomatis
+    window.onload = function() {
+        // Menentukan tanggal hari ini dalam format yyyy-mm-dd
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); // Bulan dimulai dari 0
+        var yyyy = today.getFullYear();
+        var dateString = yyyy + '-' + mm + '-' + dd;
+
+        // Menetapkan nilai tanggal pada inputan
+        document.getElementById("tanggal").value = dateString;
+
+        // Menentukan waktu saat ini dalam format hh:mm
+        var hh = String(today.getHours()).padStart(2, '0');
+        var min = String(today.getMinutes()).padStart(2, '0');
+        var timeString = hh + ':' + min;
+
+        // Menetapkan nilai waktu pada inputan
+        document.getElementById("jam").value = timeString;
+    }
+</script>
 
 <?= $this->endSection() ?>

@@ -1,8 +1,10 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content') ?>
 
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <script>
     <?php if (session()->getFlashdata('success')) : ?>
         Swal.fire({
@@ -31,66 +33,74 @@
 <section class="section">
     <div class="row" id="table-head">
         <div class="col-12">
-            <div class="card">
-                <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
+            <div class="card shadow-lg rounded-3">
+                <header class="d-flex justify-content-between align-items-center border-bottom pb-3" style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
                         <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
-                        <span class="breadcrumb-current text-muted">Est. Perbaikan</span>
+                        <span class="breadcrumb-current text-muted">Pre Order</span>
                     </div>
-                    <h5 class="page-title mb-0 fw-bold">Estimasi Perbaikan</h5>
+                    <h5 class="page-title mb-0 fw-bold text-primary">Pre Order</h5>
                 </header>
-                <div class="card-header d-flex align-items-center justify-content-start flex-wrap" style="padding: 20px;">
-                    <div class="d-flex align-items-center ms-md-auto w-100 w-md-auto">
-                        <form action="/preorder/filter" method="get" class="d-flex align-items-center flex-wrap w-100">
+                <div class="card-header py-3 px-4 border-muted" style="font-size: 12px;">
+                    <div class="d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                            <div class="d-flex align-items-center gap-3 flex-wrap">
+                                <a href="<?= base_url('order_pos') ?>" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus"></i> Pre Order
+                                </a>
+                                <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">
+                                    <i class="fas fa-file-excel"></i> Export to Excel
+                                </a>
+                            </div>
 
-                            <!-- Dropdown Bengkel -->
-                            <select id="bengkelSelect" class="form-select unique-form-select form-select-sm me-2 mb-2 mb-md-0" style="width: auto;">
-                                <option value="Bengkel" disabled selected>--Pilih Bengkel--</option>
-                                <option value="Titanium">Titanium</option>
-                                <option value="Tandem">Tandem</option>
-                                <option value="K3 Karoseri">K3 Karoseri</option>
-                            </select>
-                            <input type="date" name="date" class="form-control form-control-sm flatpickr-range me-2 mb-2 mb-md-0" placeholder="Select date.." style="width: auto;">
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="start-date" class="form-label mb-0 text-muted fw-bold">Periode:</label>
+                                <input type="text" id="start-date" class="form-control form-control-sm rounded-2 w-auto" style="width: 120px;" placeholder="Start Date" readonly />
+                                <span class="mx-1 text-muted fw-bold">to</span>
+                                <input type="text" id="end-date" class="form-control form-control-sm rounded-2 w-auto" style="width: 120px;" placeholder="End Date" readonly />
+                                <button class="btn btn-primary btn-sm rounded-2" id="filter-btn">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                            </div>
+                        </div>
 
-                            <select id="bulan" class="form-select unique-form-select form-select-sm me-2 mb-2 mb-md-0" style="width: auto;">
-                                <option value="01">Januari</option>
-                                <option value="02">Februari</option>
-                                <option value="03">Maret</option>
-                                <option value="04">April</option>
-                                <option value="05">Mei</option>
-                                <option value="06">Juni</option>
-                                <option value="07">Juli</option>
-                                <option value="08">Agustus</option>
-                                <option value="09">September</option>
-                                <option value="10">Oktober</option>
-                                <option value="11">November</option>
-                                <option value="12">Desember</option>
-                            </select>
+                        <!-- Bottom: Search and Rows Per Page -->
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <!-- Left: Search -->
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="text" id="search-bar" class="form-control form-control-sm rounded-2" placeholder="Search data..." />
+                                <button class="btn btn-outline-secondary btn-sm rounded-2" id="search-btn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
 
-                            <select id="tahun" class="form-select unique-form-select form-select-sm me-2 mb-2 mb-md-0" style="width: auto;">
-                                <option value="2022">2022</option>
-                                <option value="2023">2023</option>
-                                <option value="2024">2024</option>
-                                <option value="2025">2025</option>
-                            </select>
-                        </form>
-                    </div>
-                    <div class="d-flex align-items-center mt-4 w-100 justify-content-start">
-                        <a href="<?= base_url('order_pos') ?>" class="btn btn-primary btn-sm me-2">Add Est. Perbaikan</a>
-                        <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
+                            <!-- Right: Rows Per Page -->
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="rows-per-page" class="form-label mb-0 text-muted fw-bold">Tampilkan:</label>
+                                <select id="rows-per-page" class="form-select form-select-sm rounded-2 w-auto">
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="all">All</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Tabel untuk Pre Order -->
-                <div class="table-responsive" style="font-size: 12px; margin: 20px;">
-                    <table id="claimTable" class="table table-bordered mb-0">
-                        <thead class="thead-dark">
+
+
+
+                <!-- Table -->
+                <div class="table-responsive" style="font-size: 11px; margin: 20px;">
+                    <table id="claimTable" class="table table-bordered table-striped table-hover mb-0">
+                        <thead class="table-secondary">
                             <tr>
                                 <th class="text-center">#</th>
                                 <th class="text-center">No. Klaim</th>
-                                <th class="text-center">Tgl Klaim</th>
-                                <th class="text-center">Tgl Acc</th>
+                                <th class="text-center">Tgl. Klaim</th>
+                                <th class="text-center">Tgl. Acc</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-center">Progres</th>
                                 <th class="text-center">Nopol</th>
@@ -99,185 +109,134 @@
                                 <th class="text-center">Customer</th>
                                 <th class="text-center">Harga Estimasi</th>
                                 <th class="text-center">Harga Acc</th>
+                                <th class="text-center">Bengkel</th>
                                 <th class="text-center">User ID</th>
                             </tr>
                         </thead>
                         <tbody id="claimTableBody">
-                            <!-- Data di sini akan diisi oleh JavaScript -->
+                            <!-- Data will be inserted by JavaScript -->
                         </tbody>
-                        <tfoot>
-                            <!-- Area untuk menampilkan total -->
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="10" class="text-end fw-bold">Grand Total:</td>
+                                <td id="grand-total-estimasi" class="text-center fw-bold"></td>
+                                <td id="grand-total-acc" class="text-center fw-bold"></td>
+                                <td colspan="2"></td>
+                            </tr>
                         </tfoot>
                     </table>
-                    <footer style="text-align: center; margin-top: 20px;">
-                        <p>&copy; 2024 All rights reserved.</p>
-                    </footer>
                 </div>
+
+                <!-- Footer -->
+                <footer style="text-align: center; margin-top: 20px;">
+                    <p>&copy; 2024 All rights reserved.</p>
+                </footer>
             </div>
         </div>
     </div>
 </section>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+
 <script>
-    const poData = <?= json_encode($po); ?>; // Fetch data from PHP
-    console.log('Data PO:', poData); // Debugging log
+    const poData = <?= json_encode($po); ?>; // Data from PHP
+    let filteredData = [...poData]; // Filtered data
+    let rowsPerPage = 20; // Default number of rows per page
 
-    // Set default month and year to November 2024
-    const currentMonth = '11';
-    const currentYear = '2024';
+    // Initialize Flatpickr for date range selection
+    document.addEventListener("DOMContentLoaded", function() {
+        flatpickr("#start-date", {
+            dateFormat: "Y-m-d",
+            defaultDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1), // Start of current month
+        });
 
-    // Select elements for dropdowns
-    const monthSelect = document.getElementById('bulan');
-    const yearSelect = document.getElementById('tahun');
+        flatpickr("#end-date", {
+            dateFormat: "Y-m-d",
+            defaultDate: new Date(), // Current date
+        });
 
-    // Set default values for month and year dropdowns
-    monthSelect.value = currentMonth;
-    yearSelect.value = currentYear;
+        // Filter button click event
+        document.getElementById('filter-btn').addEventListener('click', function() {
+            const startDate = new Date(document.getElementById('start-date').value);
+            const endDate = new Date(document.getElementById('end-date').value);
 
-    // Add event listeners for month and year dropdowns
-    monthSelect.addEventListener('change', function() {
-        const selectedBengkel = document.getElementById('bengkelSelect').value;
-        const selectedMonth = this.value;
-        const selectedYear = yearSelect.value;
+            filteredData = poData.filter(item => {
+                const claimDate = new Date(item.tgl_klaim);
+                return claimDate >= startDate && claimDate <= endDate;
+            });
 
-        if (selectedBengkel) {
-            updateTable(selectedBengkel, selectedMonth, selectedYear);
-        }
+            applySearch(); // Apply search after filtering
+        });
+
+        // Rows per page dropdown change event
+        document.getElementById('rows-per-page').addEventListener('change', function() {
+            rowsPerPage = this.value === 'all' ? filteredData.length : parseInt(this.value);
+            updateTable();
+        });
+
+        // Search button click event
+        document.getElementById('search-btn').addEventListener('click', applySearch);
     });
 
-    yearSelect.addEventListener('change', function() {
-        const selectedBengkel = document.getElementById('bengkelSelect').value;
-        const selectedMonth = monthSelect.value;
-        const selectedYear = this.value;
-
-        if (selectedBengkel) {
-            updateTable(selectedBengkel, selectedMonth, selectedYear);
-        }
-    });
-
-    // Function to update table based on bengkel, month, and year
-    function updateTable(bengkel, month = null, year = null) {
-        const tableBody = document.getElementById('claimTableBody');
-        tableBody.innerHTML = ''; // Clear previous content
-
-        // Filter data by bengkel, month, and year
-        const filteredData = poData.filter(item => {
-            const claimDate = new Date(item.tgl_klaim);
-            const claimMonth = (claimDate.getMonth() + 1).toString().padStart(2, '0'); // MM format
-            const claimYear = claimDate.getFullYear().toString();
-
-            return (
-                item.bengkel === bengkel &&
-                item.status !== 'Repair Order' &&
-                (!month || claimMonth === month) &&
-                (!year || claimYear === year)
+    function applySearch() {
+        const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+        filteredData = filteredData.filter(item => {
+            return Object.values(item).some(value =>
+                String(value).toLowerCase().includes(searchTerm)
             );
         });
-
-        console.log('Filtered Data:', filteredData); // Log filtered data
-
-        // Sort data by claim date (newest first)
-        filteredData.sort((a, b) => new Date(b.tgl_klaim) - new Date(a.tgl_klaim));
-
-        let grandTotalHargaEstimasi = 0;
-        let grandTotalHargaAcc = 0;
-
-        // Add rows to the table based on filtered data
-        if (filteredData.length > 0) {
-            filteredData.forEach((po_item, index) => {
-                const hargaEstimasi = po_item.harga_estimasi ? parseFloat(po_item.harga_estimasi.toString().replace(/\./g, '').replace(',', '.')) : 0;
-                const hargaAcc = (po_item.harga_acc && po_item.asuransi !== 'UMUM/PRIBADI') ? parseFloat(po_item.harga_acc.toString().replace(/\./g, '').replace(',', '.')) : 0;
-
-                grandTotalHargaEstimasi += hargaEstimasi;
-                grandTotalHargaAcc += hargaAcc;
-
-                const row = `<tr class="text-center">
-                    <td>${index + 1}</td>
-                    <td><a href="<?= base_url('order_posprev') ?>/${po_item.id_terima_po}">${po_item.id_po}</a></td>
-                    <td>${new Date(po_item.tgl_klaim).toISOString().split('T')[0]}</td>
-                    <td>${po_item.asuransi === 'UMUM/PRIBADI' ? '-' : (po_item.tgl_acc ? new Date(po_item.tgl_acc).toISOString().split('T')[0] : '-')}</td>
-                    <td>${getStatusBadge(po_item.status)}</td>
-                    <td>${po_item.progres}</td>
-                    <td>${po_item.no_kendaraan}</td>
-                    <td>${po_item.jenis_mobil}</td>
-                    <td>${po_item.asuransi}</td>
-                    <td>${po_item.customer_name}</td>
-                    <td>${po_item.harga_estimasi ? new Intl.NumberFormat('id-ID').format(po_item.harga_estimasi) : '-'}</td>
-                    <td>${po_item.asuransi === 'UMUM/PRIBADI' ? new Intl.NumberFormat('id-ID').format(po_item.harga_estimasi) : (po_item.harga_acc ? new Intl.NumberFormat('id-ID').format(po_item.harga_acc) : '-')}</td>
-                    <td>${po_item.username}</td>
-                </tr>`;
-                tableBody.innerHTML += row;
-            });
-        } else {
-            tableBody.innerHTML = '<tr><td colspan="13">No data available.</td></tr>';
-        }
-
-        $('#claimTable').DataTable().destroy(); // Destroy existing DataTable instance
-        const table = $('#claimTable').DataTable({
-            "pagingType": "full_numbers",
-            "lengthMenu": [20, 50, 100, -1],
-            "ordering": true,
-            "drawCallback": function(settings) {
-                let pageTotalHargaEstimasi = 0;
-                let pageTotalHargaAcc = 0;
-
-                const pageData = this.api().rows({
-                    page: 'current'
-                }).data();
-                pageData.each(function(rowData) {
-                    const hargaEstimasi = rowData[10] !== '-' ? parseFloat(rowData[10].toString().replace(/\./g, '').replace(',', '.')) : 0;
-                    const hargaAcc = rowData[11] !== '-' ? parseFloat(rowData[11].toString().replace(/\./g, '').replace(',', '.')) : 0;
-
-                    pageTotalHargaEstimasi += hargaEstimasi;
-                    pageTotalHargaAcc += hargaAcc;
-                });
-
-                const allData = this.api().rows().data();
-                grandTotalHargaEstimasi = 0;
-                grandTotalHargaAcc = 0;
-
-                allData.each(function(rowData) {
-                    const hargaEstimasi = rowData[10] !== '-' ? parseFloat(rowData[10].toString().replace(/\./g, '').replace(',', '.')) : 0;
-                    const hargaAcc = rowData[11] !== '-' ? parseFloat(rowData[11].toString().replace(/\./g, '').replace(',', '.')) : 0;
-
-                    grandTotalHargaEstimasi += hargaEstimasi;
-                    grandTotalHargaAcc += hargaAcc;
-                });
-
-                const totalRow = `
-                <tr>
-                    <td colspan="10" style="text-align: right; font-weight: bold;">Total Per Halaman:</td>
-                    <td class="text-center" style="font-weight: bold;">${new Intl.NumberFormat('id-ID').format(pageTotalHargaEstimasi)}</td>
-                    <td class="text-center" style="font-weight: bold;">${new Intl.NumberFormat('id-ID').format(pageTotalHargaAcc)}</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td colspan="10" style="text-align: right; font-weight: bold;">Grand Total:</td>
-                    <td class="text-center" style="font-weight: bold;">${new Intl.NumberFormat('id-ID').format(grandTotalHargaEstimasi)}</td>
-                    <td class="text-center" style="font-weight: bold;">${new Intl.NumberFormat('id-ID').format(grandTotalHargaAcc)}</td>
-                    <td></td>
-                </tr>`;
-                $('#claimTable tfoot').html(totalRow);
-            },
-            "language": {
-                "lengthMenu": "Tampilkan _MENU_ entri",
-                "search": "Search:",
-                "zeroRecords": "Tidak ada hasil ditemukan",
-                "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
-                "infoEmpty": "Tidak ada data tersedia",
-                "infoFiltered": "(disaring dari _MAX_ total entri)",
-                "paginate": {
-                    "first": "First",
-                    "last": "Last",
-                    "next": "Next",
-                    "previous": "Previous"
-                }
-            }
-        });
+        updateTable();
     }
+
+    function updateTable() {
+        const tableBody = document.getElementById('claimTableBody');
+        tableBody.innerHTML = ''; // Clear existing table content
+
+        let grandTotalEstimasi = 0;
+        let grandTotalAcc = 0;
+
+        const dataToDisplay = filteredData.slice(0, rowsPerPage);
+        let currentRowNumber = 1; // Initialize row number
+
+        dataToDisplay.forEach((item) => {
+            if (item.status === 'Repair Order') return; // Skip 'Repair Order' status
+
+            const hargaEstimasi = item.harga_estimasi ? parseFloat(item.harga_estimasi) : 0;
+            const hargaAcc = item.harga_acc ? parseFloat(item.harga_acc) : 0;
+
+            grandTotalEstimasi += hargaEstimasi;
+            grandTotalAcc += hargaAcc;
+
+            const row = `
+            <tr class="text-center">
+                <td>${currentRowNumber}</td>
+                <td><a href="<?= base_url('order_posprev') ?>/${item.id_terima_po}">${item.id_terima_po}</a></td>
+                <td>${item.tgl_klaim}</td>
+                <td>${item.tgl_acc || '-'}</td>
+                <td>${getStatusBadge(item.status)}</td>
+                <td>${item.progres}</td>
+                <td>${item.no_kendaraan}</td>
+                <td>${item.jenis_mobil}</td>
+                <td>${item.asuransi}</td>
+                <td>${item.customer_name}</td>
+                <td>${formatNumber(hargaEstimasi)}</td>
+                <td>${formatNumber(hargaAcc)}</td>
+                <td>${item.bengkel}</td>
+                <td>${item.user_id}</td>
+            </tr>`;
+
+            tableBody.innerHTML += row;
+
+            currentRowNumber++;
+        });
+
+        // Update totals in the footer
+        document.getElementById('grand-total-estimasi').innerText = formatNumber(grandTotalEstimasi);
+        document.getElementById('grand-total-acc').innerText = formatNumber(grandTotalAcc);
+    }
+
 
     function getStatusBadge(status) {
         switch (status) {
@@ -292,34 +251,19 @@
         }
     }
 
-    document.getElementById('bengkelSelect').addEventListener('change', function() {
-        const selectedValue = this.value;
-        if (selectedValue) {
-            updateTable(selectedValue, currentMonth, currentYear);
-        } else {
-            document.getElementById('claimTableBody').innerHTML = '<tr><td colspan="13">Silakan pilih bengkel.</td></tr>';
-        }
-    });
-
-    // Load data for default bengkel on page load
-    updateTable('Titanium', currentMonth, currentYear);
+    function formatNumber(value) {
+        return value ? new Intl.NumberFormat('id-ID').format(value) : '-';
+    }
 
     function exportToExcel() {
         const table = document.getElementById('claimTable');
-        const wb = XLSX.utils.table_to_book(table, {
+        const workbook = XLSX.utils.table_to_book(table, {
             sheet: "Pre Order"
         });
-
-        const now = new Date();
-        const formattedDate = now.toISOString().replace(/[-:T]/g, '').split('.')[0];
-        const fileName = `PRE_ORDER_${formattedDate}.xlsx`;
-
-        XLSX.writeFile(wb, fileName);
+        XLSX.writeFile(workbook, 'Pre_Order.xlsx');
     }
+
+    updateTable(); // Initial load
 </script>
-
-
-
-
 
 <?= $this->endSection() ?>

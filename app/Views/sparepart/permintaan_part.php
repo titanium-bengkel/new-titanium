@@ -61,20 +61,20 @@
             </header>
             <div class="card-content">
                 <div class="table-responsive" style="font-size: 12px; margin:20px;">
-                    <table class="table table-bordered mb-0">
-                        <thead class="thead-dark">
-                            <tr style="text-align: center;">
+                    <table class="table table-bordered table-striped table-hover mb-0" id="partTable">
+                        <thead class="thead-dark table-secondary">
+                            <tr>
                                 <th>#</th>
-                                <th>No. Order</th>
-                                <th>Tgl. Klaim</th>
-                                <th>Tgl. Acc</th>
-                                <th>Jenis Mobil</th>
-                                <th>Nopol</th>
-                                <th>Warna</th>
-                                <th>Tahun</th>
-                                <th>Asuransi</th>
-                                <th>SA</th>
-                                <th>Action</th>
+                                <th class="text-center">No. Order</th>
+                                <th class="text-center">Tgl. Klaim</th>
+                                <th class="text-center">Tgl. Acc</th>
+                                <th class="text-center">Jenis Mobil</th>
+                                <th class="text-center">Nopol</th>
+                                <th class="text-center">Warna</th>
+                                <th class="text-center">Tahun</th>
+                                <th class="text-center">Asuransi</th>
+                                <th class="text-center">User ID</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody class="text-center">
@@ -87,7 +87,6 @@
                                 foreach ($poData as $data):
                                     $showData = true;
 
-                                    // Jika data berasal dari M_Po, periksa kondisi asuransi dan status
                                     if (isset($data['status'])) {
                                         if ($data['asuransi'] === 'UMUM/PRIBADI' || $data['status'] === 'Acc Asuransi') {
                                             $showData = true;
@@ -96,7 +95,6 @@
                                         }
                                     }
 
-                                    // Pastikan ID tidak duplikat dan tampilkan data
                                     if ($showData && !in_array($data['id_terima_po'], $displayedIds)) {
                                         $hasData = true;
                                         $displayedIds[] = $data['id_terima_po'];
@@ -162,24 +160,23 @@
         <div class="modal fade" id="detail-po-<?= $data['id_terima_po'] ?>" tabindex="-1" aria-labelledby="detailPoLabel-<?= $data['id_terima_po'] ?>" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-gradient-ltr text-white">
                         <div id="detailPoLabel-<?= $data['id_terima_po'] ?>" style="display: flex; justify-content: space-between; width: 100%; font-size: 14px;">
                             <span>Detail Permintaan Part:</span>
                             <span>Nopol: <?= esc($data['no_kendaraan']) ?> | Jenis Mobil: <?= esc($data['jenis_mobil']) ?></span>
                         </div>
-                        <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-
                     <div class="modal-body">
-                        <table class="table text-center" style="border: 1px solid #dee2e6; border-collapse: collapse; width: 100%; color: #ffffff; font-size: 14px;">
+                        <table class="table table-bordered table-striped table-hover">
                             <thead>
                                 <tr>
-                                    <th style="border: 1px solid #dee2e6;">Kode</th>
-                                    <th style="border: 1px solid #dee2e6;">Nama</th>
-                                    <th style="border: 1px solid #dee2e6;">Qty</th>
-                                    <th style="border: 1px solid #dee2e6;">Harga</th>
-                                    <th style="border: 1px solid #dee2e6;">Total Harga</th>
-                                    <th style="border: 1px solid #dee2e6;">Keterangan</th>
+                                    <th class="text-center">Kode</th>
+                                    <th class="text-center">Nama</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-center">Harga</th>
+                                    <th class="text-center">Total Harga</th>
+                                    <th class="text-center">Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -198,25 +195,25 @@
                                         $has_nonsupply = true;
                                 ?>
                                         <tr>
-                                            <td style="border: 1px solid #dee2e6;">
-                                                <input type="text" name="kode_sparepart[]" value="<?= esc($sparepart['kode_sparepart']) ?>" style="background-color: #2b2f38; color: #ffffff; border: none; width: 100%;" readonly>
-                                                <input type="hidden" name="id_sparepart_po[]" value="<?= esc($sparepart['id_sparepart_po']) ?>"> <!-- Hidden input untuk ID -->
+                                            <input type="hidden" name="id_sparepart_po[]" value="<?= esc($sparepart['id_sparepart_po']) ?>"> <!-- Hidden input untuk ID -->
+                                            <td>
+                                                <input type="text" name="kode_sparepart[]" value="<?= esc($sparepart['kode_sparepart']) ?>" style="width: 100%;" readonly>
                                             </td>
-                                            <td style="border: 1px solid #dee2e6;">
-                                                <input type="text" name="nama_sparepart[]" value="<?= esc($sparepart['nama_sparepart']) ?>" style="background-color: #2b2f38; color: #ffffff; border: none; width: 100%;" readonly>
+                                            <td>
+                                                <input type="text" name="nama_sparepart[]" value="<?= esc($sparepart['nama_sparepart']) ?>" style="width: 100%;" readonly>
                                             </td>
-                                            <td style="border: 1px solid #dee2e6;">
-                                                <input type="number" name="qty[]" value="<?= intval($sparepart['qty']) ?>" style="background-color: #2b2f38; color: #ffffff; border: none; width: 100%;" readonly>
+                                            <td>
+                                                <input type="number" name="qty[]" value="<?= intval($sparepart['qty']) ?>" style="width: 100%;" readonly>
                                             </td>
-                                            <td style="border: 1px solid #dee2e6;">
-                                                <input type="text" name="harga[]" value="<?= esc(number_format($sparepart['harga'], 0, ',', '.')) ?>" style="background-color: #2b2f38; color: #ffffff; border: none; width: 100%;" readonly>
+                                            <td>
+                                                <input type="text" name="harga[]" value="<?= esc(number_format($sparepart['harga'], 0, ',', '.')) ?>" style="width: 100%;" readonly>
                                             </td>
-                                            <td style="border: 1px solid #dee2e6;">
-                                                <input type="text" name="total_harga[]" value="<?= esc(number_format($sparepart['total_harga'], 0, ',', '.')) ?>" style="background-color: #2b2f38; color: #ffffff; border: none; width: 100%;" readonly>
+                                            <td>
+                                                <input type="text" name="total_harga[]" value="<?= esc(number_format($sparepart['total_harga'], 0, ',', '.')) ?>" style="width: 100%;" readonly>
                                             </td>
 
-                                            <td style="border: 1px solid #dee2e6;">
-                                                <select name="jenis_part[]" style="background-color: #2b2f38; color: #ffffff; border: none; width: 100%;">
+                                            <td>
+                                                <select name="jenis_part[]" style="width: 100%;">
                                                     <option value="NON-SUPPLY" <?= $sparepart['jenis_part'] == 'NON-SUPPLY' ? 'selected' : '' ?>>NON-SUPPLY</option>
                                                     <option value="AMBIL STOK" <?= $sparepart['jenis_part'] == 'AMBIL STOK' ? 'selected' : '' ?>>AMBIL STOK</option>
                                                     <option value="SUPPLY" <?= $sparepart['jenis_part'] == 'SUPPLY' ? 'selected' : '' ?>>SUPPLY</option>
@@ -242,9 +239,9 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
                 </div>
             </div>
@@ -258,21 +255,23 @@
 foreach ($poData as $po):
 ?>
     <!-- Modal untuk Permintaan Sparepart -->
-    <div class="modal fade" id="create-po-<?= $po['id_terima_po']; ?>" tabindex="-1" aria-labelledby="createPoLabel-<?= $po['id_terima_po']; ?>" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-scrollable modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createPoLabel-<?= $po['id_terima_po']; ?>">Buat Permintaan Sparepart untuk <?= esc($po['id_terima_po']); ?></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="create-po-form-<?= $po['id_terima_po']; ?>" action="<?= base_url('create_part_po') ?>" method="POST">
+    <form id="create-po-form-<?= $po['id_terima_po']; ?>" action="<?= base_url('create_part_po') ?>" method="POST">
+        <div class="modal fade" id="create-po-<?= $po['id_terima_po']; ?>" tabindex="-1" aria-labelledby="createPoLabel-<?= $po['id_terima_po']; ?>" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-scrollable modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-gradient-ltr">
+                        <h5 class="modal-title  text-white" id="createPoLabel-<?= $po['id_terima_po']; ?>">Buat Permintaan Sparepart untuk <?= esc($po['id_terima_po']); ?></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
                         <input type="hidden" name="id_terima_po" value="<?= $po['id_terima_po']; ?>">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="card">
+                                    <div class="card-header">
+                                        <h5>Form Informasi Pesanan</h5>
+                                    </div>
                                     <div class="card-body">
-                                        <!-- Form Data -->
                                         <div class="row">
                                             <div class="col-lg-2 col-3 mb-3">
                                                 <label for="id_pesan" class="col-form-label">Nomor (auto)</label>
@@ -285,7 +284,7 @@ foreach ($poData as $po):
                                                 <label for="tgl" class="col-form-label">Tanggal</label>
                                             </div>
                                             <div class="col-lg-10 col-9 mb-3">
-                                                <input type="date" id="tgl" class="form-control" name="tgl" value="" onkeydown="return false" onclick="this.showPicker()" required>
+                                                <input type="date" id="tanggal_input" class="form-control" name="tgl" onkeydown="return false" onclick="this.showPicker()" required>
                                             </div>
 
                                             <div class="col-lg-2 col-3">
@@ -303,17 +302,10 @@ foreach ($poData as $po):
                                             </div>
 
                                             <div class="col-lg-1 col-2 mb-3">
-                                                <button type="button" class="btn btn-secondary btn-sm openSupplierModal">
+                                                <button type="button" class="btn btn-secondary openSupplierModal">
                                                     <i class="fas fa-search"></i>
                                                 </button>
                                             </div>
-
-                                            <!-- <div class="col-lg-2 col-3 mb-3">
-                                                <label for="jatuh_tempo" class="col-form-label">Jatuh tempo</label>
-                                            </div>
-                                            <div class="col-lg-10 col-9 mb-3">
-                                                <input type="date" id="jatuh_tempo" class="form-control" name="jatuh_tempo" onclick="this.showPicker()" required>
-                                            </div> -->
 
                                             <div class="col-lg-2 col-3 mb-3">
                                                 <label for="keterangan" class="col-form-label">Keterangan</label>
@@ -326,7 +318,7 @@ foreach ($poData as $po):
                                         <!-- Informasi Tambahan -->
                                         <div class="row">
                                             <div class="col-lg-2 col-12 mb-3">
-                                                <label for="no_ro" class="col-form-label">No. Repair Order</label>
+                                                <label for="no_ro" class="col-form-label">Work Order (WO)</label>
                                             </div>
                                             <div class="col-lg-10 col-12 mb-3">
                                                 <input type="text" id="no_ro" class="form-control" name="no_ro" value="<?= $po['id_terima_po'] ?>" readonly>
@@ -337,6 +329,13 @@ foreach ($poData as $po):
                                             </div>
                                             <div class="col-lg-10 col-12 mb-3">
                                                 <input type="text" id="nama_pemilik" class="form-control" name="nama_pemilik" value="<?= $po['customer_name'] ?>" readonly>
+                                            </div>
+
+                                            <div class="col-lg-2 col-12 mb-3">
+                                                <label for="no-rangka" class="col-form-label">No. Rangka</label>
+                                            </div>
+                                            <div class="col-lg-10 col-12 mb-3">
+                                                <input type="text" id="no-rangka" class="form-control" name="no_rangka" value="<?= $po['no_rangka'] ?>" readonly>
                                             </div>
 
                                             <div class="col-lg-2 col-12 mb-3">
@@ -363,69 +362,86 @@ foreach ($poData as $po):
                                             <div class="col-lg-2 col-12 mb-3">
                                                 <label for="warna" class="col-form-label">Warna</label>
                                             </div>
-                                            <div class="col-lg-10 col-12 mb-5">
+                                            <div class="col-lg-10 col-12 mb-3">
                                                 <input type="text" id="warna" class="form-control" name="warna" value="<?= $po['warna'] ?>" readonly>
                                             </div>
                                         </div>
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered text-center">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Kode Barang</th>
-                                                        <th>Nama Barang</th>
-                                                        <th>Qty</th>
-                                                        <th>Satuan</th>
-                                                        <th>Harga</th>
-                                                        <th>Jumlah</th>
-                                                        <th>No. Faktur</th>
-                                                        <th>Tgl. Faktur</th>
-                                                        <th>Pilih</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php if (isset($detailPO[$po['id_terima_po']])): ?>
-                                                        <?php foreach ($detailPO[$po['id_terima_po']] as $sparepart): ?>
-                                                            <tr>
-                                                                <td><input type="text" class="form-control" name="kode_barang[]" value="<?= esc($sparepart['kode_sparepart']) ?>" readonly></td>
-                                                                <td><input type="text" class="form-control" name="nama_barang[]" value="<?= esc($sparepart['nama_sparepart']) ?>" readonly></td>
-                                                                <td><input type="number" class="form-control" name="qty[]" value="<?= esc($sparepart['qty']) ?>"></td>
-                                                                <td><input type="text" class="form-control" name="satuan[]" value="PCS" readonly></td>
-                                                                <td><input type="text" class="form-control" name="harga[]" value="<?= number_format($sparepart['harga'], 0, ',', '.') ?>" readonly></td>
-                                                                <td><input type="text" class="form-control" name="jumlah[]" value="<?= number_format($sparepart['qty'] * $sparepart['harga'], 0, ',', '.') ?>" readonly></td>
-                                                                <td><input type="text" class="form-control" name="no_faktur[]"></td>
-                                                                <td><input type="text" class="form-control" name="tgl_faktur[]"></td>
-                                                                <td><input type="checkbox" class="form-check-input" name="selected_ids[]" value="<?= esc($sparepart['id_sparepart_po']) ?>"></td>
-                                                            </tr>
-                                                        <?php endforeach; ?>
-                                                    <?php else: ?>
+                                    </div>
+                                    <div class="card-header">
+                                        <h5>Permintaan Sparepart</h5>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered text-center">
+                                            <thead class="table-secondary">
+                                                <tr>
+                                                    <th><input type="checkbox" id="selectAll" class="form-check-input"></th> <!-- Pilih Semua -->
+                                                    <th>Kode Barang</th>
+                                                    <th>Nama Barang</th>
+                                                    <th>Qty</th>
+                                                    <th>Satuan</th>
+                                                    <th>Harga</th>
+                                                    <th>Jumlah</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php if (isset($detailPO[$po['id_terima_po']])): ?>
+                                                    <?php foreach ($detailPO[$po['id_terima_po']] as $sparepart): ?>
                                                         <tr>
-                                                            <td colspan="9">Tidak ada sparepart untuk PO ini.</td>
+                                                            <td><input type="checkbox" class="form-check-input" name="selected_ids[]" value="<?= esc($sparepart['id_sparepart_po']) ?>"></td>
+                                                            <td><input type="text" class="form-control" name="kode_barang[]" value="<?= esc($sparepart['kode_sparepart']) ?>" readonly></td>
+                                                            <td><input type="text" class="form-control" name="nama_barang[]" value="<?= esc($sparepart['nama_sparepart']) ?>" readonly></td>
+                                                            <td><input type="number" class="form-control" name="qty[]" value="<?= esc($sparepart['qty']) ?>"></td>
+                                                            <td><input type="text" class="form-control" name="satuan[]" value="PCS" readonly></td>
+                                                            <td><input type="text" class="form-control" name="harga[]" value="<?= number_format($sparepart['harga'], 0, ',', '.') ?>" readonly></td>
+                                                            <td><input type="text" class="form-control" name="jumlah[]" value="<?= number_format($sparepart['qty'] * $sparepart['harga'], 0, ',', '.') ?>" readonly></td>
                                                         </tr>
-                                                    <?php endif; ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
-                                            <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
-                                        </div>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <tr>
+                                                        <td colspan="8">Tidak ada sparepart untuk PO ini.</td>
+                                                    </tr>
+                                                <?php endif; ?>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 <?php endforeach; ?>
 
 
+<script>
+    // Script untuk mengaktifkan "Pilih Semua"
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('input[name="selected_ids[]"]'); // Targeting the checkboxes
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked; // Set each checkbox to the state of selectAll
+        });
+    });
+
+    // Check to see if the "selectAll" should be checked when all checkboxes are selected
+    const checkboxes = document.querySelectorAll('input[name="selected_ids[]"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const allChecked = [...checkboxes].every(checkbox => checkbox.checked);
+            document.getElementById('selectAll').checked = allChecked;
+        });
+    });
+</script>
 <!-- Modal Supplier -->
 <div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-gradient-ltr">
                 <h5 class="modal-title" id="supplierModalLabel">Pilih Supplier</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -462,6 +478,18 @@ foreach ($poData as $po):
                 checkbox.checked = this.checked; // Centang/Uncentang berdasarkan checkbox "Pilih Semua"
             }
         }
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#partTable').DataTable({
+            "paging": true,
+            "ordering": true,
+        });
     });
 </script>
 
@@ -569,17 +597,7 @@ foreach ($poData as $po):
         });
     });
 </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var today = new Date();
-        var day = String(today.getDate()).padStart(2, '0');
-        var month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
-        var year = today.getFullYear();
-        var todayString = year + '-' + month + '-' + day;
 
-        document.getElementById('tgl').value = todayString;
-    });
-</script>
 
 
 <?= $this->endSection() ?>
