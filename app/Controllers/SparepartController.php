@@ -1213,6 +1213,7 @@ class SparepartController extends BaseController
                         'debit'          => $this->request->getPost('qty'), // Pastikan qty dikirim melalui form
                         'stok'           => $this->request->getPost('qty'),
                         'nopol'          => $this->request->getPost('no_kendaraan'),
+                        'wo'             => strtoupper($this->request->getPost('no_ro')),
                         'gudang'         => $data['gudang'],
                         'id_penerimaan'  => $id_penerimaan,
                     ];

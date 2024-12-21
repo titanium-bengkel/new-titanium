@@ -12,33 +12,33 @@
                         <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambahData">
                             Entry Data
                         </button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</button>
                         <h6 class="mb-0 ms-auto">List Data Bahan</h6>
                     </div>
                     <div class="card-body">
                         <div class="table-container">
                             <div class="table-section active" id="tableLeft">
-                                <!-- Tabel Kiri -->
                                 <div class="table-responsive" style="margin: 20px; font-size: 14px;">
-                                    <table class="table table-bordered mb-0">
+                                    <table class="table table-bordered mb-0" id="bahanTable">
                                         <thead class="thead-dark">
                                             <tr>
-                                                <td><button class="btn btn-link slide-button" data-target="#tableRight">#</button></td>
+                                                <td>No</td>
                                                 <th>Aksi</th>
                                                 <th>Kode</th>
                                                 <th>Nama Bahan</th>
                                                 <th>Kode Group</th>
                                                 <th>Kode Kategori</th>
-                                                <th>Sat_K</th>
-                                                <th>Isi_K</th>
-                                                <th>Sat_T</th>
+                                                <th>Satuan Pakai</th>
+                                                <!-- <th>Isi_K</th> -->
+                                                <!-- <th>Sat_T</th>
                                                 <th>Isi_T</th>
                                                 <th>Sat_B</th>
-                                                <th>Isi_B</th>
+                                                <th>Isi_B</th> -->
                                                 <th>Harga Beli</th>
-                                                <th>Harga Jual Awal</th>
-                                                <th>Harga Jual Baru</th>
+                                                <th>Harga Jual</th>
+                                                <!-- <th>Harga Jual Baru</th> -->
                                                 <th>Stok Min</th>
-                                                <th>Stok Max</th>
+                                                <!-- <th>Stok Max</th> -->
                                                 <th>User Input</th>
                                                 <th>Tanggal</th>
                                             </tr>
@@ -62,16 +62,16 @@
                                                     <td><?= $item['kode_group'] ?></td>
                                                     <td><?= $item['kode_kategori'] ?></td>
                                                     <td><?= $item['sat_k'] ?></td>
-                                                    <td><?= $item['isi_k'] ?></td>
-                                                    <td><?= $item['sat_t'] ?></td>
+                                                    <!-- <td><?= $item['isi_k'] ?></td> -->
+                                                    <!-- <td><?= $item['sat_t'] ?></td>
                                                     <td><?= $item['isi_t'] ?></td>
                                                     <td><?= $item['sat_b'] ?></td>
-                                                    <td><?= $item['isi_b'] ?></td>
-                                                    <td><?= $item['harga_beli'] ?></td>
+                                                    <td><?= $item['isi_b'] ?></td> -->
+                                                    <td><?= number_format($item['harga_beli'], 0, ',', '.') ?></td>
                                                     <td><?= $item['harga_jualawal'] ?></td>
-                                                    <td><?= $item['harga_jualbaru'] ?></td>
+                                                    <!-- <td><?= $item['harga_jualbaru'] ?></td> -->
                                                     <td><?= $item['stok_minimal'] ?></td>
-                                                    <td><?= $item['stok_maksimal'] ?></td>
+                                                    <!-- <td><?= $item['stok_maksimal'] ?></td> -->
                                                     <td><?= $item['user_id'] ?></td>
                                                     <td><?= $item['tanggal'] ?></td>
                                                 </tr>
@@ -88,6 +88,22 @@
         </div>
     </div>
 </section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
+<script>
+    function exportToExcel() {
+        // Get the table by ID supplierTable
+        const table = document.getElementById('bahanTable');
+
+        // Convert the table into a workbook
+        const workbook = XLSX.utils.table_to_book(table, {
+            sheet: "Bahan Data"
+        });
+
+        // Export the workbook as an Excel file with the name 'Supplier_Data.xlsx'
+        XLSX.writeFile(workbook, 'Bahan_Data.xlsx');
+    }
+</script>
 
 
 
@@ -131,16 +147,16 @@
 
                             <!-- Sejajarkan Satuan dan Isi -->
                             <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="sat_k" class="form-label">Satuan Kecil</label>
+                                <div class="col-md-12">
+                                    <label for="sat_k" class="form-label">Satuan Pakai</label>
                                     <input type="text" class="form-control" id="sat_k" name="sat_k">
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="isi_k" class="form-label">Isi Kecil</label>
+                                <!-- <div class="col-md-6">
+                                    <label for="isi_k" class="form-label">Isi</label>
                                     <input type="text" class="form-control" id="isi_k" name="isi_k">
-                                </div>
+                                </div> -->
                             </div>
-                            <div class="row mb-3">
+                            <!-- <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="sat_t" class="form-label">Satuan Tengah</label>
                                     <input type="text" class="form-control" id="sat_t" name="sat_t">
@@ -159,7 +175,7 @@
                                     <label for="isi_b" class="form-label">Isi Besar</label>
                                     <input type="text" class="form-control" id="isi_b" name="isi_b">
                                 </div>
-                            </div>
+                            </div> -->
 
                             <!-- Input tambahan -->
                             <div class="mb-3">
@@ -167,21 +183,21 @@
                                 <input type="text" class="form-control" id="harga_beli" name="harga_beli">
                             </div>
                             <div class="mb-3">
-                                <label for="harga_jualawal" class="form-label">Harga Jual Awal</label>
+                                <label for="harga_jualawal" class="form-label">Harga Jual</label>
                                 <input type="text" class="form-control" id="harga_jualawal" name="harga_jualawal">
                             </div>
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label for="harga_jualbaru" class="form-label">Harga Jual Baru</label>
                                 <input type="text" class="form-control" id="harga_jualbaru" name="harga_jualbaru">
-                            </div>
+                            </div> -->
                             <div class="mb-3">
                                 <label for="stok_minimal" class="form-label">Stok Minimal</label>
                                 <input type="text" class="form-control" id="stok_minimal" name="stok_minimal">
                             </div>
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label for="stok_maksimal" class="form-label">Stok Maksimal</label>
                                 <input type="text" class="form-control" id="stok_maksimal" name="stok_maksimal">
-                            </div>
+                            </div> -->
                             <div class="mb-3">
                                 <label for="stok" class="form-label">Stok</label>
                                 <p>jika bahan memiliki stok input disini, jika tidak biarkan kosong</p>
@@ -249,16 +265,16 @@
 
                                 <!-- Sejajarkan Satuan dan Isi -->
                                 <div class="row mb-3">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label for="sat_k<?= $b['id_bahan'] ?>" class="form-label">Satuan Kecil</label>
                                         <input type="text" class="form-control" id="sat_k<?= $b['id_bahan'] ?>" name="sat_k" value="<?= $b['sat_k'] ?>">
                                     </div>
-                                    <div class="col-md-6">
+                                    <!-- <div class="col-md-6">
                                         <label for="isi_k<?= $b['id_bahan'] ?>" class="form-label">Isi Kecil</label>
                                         <input type="text" class="form-control" id="isi_k<?= $b['id_bahan'] ?>" name="isi_k" value="<?= $b['isi_k'] ?>">
-                                    </div>
+                                    </div> -->
                                 </div>
-                                <div class="row mb-3">
+                                <!-- <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="sat_t<?= $b['id_bahan'] ?>" class="form-label">Satuan Tengah</label>
                                         <input type="text" class="form-control" id="sat_t<?= $b['id_bahan'] ?>" name="sat_t" value="<?= $b['sat_t'] ?>">
@@ -277,7 +293,7 @@
                                         <label for="isi_b<?= $b['id_bahan'] ?>" class="form-label">Isi Besar</label>
                                         <input type="text" class="form-control" id="isi_b<?= $b['id_bahan'] ?>" name="isi_b" value="<?= $b['isi_b'] ?>">
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <!-- Input tambahan -->
                                 <div class="mb-3">
@@ -285,21 +301,21 @@
                                     <input type="text" class="form-control" id="harga_beli<?= $b['id_bahan'] ?>" name="harga_beli" value="<?= $b['harga_beli'] ?>">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="harga_jualawal<?= $b['id_bahan'] ?>" class="form-label">Harga Jual Awal</label>
+                                    <label for="harga_jualawal<?= $b['id_bahan'] ?>" class="form-label">Harga Jual</label>
                                     <input type="text" class="form-control" id="harga_jualawal<?= $b['id_bahan'] ?>" name="harga_jualawal" value="<?= $b['harga_jualawal'] ?>">
                                 </div>
-                                <div class="mb-3">
+                                <!-- <div class="mb-3">
                                     <label for="harga_jualbaru<?= $b['id_bahan'] ?>" class="form-label">Harga Jual Baru</label>
                                     <input type="text" class="form-control" id="harga_jualbaru<?= $b['id_bahan'] ?>" name="harga_jualbaru" value="<?= $b['harga_jualbaru'] ?>">
-                                </div>
+                                </div> -->
                                 <div class="mb-3">
                                     <label for="stok_minimal<?= $b['id_bahan'] ?>" class="form-label">Stok Minimal</label>
                                     <input type="text" class="form-control" id="stok_minimal<?= $b['id_bahan'] ?>" name="stok_minimal" value="<?= $b['stok_minimal'] ?>">
                                 </div>
-                                <div class="mb-3">
+                                <!-- <div class="mb-3">
                                     <label for="stok_maksimal<?= $b['id_bahan'] ?>" class="form-label">Stok Maksimal</label>
                                     <input type="text" class="form-control" id="stok_maksimal<?= $b['id_bahan'] ?>" name="stok_maksimal" value="<?= $b['stok_maksimal'] ?>">
-                                </div>
+                                </div> -->
                                 <div class="mb-3">
                                     <label for="tanggal<?= $b['id_bahan'] ?>" class="form-label">Tanggal</label>
                                     <input type="date" class="form-control" id="tanggal<?= $b['id_bahan'] ?>" name="tanggal" value="<?= $b['tanggal'] ?>" onkeydown="return false" onclick="this.showPicker()">
