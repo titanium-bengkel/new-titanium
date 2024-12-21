@@ -95,7 +95,7 @@
                                                 <?php endif; ?>
                                             </td>
 
-                                            <td><?= $item['username'] ?></td>
+                                            <td><?= $item['user_id'] ?></td>
                                             <td>
                                                 <!-- Tombol hapus -->
                                                 <button type="button" class="btn btn-sm delete-user-btn" data-nomor="<?= $item['nomor'] ?>">

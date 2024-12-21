@@ -136,6 +136,18 @@
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="panel" class="form-control" name="panel" value="<?= isset($po['panel']) ? esc($po['panel']) : '' ?>">
                         </div>
+                        <div class="col-lg-2 col-3 mb-3">
+                            <label class="col-form-label" for="tingkat">Tingkat Kerusakan</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-3">
+                            <select id="tingkat" class="form-select" name="tingkat">
+                                <option value="" disabled <?= empty($po['tingkat']) ? 'selected' : '' ?>>Pilih Tingkat Kerusakan</option>
+                                <option value="Heavy" <?= isset($po['tingkat']) && $po['tingkat'] === 'HEAVY' ? 'selected' : '' ?>>HEAVY</option>
+                                <option value="Medium" <?= isset($po['tingkat']) && $po['tingkat'] === 'MEDIUM' ? 'selected' : '' ?>>MEDIUM</option>
+                                <option value="Light" <?= isset($po['tingkat']) && $po['tingkat'] === 'LIGHT' ? 'selected' : '' ?>>LIGHT</option>
+                            </select>
+                        </div>
+
                     </div>
                     <hr>
                     <h5 class="text-center mb-3">Data Pelanggan</h5>
@@ -1080,7 +1092,7 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="tgl_estimasi" class="col-sm-3 col-form-label" style="font-weight: 500;">Tanggal Estimasi</label>
+                            <label for="tgl_estimasi" class="col-sm-3 col-form-label" style="font-weight: 500;">Estimasi Keluar</label>
                             <div class="col-sm-9">
                                 <input type="date" id="tgl_estimasi" class="form-control" name="tgl_estimasi" onclick="this.showPicker()" required>
                             </div>

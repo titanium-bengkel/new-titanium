@@ -1,4 +1,5 @@
 <?
+
 namespace App\Controllers;
 
 use App\Models\M_Po;
@@ -9,15 +10,7 @@ class Home extends BaseController
 {
     public function index()
     {
-        // Mengambil user_id dari session
-        $user_id = session()->get('user_id');
 
-        if (!$user_id) {
-            return $this->response->setJSON([
-                'status' => 'error',
-                'message' => 'User ID tidak ditemukan dalam sesi'
-            ]);
-        }
 
         // Instansiasi model
         $poModel = new M_Po();
@@ -78,7 +71,6 @@ class Home extends BaseController
             'repairOrder' => $repairOrderCount,
             'mobilMasuk' => $mobilMasuk,
             'reportPendapatan' => $reportPendapatan, // Laporan pendapatan harian
-            'user_id' => $user_id // Mengirim user_id ke view
         ];
 
         return view('/index', $data);

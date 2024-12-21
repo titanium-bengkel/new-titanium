@@ -26,6 +26,7 @@ class M_Po extends Model
         'no_rangka',
         'tahun_kendaraan',
         'panel',
+        'tingkat',
         'no_contact',
         'customer_name',
         'alamat',

@@ -1148,6 +1148,7 @@ class SparepartController extends BaseController
             'nama_pemilik'      => strtoupper($this->request->getPost('nama_pemilik')),
             'asuransi'          => strtoupper($this->request->getPost('asuransi')),
             'nopol'             => strtoupper($this->request->getPost('no_kendaraan')),
+            'no_rangka'         => strtoupper($this->request->getPost('no_rangka')),
             'jenis_mobil'       => strtoupper($this->request->getPost('jenis_mobil')),
             'warna'             => strtoupper($this->request->getPost('warna')),
             'user_id'           => $user_id,

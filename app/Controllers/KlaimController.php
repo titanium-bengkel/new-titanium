@@ -24,19 +24,38 @@ use App\Models\M_ReportJurnal;
 use App\Models\M_Coa;
 use App\Models\M_Part_Terima;
 use App\Models\UserModel;
+// --------------------------- //
 
 class KlaimController extends BaseController
 {
 
     public function preorder()
     {
-        $poM = new M_Po();
+        $poModel = new M_Po();
+        $poData = $poModel->getPoWithUsername();
+        $accData = $poModel->getPoWithAccAsuransi();
 
-        $poData = $poM->orderBy('tgl_klaim', 'DESC')->findAll();
+        foreach ($poData as &$po_item) {
+            foreach ($accData as $acc_item) {
+                if ($po_item['id_terima_po'] === $acc_item['id_terima_po']) {
+                    $po_item['tgl_acc'] = $acc_item['tgl_acc'];
+                    $po_item['harga_acc'] = $acc_item['harga_acc'];
+                    break;
+                }
+            }
+        }
+        usort($poData, function ($a, $b) {
+            return strtotime($b['tgl_klaim']) <=> strtotime($a['tgl_klaim']);
+        });
+
+        $preOrderId = $poModel->generateIdTerimaPo();
+        $idPo = $poModel->generateIdPo();
 
         $data = [
             'title' => 'Pre-Order',
-            'po' => $poData
+            'preOrderId' => $preOrderId,
+            'idPo' => $idPo,
+            'po' => $poData,
         ];
 
         return view('klaim/preorder', $data);
@@ -147,43 +166,43 @@ class KlaimController extends BaseController
 
     public function createPo()
     {
+        // Mendapatkan user_id dari session
         $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
 
+        // Model yang digunakan
         $poModel = new M_Po();
         $kendaraanModel = new M_Kendaraan();
         $jenisMobilModel = new M_JenisMobil();
         $warnaModel = new M_Warna();
 
-        // Generate new IDs
-        $newPoId = $poModel->generateIdPo();
         $newIdTerimaPo = $poModel->generateIdTerimaPo();
+        $idPo = $poModel->generateIdPo();
 
-        // Ambil data dari form
+        // Mengambil data dari form
         $progres = $this->request->getPost('progres');
-        $bengkel = $this->request->getPost('bengkel'); // Ambil nilai bengkel dari form
+        $bengkel = $this->request->getPost('bengkel');
 
-        // Pastikan $progres dan $bengkel ada dan valid
+        // Validasi untuk progres dan bengkel
         if (!$progres) {
-            log_message('error', 'Progres tidak ditemukan dalam data POST.');
             return redirect()->back()->with('error', 'Progres tidak dipilih.');
         }
 
         if (!$bengkel) {
-            log_message('error', 'Bengkel tidak ditemukan dalam data POST.');
             return redirect()->back()->with('error', 'Bengkel tidak dipilih.');
         }
 
+        // Data yang akan disimpan ke database
         $data = [
-            'id_po' => $newPoId,
+            'id_po' => $idPo,
             'id_terima_po' => $newIdTerimaPo,
             'no_kendaraan' => strtoupper($this->request->getPost('no-kendaraan')),
             'jenis_mobil' => strtoupper($this->request->getPost('jenis-mobil')),
             'warna' => strtoupper($this->request->getPost('warna')),
             'no_polis' => strtoupper($this->request->getPost('no-polis')),
-            'no_rangka' => strtoupper($this->request->getPost('no_rangka')),
+            'no_rangka' => $this->request->getPost('no_rangka'),
             'tahun_kendaraan' => $this->request->getPost('tahun-kendaraan'),
             'panel' => $this->request->getPost('panel'),
             'no_contact' => $this->request->getPost('no-contact'),
@@ -197,24 +216,20 @@ class KlaimController extends BaseController
             'status' => 'Pre-Order',
             'progres' => $progres,
             'bengkel' => $bengkel,
-            'user_id' => $user_id
+            'user_id' => $user_id,
         ];
 
-        // Debug data
-        log_message('debug', 'Data yang dikirim ke database: ' . print_r($data, true));
-
-        // Simpan data ke database
-        // Cek dan masukkan ke tabel kendaraan, jenis_mobil, dan warna jika belum ada
+        // Cek dan masukkan data kendaraan, jenis mobil, dan warna ke tabel jika belum ada
         $no_kendaraan = $this->request->getPost('no-kendaraan');
         $customer_name = $this->request->getPost('customer-name');
         $no_contact = $this->request->getPost('no-contact');
+
         if (!$kendaraanModel->where('no_kendaraan', $no_kendaraan)->first()) {
-            $kendaraanData = [
+            $kendaraanModel->insert([
                 'no_kendaraan' => $no_kendaraan,
                 'customer_name' => $customer_name,
                 'no_contact' => $no_contact
-            ];
-            $kendaraanModel->insert($kendaraanData);
+            ]);
         }
 
         $jenis_mobil = $this->request->getPost('jenis-mobil');
@@ -227,14 +242,17 @@ class KlaimController extends BaseController
             $warnaModel->insert(['warna' => $warna]);
         }
 
+        // Simpan data PO ke database
         if (!$poModel->createPo($data)) {
             $errors = $poModel->errors();
             log_message('error', 'Gagal menyimpan data PO: ' . print_r($errors, true));
             return redirect()->back()->with('error', 'Gagal menyimpan data PO.');
         }
 
+        // Jika berhasil, arahkan ke halaman berikutnya dengan pesan sukses
         return redirect()->to(base_url('/order_posprev/' . $newIdTerimaPo))->with('success', 'Pre Order Berhasil Ditambahkan.');
     }
+
 
 
     public function updatePO($id_terima_po)
@@ -289,15 +307,14 @@ class KlaimController extends BaseController
             'customer_name' => strtoupper($this->request->getPost('customer_name')),
             'alamat' => strtoupper($this->request->getPost('alamat')),
             'kota' => strtoupper($this->request->getPost('kota')),
+            'tgl_klaim' => strtoupper($this->request->getPost('tanggal_klaim')),
+            'tingkat' => strtoupper($this->request->getPost('tingkat')),
             'asuransi' => strtoupper($this->request->getPost('asuransi')),
-            'tgl_klaim' => $this->request->getPost('tanggal_klaim'),
-            'jam_klaim' => $this->request->getPost('jam_klaim'),
             'harga_estimasi' => $harga_estimasi,
             'keterangan' => strtoupper($this->request->getPost('keterangan')),
             'status' => $status_order,
             'progres' => $progres,
             'bengkel' => $bengkel,
-            'user_id' => $user_id
         ];
 
         // Debug data
@@ -340,7 +357,7 @@ class KlaimController extends BaseController
             // Data untuk tabel repair_order
             $repairOrderData = [
                 'id_terima_po' => $id_terima_po,
-                'tgl_klaim' => $updatedPO['tgl_klaim'],
+                'tgl_klaim' => $this->request->getPost('tanggal_klaim'),
                 'tgl_acc' => $updatedPO['tgl_acc'],
                 'tgl_masuk' => date('Y-m-d'),
                 'no_kendaraan' => strtoupper($updatedPO['no_kendaraan']),
@@ -350,6 +367,7 @@ class KlaimController extends BaseController
                 'no_rangka' => strtoupper($updatedPO['no_rangka']),
                 'tahun_kendaraan' => $updatedPO['tahun_kendaraan'],
                 'panel' => $updatedPO['panel'],
+                'tingkat' => strtoupper($this->request->getPost('tingkat')),
                 'no_contact' => strtoupper($updatedPO['no_contact']),
                 'customer_name' => strtoupper($updatedPO['customer_name']),
                 'alamat' => strtoupper($updatedPO['alamat']),
@@ -361,7 +379,9 @@ class KlaimController extends BaseController
                 'total_biaya' => $updatedPO['total_biaya'],
                 'user_id' => $user_id,
                 'harga_estimasi' => $updatedPO['harga_estimasi'],
-                'bengkel' => strtoupper($bengkel)
+                'harga_acc' => $updatedPO['harga_acc'],
+                'status' => $status_order,
+                'bengkel' => $bengkel
             ];
 
 
@@ -408,7 +428,7 @@ class KlaimController extends BaseController
         $data = [
             'kode_pengerjaan' => $this->request->getPost('kodePengerjaan'),
             'nama_pengerjaan' => $this->request->getPost('pengerjaan'),
-            'harga' => str_replace('.', '', $this->request->getPost('harga')),
+            'harga' => str_replace(['.', ','], '', $this->request->getPost('harga')),
             'id_terima_po' => $id_terima_po
         ];
 
@@ -452,7 +472,7 @@ class KlaimController extends BaseController
         $kode_pengerjaan = $this->request->getPost('kodePengerjaan');
 
         if (!$id_terima_po || !$kode_pengerjaan) {
-            return redirect()->back()->with('error', 'ID Terima PO atau Kode Pengerjaan tidak ditemukan.');
+            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'ID Terima PO atau Kode Pengerjaan tidak ditemukan.');
         }
 
         // Inisialisasi model M_Po dan M_PengerjaanPo
@@ -462,13 +482,14 @@ class KlaimController extends BaseController
         // Mengambil data PO berdasarkan id_terima_po
         $poData = $poModel->where('id_terima_po', $id_terima_po)->first();
         if (!$poData) {
-            return redirect()->back()->with('error', 'Data PO tidak ditemukan.');
+            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Data PO tidak ditemukan.');
         }
 
         // Mengumpulkan data yang akan diupdate dari form
         $data = [
             'nama_pengerjaan' => $this->request->getPost('pengerjaan'),
-            'harga' => str_replace('.', '', $this->request->getPost('harga')),
+            'harga' => str_replace(['.', ','], '', $this->request->getPost('harga')),
+
         ];
 
         // Debug data yang akan diupdate
@@ -477,7 +498,7 @@ class KlaimController extends BaseController
         // Update data di tabel pengerjaan_po
         try {
             $pengerjaanPoModel->where('id_terima_po', $id_terima_po)
-                ->where('kode_pengerjaan', $kode_pengerjaan)
+                ->where('id_pengerjaan_po', $kode_pengerjaan)
                 ->set($data)
                 ->update();
 
@@ -719,7 +740,7 @@ class KlaimController extends BaseController
             // Update biaya_sparepart di tabel po
             $poModel->where('id_terima_po', $id_terima_po)->set(['biaya_sparepart' => $totalBiayaSparepart])->update();
 
-            return redirect()->back()->with('success', 'Data sparepart berhasil diperbarui.');
+            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('success', 'Data sparepart berhasil diperbarui.');
         } catch (\Exception $e) {
             log_message('error', 'Error saat memperbarui data sparepart: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
@@ -733,6 +754,18 @@ class KlaimController extends BaseController
     {
         $sparepartPoModel = new M_SparepartPo();
         $data = $sparepartPoModel->find($id_sparepart_po);
+
+        if ($data) {
+            return $this->response->setJSON($data);
+        } else {
+            return $this->response->setJSON(['error' => 'Data not found'], 404);
+        }
+    }
+
+    public function getSparepartDataRepair($id)
+    {
+        $sparepartPoModel = new M_Pdetail_Terima();
+        $data = $sparepartPoModel->find($id);
 
         if ($data) {
             return $this->response->setJSON($data);
@@ -777,7 +810,7 @@ class KlaimController extends BaseController
             // Update biaya_sparepart di tabel po
             $poModel->where('id_terima_po', $id_terima_po)->set(['biaya_sparepart' => $totalBiayaSparepart])->update();
 
-            return redirect()->back()->with('success', 'Data sparepart berhasil dihapus.');
+            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('success', 'Data sparepart berhasil dihapus.');
         } catch (\Exception $e) {
             log_message('error', 'Error saat menghapus data sparepart: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
@@ -802,7 +835,7 @@ class KlaimController extends BaseController
         $deskripsiArray = $this->request->getPost('deskripsi');
 
         if (empty($gambarFiles['gambar'])) {
-            return redirect()->back()->with('error', 'Tidak ada file gambar yang diunggah.');
+            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Tidak ada file gambar yang diunggah.');
         }
 
         $gambarArray = $gambarFiles['gambar'];
@@ -819,18 +852,18 @@ class KlaimController extends BaseController
 
         foreach ($gambarArray as $index => $gambarFile) {
             if (!$gambarFile->isValid()) {
-                return redirect()->back()->with('error', 'File tidak valid.');
+                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'File tidak valid.');
             }
 
             $fileExtension = $gambarFile->getClientExtension();
             $fileMimeType = $gambarFile->getClientMimeType();
 
             if (!in_array($fileExtension, $allowedExtensions) || !in_array($fileMimeType, $allowedMimeTypes)) {
-                return redirect()->back()->with('error', 'Jenis file tidak diizinkan: ' . $gambarFile->getClientName());
+                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Jenis file tidak diizinkan: ' . $gambarFile->getClientName());
             }
 
             if ($gambarFile->getSize() > $maxFileSize) {
-                return redirect()->back()->with('error', 'Ukuran file terlalu besar: ' . $gambarFile->getClientName());
+                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Ukuran file terlalu besar: ' . $gambarFile->getClientName());
             }
 
             // Menyimpan file gambar
@@ -852,7 +885,7 @@ class KlaimController extends BaseController
             $gambarPoModel->insert($data);
         }
 
-        return redirect()->back()->with('success', 'Gambar berhasil diunggah.');
+        return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('success', 'Gambar berhasil diunggah.');
     }
 
 
@@ -885,9 +918,9 @@ class KlaimController extends BaseController
         try {
             $gambarPoModel->delete($id);
 
-            return redirect()->back()->with('success', 'Gambar berhasil dihapus.');
+            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('success', 'Gambar berhasil dihapus.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Error: ' . $e->getMessage());
         }
     }
     // Controller
@@ -977,10 +1010,10 @@ class KlaimController extends BaseController
                 // Menyimpan nama file ke dalam data
                 $data['file_lampiran'] = $fileName;
             } else {
-                return redirect()->back()->with('error', 'File upload tidak valid atau sudah dipindahkan.');
+                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'File upload tidak valid atau sudah dipindahkan.');
             }
         } else {
-            return redirect()->back()->with('error', 'Tidak ada file yang diupload.');
+            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Tidak ada file yang diupload.');
         }
 
         // Simpan data ke database
@@ -998,14 +1031,14 @@ class KlaimController extends BaseController
             ]);
 
             if ($updateStatus) {
-                return redirect()->back()->with('success', 'Asuransi Berhasil Di Approve.');
+                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('success', 'Asuransi Berhasil Di Approve.');
             } else {
                 log_message('error', 'Gagal mengupdate status di tabel PO dengan ID Terima PO: ' . $id_terima_po);
-                return redirect()->back()->with('error', 'Gagal mengupdate status di tabel PO.');
+                return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Gagal mengupdate status di tabel PO.');
             }
         } else {
             log_message('error', 'Gagal menyimpan data asuransi.');
-            return redirect()->back()->with('error', 'Gagal menyimpan data asuransi.');
+            return redirect()->to(base_url('/order_posprev/' . $id_terima_po))->with('error', 'Gagal menyimpan data asuransi.');
         }
     }
 
@@ -1145,22 +1178,37 @@ class KlaimController extends BaseController
     {
         $model = new M_RepairOrder();
         $userModel = new UserModel();
+        $accAsuransiModel = new M_AccAsuransi();
 
-        $repair = $model->findAll();
+        $repair = $model->where('status !=', 'Mobil Keluar')
+            ->orderBy('id_terima_po', 'DESC')
+            ->findAll();
 
         foreach ($repair as &$order) {
             $user = $userModel->find($order['user_id']);
             $order['username'] = $user ? $user['username'] : 'Unknown';
+
+            // Ambil biaya asuransi jika ada
+            if (!empty($order['id_terima_po'])) {
+                $asuransi = $accAsuransiModel->where('id_terima_po', $order['id_terima_po'])->first();
+                $order['harga_acc'] = $asuransi ? $asuransi['biaya_total'] : null;
+            } else {
+                $order['harga_acc'] = null;
+            }
         }
 
+        // Siapkan data untuk dikirim ke view
         $data = [
             'title' => 'Repair Order',
             'repairOrders' => $repair
         ];
 
-        // Mengembalikan view dengan data
+        // Kembalikan tampilan dengan data yang sudah diproses
         return view('klaim/repair_order', $data);
     }
+
+
+
 
 
     public function orderlist_pending()
@@ -1437,9 +1485,8 @@ class KlaimController extends BaseController
             'kota'             => strtoupper($this->request->getPost('kota')),
             'asuransi'         => strtoupper($this->request->getPost('asuransi')),
             'no_polis'         => strtoupper($this->request->getPost('no-polis')),
-            'tgl_klaim'        => $this->request->getPost('tanggal-masuk'),
             'tgl_keluar'       => $this->request->getPost('tanggal-estimasi'),
-            'jam_keluar'       => $this->request->getPost('jam_keluar'),
+            'jam_keluar'       => $this->request->getPost('tanggal-estimasi'),
             'harga_estimasi'   => str_replace(['.', ','], ['', '.'], $this->request->getPost('harga-estimasi')),
             'keterangan'       => strtoupper($this->request->getPost('keterangan')),
             'progres_pengerjaan' => strtoupper(implode(',', (array) $this->request->getPost('progres_pengerjaan'))),
@@ -1462,6 +1509,7 @@ class KlaimController extends BaseController
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
         }
     }
+
     public function buttonExit($id_terima_po)
     {
         // Memuat model Repair Order
@@ -2889,9 +2937,9 @@ class KlaimController extends BaseController
                 if ($repairOrder) {
                     // Update status_bayar di RepairOrder berdasarkan metode pembayaran
                     if ($data['metode_pembayaran'] === 'Pembayaran OR') {
-                        $repair->update($repairOrder['id_repair_order'], ['status_bayar' => 'Sudah Bayar OR']);
+                        $repair->update($repairOrder['id_repair_order'], ['status_bayar' => 'Belum Kwitansi']);
                     } elseif ($data['metode_pembayaran'] === 'Pembayaran Asuransi') {
-                        $repair->update($repairOrder['id_repair_order'], ['status_bayar' => 'Sudah Bayar']);
+                        $repair->update($repairOrder['id_repair_order'], ['status_bayar' => 'Lunas']);
                     }
                 }
             }
@@ -2978,5 +3026,37 @@ class KlaimController extends BaseController
         ];
 
         return view('klaim/mobil_batal_asuransi', $data);
+    }
+
+    public function mobil_selesai()
+    {
+        $model = new M_RepairOrder();
+        $userModel = new UserModel();
+        $accAsuransiModel = new M_AccAsuransi();
+
+        // Ambil hanya data yang memiliki status 'Mobil Selesai'
+        $repair = $model->where('status', 'Mobil Keluar')->findAll();
+
+        foreach ($repair as &$order) {
+            // Mengambil data user berdasarkan user_id
+            $user = $userModel->find($order['user_id']);
+            $order['username'] = $user ? $user['username'] : 'Unknown';
+
+            // Jika ada id_terima_po, ambil data asuransi terkait
+            if (!empty($order['id_terima_po'])) {
+                $asuransi = $accAsuransiModel->where('id_terima_po', $order['id_terima_po'])->first();
+                $order['harga_acc'] = $asuransi ? $asuransi['biaya_total'] : null;
+            } else {
+                $order['harga_acc'] = null;
+            }
+        }
+
+        // Data yang akan dikirim ke view
+        $data = [
+            'title' => 'Mobil Keluar',
+            'repairOrders' => $repair
+        ];
+
+        return view('klaim/mobil_keluar', $data);
     }
 }

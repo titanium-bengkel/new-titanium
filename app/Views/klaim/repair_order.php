@@ -96,9 +96,8 @@
                             <tr>
                                 <th class="text-center">#</th>
                                 <th class="text-center">No. Klaim</th>
-                                <th class="text-center">Tgl. Klaim</th>
-                                <th class="text-center">Tgl. Acc</th>
                                 <th class="text-center">Tgl. Masuk</th>
+                                <th class="text-center">Tgl. Acc</th>
                                 <th class="text-center">Progres</th>
                                 <th class="text-center">Status Bayar</th>
                                 <th class="text-center">Est. Keluar</th>
@@ -230,9 +229,8 @@
             const row = `<tr class="text-center">
             <td>${index + 1}</td>
             <td><a href="<?= base_url('order_repair') ?>/${item.id_terima_po}">${item.id_terima_po}</a></td>
-            <td>${item.tgl_klaim || '-'}</td>
-            <td>${item.tgl_acc || '-'}</td>
             <td>${item.tgl_masuk || '-'}</td>
+            <td>${item.tgl_acc || '-'}</td>
             <td>${item.progres_pengerjaan}</td>
             <td>${getStatusBadge(item.status_bayar)}</td>
             <td>${item.tgl_keluar || '-'}</td>
@@ -242,7 +240,7 @@
             <td>${item.customer_name}</td>
             <td class="harga-acc">${hargaAcc ? hargaAcc.toLocaleString('id-ID') : (hargaEstimasi ? hargaEstimasi.toLocaleString('id-ID') : '-')}</td>
             <td>${item.bengkel}</td>
-            <td>${item.username}</td>
+            <td>${item.user_id}</td>
         </tr>`;
 
             tableBody.innerHTML += row;
@@ -264,8 +262,8 @@
         switch (status) {
             case 'Belum Bayar':
                 return '<span class="badge bg-warning text-dark">Belum Bayar</span>';
-            case 'Sudah Kwitansi OR':
-                return '<span class="badge bg-primary text-dark">Sudah Kwitansi OR</span>';
+            case 'Belum Kwitansi':
+                return '<span class="badge bg-primary text-dark">Belum Kwitansi</span>';
             case 'Sudah Kwitansi':
                 return '<span class="badge bg-secondary text-dark">Sudah Kwitansi</span>';
             case 'Pernah Bayar':
@@ -273,7 +271,7 @@
             case 'Lunas':
                 return '<span class="badge bg-success">Lunas</span>';
             default:
-                return status; // Jika ada status lain yang tidak terdefinisi
+                return status;
         }
     }
 

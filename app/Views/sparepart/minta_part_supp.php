@@ -59,14 +59,15 @@
             </header>
             <div class="card-content">
                 <div class="table-responsive" style="font-size: 12px; margin:20px;">
-                    <table class="table table-bordered mb-0">
-                        <thead class="thead-dark">
+                    <table class="table table-bordered table-striped table-hover mb-0">
+                        <thead class="thead-dark table-secondary">
                             <tr style="text-align: center;">
                                 <th>#</th>
                                 <th>No. Order</th>
                                 <th>Tgl. Klaim</th>
                                 <th>Tgl. Acc</th>
                                 <th>Jenis Mobil</th>
+                                <th>No. Rangka</th>
                                 <th>Nopol</th>
                                 <th>Warna</th>
                                 <th>Tahun</th>
@@ -100,11 +101,12 @@
                                                 <?php endif; ?>
                                             </td>
                                             <td><?= esc($data['jenis_mobil']) ?></td>
+                                            <td><?= esc($data['no_rangka']) ?></td>
                                             <td><?= esc($data['no_kendaraan']) ?></td>
                                             <td><?= esc($data['warna']) ?></td>
                                             <td><?= esc($data['tahun_kendaraan']) ?></td>
                                             <td><?= esc($data['asuransi']) ?></td>
-                                            <td><?= esc($data['username']) ?></td>
+                                            <td><?= esc($data['user_id']) ?></td>
                                             <td>
                                                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#create-po-<?= esc($data['id_terima_po']) ?>">
                                                     <i class="fas fa-plus-circle"></i> Terima Barang
@@ -116,13 +118,13 @@
 
                                 <?php if (!$hasData): ?>
                                     <tr>
-                                        <td colspan="11">Belum ada permintaan.</td>
+                                        <td colspan="12">Belum ada permintaan.</td>
                                     </tr>
                                 <?php endif; ?>
 
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="11">Belum ada permintaan.</td>
+                                    <td colspan="12">Belum ada permintaan.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -144,8 +146,8 @@ foreach ($poData as $po):
     <div class="modal fade" id="create-po-<?= $po['id_terima_po']; ?>" tabindex="-1" aria-labelledby="createPoLabel-<?= $po['id_terima_po']; ?>" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-scrollable modal-xl">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createPoLabel-<?= $po['id_terima_po']; ?>">Buat Permintaan Sparepart untuk <?= esc($po['id_terima_po']); ?></h5>
+                <div class="modal-header bg-gradient-ltr">
+                    <h5 class="modal-title text-white" id="createPoLabel-<?= $po['id_terima_po']; ?>">Buat Permintaan Sparepart untuk <?= esc($po['id_terima_po']); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -225,7 +227,7 @@ foreach ($poData as $po):
                                         <!-- Informasi Tambahan -->
                                         <div class="row">
                                             <div class="col-lg-2 col-12 mb-3">
-                                                <label for="no_ro" class="col-form-label">No. Repair Order</label>
+                                                <label for="no_ro" class="col-form-label">No. Order</label>
                                             </div>
                                             <div class="col-lg-10 col-12 mb-3">
                                                 <input type="text" id="no_ro" class="form-control" name="no_ro" value="<?= $po['id_terima_po'] ?>" readonly>
@@ -243,6 +245,13 @@ foreach ($poData as $po):
                                             </div>
                                             <div class="col-lg-10 col-12 mb-3">
                                                 <input type="text" id="asuransi" class="form-control" name="asuransi" value="<?= $po['asuransi'] ?>" readonly>
+                                            </div>
+
+                                            <div class="col-lg-2 col-12 mb-3">
+                                                <label for="no_rangka" class="col-form-label">No. Rangka</label>
+                                            </div>
+                                            <div class="col-lg-10 col-12 mb-3">
+                                                <input type="text" id="no_rangka" class="form-control" name="no_rangka" value="<?= $po['no_rangka'] ?>" readonly>
                                             </div>
 
                                             <div class="col-lg-2 col-12 mb-3">
@@ -296,12 +305,13 @@ foreach ($poData as $po):
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
-                                            <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
-                                        </div>
+
                                     </div>
                                 </div>
+                            </div>
+                            <div class="modal-footer bg-light">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
                         </div>
                     </form>
