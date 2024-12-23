@@ -16,7 +16,7 @@ class AuthController extends Controller
         $this->userModel = new UserModel();
         $this->roleModel = new M_Role();
     }
-    public function index()
+    public function login_page()
     {
         return view('auth/view_login');
     }

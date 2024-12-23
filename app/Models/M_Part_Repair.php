@@ -55,44 +55,21 @@ class M_Part_Repair extends Model
         $query = $builder->get();
         return $query->getResult();
     }
-
     public function getpenerimaanJoinedDataWithIsSent($search = null)
     {
         $builder = $this->db->table('part_terima')
-            ->select('
-            part_terima.id_penerimaan,
-            part_terima.no_repair_order,
-            part_terima.asuransi,
-            part_terima.jenis_mobil,
-            part_terima.warna,
-            part_terima.nama_pemilik,
-            part_terima.nopol,
-            part_terima.gudang,
-            repair_order.tgl_masuk,
-            repair_order.tahun_kendaraan,
-            pdetail_terima.id_penerimaan AS detail_id_penerimaan,
-            pdetail_terima.id_kode_barang,
-            pdetail_terima.nama_barang,
-            pdetail_terima.qty,
-            pdetail_terima.satuan,
-            pdetail_terima.harga,
-            pdetail_terima.is_sent
-        ')
-            ->join('repair_order', 'repair_order.no_kendaraan = part_terima.nopol', 'left')
+            ->select('part_terima.*, pdetail_terima.*')
             ->join('pdetail_terima', 'pdetail_terima.id_penerimaan = part_terima.id_penerimaan', 'left')
             ->where('pdetail_terima.is_sent', 1);
 
-        // Menambahkan filter pencarian jika parameter $search diisi
         if ($search) {
-            $builder->groupStart()
-                ->like('part_terima.nama_pemilik', $search)
-                ->orLike('part_terima.nopol', $search)
-                ->orLike('part_terima.jenis_mobil', $search)
-                ->groupEnd();
+            $builder->like('part_terima.kode_supplier', $search)
+                ->orLike('part_terima.supplier', $search)
+                ->orLike('part_terima.nama_pemilik', $search);
         }
-
         return $builder->get()->getResultArray();
     }
+
 
 
     public function getSparepartsByPenerimaan($id_penerimaan)

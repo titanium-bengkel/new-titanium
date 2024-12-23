@@ -408,12 +408,14 @@ class SparepartController extends BaseController
     {
         $partPoModel = new M_Part_Po();
         $terimaPartModel = new M_Part_Terima();
+        $partM = new M_Barang_Sparepart();
+        $suppM = new M_Supplier();
 
-        // Ambil data part_po berdasarkan id_pesan
+        $barangData = $partM->findAll();
+
         $partPoData = $partPoModel->getByIdPesan($id_pesan);
 
-        $supplierData = $terimaPartModel->getAllSupplier();
-        $barangData = $terimaPartModel->getAllBarang();
+        $supplierData = $suppM->findAll();
         $partPoData = $terimaPartModel->getAllPoBahan();
 
 
@@ -500,6 +502,7 @@ class SparepartController extends BaseController
             'warna' => strtoupper($this->request->getPost('warna')),
             'nama_pemilik' => strtoupper($this->request->getPost('nama_pemilik')),
             'nopol' => strtoupper($this->request->getPost('nopol')),
+            'no_rangka' => strtoupper($this->request->getPost('no_rangka')),
             'pembayaran' => $this->request->getPost('pembayaran'),
             'ppn' => ($ppn_option == 'PPN') ? 11 : 0,
             'term' => $this->request->getPost('term'),
@@ -579,6 +582,7 @@ class SparepartController extends BaseController
                     'disc' => $disc[$index],
                     'jumlah' => $jumlah,
                     'no_po' => $no_po[$index],
+                    'no_rangka' => $this->request->getPost('no_rangka'),
                     'id_penerimaan' => $this->request->getPost('id_penerimaan'),
                     'no_repair_order' => $this->request->getPost('no_repair_order'),
                     'asuransi' => strtoupper($this->request->getPost('asuransi')),
@@ -747,7 +751,7 @@ class SparepartController extends BaseController
                 ]);
         }
 
-        return redirect()->to(base_url('/order_pos_terimapartprev/' . $GenerateIdT))->with('success', 'Data berhasil disimpan.');
+        return redirect()->to(base_url('terima_part'))->with('success', 'Data berhasil disimpan.');
     }
 
 
@@ -1320,38 +1324,70 @@ class SparepartController extends BaseController
         return view('sparepart/repair_material_part', $data);
     }
 
-    public function getSparepartTerima()
+    public function getSparepartsTerima()
     {
-        $id_penerimaan = $this->request->getGet('id_penerimaan');
 
-        if (!$id_penerimaan) {
-            return $this->response->setStatusCode(400, 'ID Pesan tidak ditemukan');
+        $no_repair_order = $this->request->getGet('no_repair_order');
+
+        if (!$no_repair_order) {
+            return $this->response->setStatusCode(400, 'No Repair Order tidak ditemukan');
         }
 
         $pdetailTerimaModel = new M_Pdetail_Terima();
-        $data = $pdetailTerimaModel->getSparepartsByTerima($id_penerimaan);
+
+        $data = $pdetailTerimaModel->where('no_repair_order', $no_repair_order)->findAll();
+
+        if (empty($data)) {
+            return $this->response->setStatusCode(404, 'Data sparepart tidak ditemukan');
+        }
 
         return $this->response->setJSON($data);
     }
 
 
+
     public function add_repair_material()
     {
-        $partRepairModel = new M_Part_Repair();
-        $barangData = $partRepairModel->getAllBarangSparepart();
-        $poData = $partRepairModel->getAllPO();
-        $penerimaan = $partRepairModel->getpenerimaanJoinedDataWithIsSent();
+        $repairM = new M_Part_Repair();
+        $partM = new M_Barang_Sparepart();
+        $poM = new M_Po();
+        $terimaM = new M_Part_Terima();
+        $detailM = new M_Pdetail_Terima();
+
+        $barangData = $partM->findAll();
+        $poData = $poM->findAll();
+        $terimaData = $terimaM->findAll();
+        $detailData = $detailM->findAll();
+
+        // Gabungkan data berdasarkan no_repair_order
+        $penerimaan = [];
+        foreach ($terimaData as $terima) {
+            $noRepairOrder = $terima['no_repair_order'];
+
+            // Cari data detail yang cocok dengan no_repair_order
+            $detailFiltered = array_filter($detailData, function ($detail) use ($noRepairOrder) {
+                return $detail['no_repair_order'] === $noRepairOrder;
+            });
+
+            // Jika ditemukan data detail yang cocok, gabungkan
+            foreach ($detailFiltered as $detail) {
+                $penerimaan[] = array_merge($terima, $detail);
+            }
+        }
 
         $data = [
             'title' => 'RM Sparepart',
-            'generateIdrepair' => $partRepairModel->generateId(),
+            'generateIdrepair' => $repairM->generateId(),
             'barang' => $barangData,
             'po' => $poData,
             'penerimaan' => $penerimaan,
-
         ];
+
         return view('sparepart/repair_material_add', $data);
     }
+
+
+
 
 
 
@@ -1385,6 +1421,7 @@ class SparepartController extends BaseController
             'gudang_keluar' => strtoupper($this->request->getPost('gudang_keluar')),
             'no_repair' => strtoupper($this->request->getPost('no_ro')),
             'tanggal_masuk' => $this->request->getPost('tanggal_masuk'),
+            'no_rangka' => $this->request->getPost('no_rangka'),
             'nopol' => strtoupper($this->request->getPost('nopol')),
             'asuransi' => strtoupper($this->request->getPost('asuransi')),
             'jenis_mobil' => strtoupper($this->request->getPost('jenis_mobil')),

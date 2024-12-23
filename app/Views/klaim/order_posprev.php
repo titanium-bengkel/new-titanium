@@ -995,7 +995,6 @@
 
 
 
-
 <!-- Modal Acc Asuransi -->
 <div class="modal fade" id="asur-acc" tabindex="-1" aria-labelledby="asuransiModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -1097,24 +1096,44 @@
                                 <input type="date" id="tgl_estimasi" class="form-control" name="tgl_estimasi" onclick="this.showPicker()" required>
                             </div>
                         </div>
+
                         <div class="row mb-3">
                             <label for="jasa" class="col-sm-3 col-form-label" style="font-weight: 500;">Biaya Jasa</label>
                             <div class="col-sm-9">
-                                <input type="text" id="jasa" class="form-control" name="jasa" oninput="formatNumber(this); calculateTotal()" required>
+                                <input type="number" id="jasa" class="form-control" name="jasa" oninput="calculateTotal()" step="any" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="sparepart" class="col-sm-3 col-form-label" style="font-weight: 500;">Biaya Sparepart</label>
                             <div class="col-sm-9">
-                                <input type="text" id="sparepart" class="form-control" name="sparepart" oninput="formatNumber(this); calculateTotal()" required>
+                                <input type="number" id="sparepart" class="form-control" name="sparepart" oninput="calculateTotal()" step="any" required>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="nilai_total" class="col-sm-3 col-form-label" style="font-weight: 500;">Nilai Total</label>
+                        <div class="row mb-0">
+                            <label for="nilai_total" class="col-sm-3 col-form-label" style="font-weight: 500;" hidden>Nilai Total</label>
                             <div class="col-sm-9">
-                                <input type="text" id="nilai_total" class="form-control" name="nilai_total" readonly>
+                                <input type="hidden" id="nilai_total" class="form-control" name="nilai_total" readonly>
                             </div>
                         </div>
+
+                        <script>
+                            function calculateTotal() {
+                                // Ambil nilai input sebagai angka
+                                const jasa = Number(document.getElementById('jasa').value) || 0;
+                                const sparepart = Number(document.getElementById('sparepart').value) || 0;
+
+                                // Hitung total
+                                const total = jasa + sparepart;
+
+                                // Tampilkan hasil di kolom Nilai Total
+                                document.getElementById('nilai_total').value = total.toLocaleString('id-ID'); // Format angka
+                            }
+                        </script>
+
+
+
+
+
 
                         <div class="row mb-3">
                             <label for="nilai_or" class="col-sm-3 col-form-label" style="font-weight: 500;">Nilai OR</label>
@@ -1142,6 +1161,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="modal-footer bg-light" style="border-top: 1px solid #dee2e6;">
                     <button type="button" class="btn btn-secondary ms-2" data-bs-dismiss="modal">
                         Batal
@@ -1154,7 +1174,6 @@
         </div>
     </div>
 </div>
-
 
 
 
@@ -1215,12 +1234,54 @@
     }
 </style>
 
-<!-- Acc Asuransi Pengerjaan -->
-<script>
+<!-- <script>
+    // Fungsi untuk memformat angka dengan pemisah ribuan
+    function formatNumber(inputElement) {
+        let value = inputElement.value.replace(/[^\d.-]/g, ''); // Mengizinkan hanya angka dan tanda minus
+        if (value && !isNaN(value)) {
+            inputElement.value = parseFloat(value).toLocaleString('id-ID');
+        } else {
+            inputElement.value = '';
+        }
+    }
+
+    // Fungsi untuk menghitung total harga jasa
+    function calculateTotal() {
+        const totalHargaJasaInput = document.getElementById('totalHargaJasa');
+        const totalHargaSparepartInput = document.getElementById('totalHargaSparepart');
+        const totalHargaInput = document.getElementById('totalHarga');
+
+        let totalHargaJasa = 0;
+        let totalHargaSparepart = 0;
+
+        // Menghitung total biaya jasa
+        const jasaInputs = document.querySelectorAll('input[name="harga_jasa[]"]');
+        jasaInputs.forEach(input => {
+            const value = parseFloat(input.value.replace(/[^\d.-]/g, '')) || 0;
+            totalHargaJasa += value;
+        });
+        totalHargaJasaInput.value = totalHargaJasa.toLocaleString('id-ID');
+
+        // Menghitung total biaya sparepart
+        const sparepartRows = document.querySelectorAll('#biayaSparepartTableBody tr');
+        sparepartRows.forEach(row => {
+            const qtyInput = row.querySelector('.qty-input');
+            const hargaInput = row.querySelector('.harga-input');
+            const qty = parseFloat(qtyInput.value.replace(/[^\d.-]/g, '')) || 0;
+            const harga = parseFloat(hargaInput.value.replace(/[^\d.-]/g, '')) || 0;
+            totalHargaSparepart += qty * harga;
+        });
+        totalHargaSparepartInput.value = totalHargaSparepart.toLocaleString('id-ID');
+
+        // Menghitung total semua
+        const totalHarga = totalHargaJasa + totalHargaSparepart;
+        totalHargaInput.value = totalHarga.toLocaleString('id-ID');
+    }
+
+    // Menambah baris baru untuk biaya jasa
     document.addEventListener('DOMContentLoaded', function() {
         const tableBody = document.getElementById('biayaJasaTableBody');
         const addRowButton = document.getElementById('addRowButton');
-        const totalHargaInput = document.getElementById('totalHargaJasa');
 
         addRowButton.addEventListener('click', function() {
             const rowCount = tableBody.children.length + 1;
@@ -1233,48 +1294,28 @@
             `;
             tableBody.appendChild(newRow);
             updateRowNumbers();
-            updateTotalHarga();
+            calculateTotal();
         });
 
         tableBody.addEventListener('click', function(event) {
-            if (event.target && (event.target.classList.contains('remove-row') || event.target.closest('.remove-row'))) {
+            if (event.target && event.target.classList.contains('remove-row')) {
                 event.target.closest('tr').remove();
                 updateRowNumbers();
-                updateTotalHarga();
+                calculateTotal();
             }
         });
 
         tableBody.addEventListener('input', function(event) {
             if (event.target && event.target.name === 'harga_jasa[]') {
-                updateTotalHarga();
+                calculateTotal();
             }
         });
-
-        function updateRowNumbers() {
-            Array.from(tableBody.children).forEach((row, index) => {
-                row.children[0].textContent = index + 1;
-            });
-        }
-
-        function updateTotalHarga() {
-            let totalHarga = 0;
-            const hargaInputs = tableBody.querySelectorAll('input[name="harga_jasa[]"]');
-            hargaInputs.forEach(input => {
-                const value = parseFloat(input.value) || 0;
-                totalHarga += value;
-            });
-            totalHargaInput.value = totalHarga.toLocaleString('id-ID');
-        }
     });
-</script>
 
-<!-- Acc Asuransi Sparepart-->
-<script>
+    // Menambah baris baru untuk biaya sparepart
     document.addEventListener('DOMContentLoaded', function() {
         const tableBody = document.getElementById('biayaSparepartTableBody');
         const addRowButton = document.getElementById('addSparepartRowButton');
-        const totalQtyInput = document.getElementById('totalQtySparepart');
-        const totalHargaInput = document.getElementById('totalHargaSparepart');
 
         addRowButton.addEventListener('click', function() {
             const rowCount = tableBody.children.length + 1;
@@ -1288,51 +1329,37 @@
             `;
             tableBody.appendChild(newRow);
             updateRowNumbers();
-            updateTotals();
+            calculateTotal();
         });
 
         tableBody.addEventListener('click', function(event) {
-            if (event.target && (event.target.classList.contains('remove-row') || event.target.closest('.remove-row'))) {
+            if (event.target && event.target.classList.contains('remove-row')) {
                 event.target.closest('tr').remove();
                 updateRowNumbers();
-                updateTotals();
+                calculateTotal();
             }
         });
 
         tableBody.addEventListener('input', function(event) {
             if (event.target && (event.target.classList.contains('qty-input') || event.target.classList.contains('harga-input'))) {
-                updateTotals();
+                calculateTotal();
             }
         });
-
-        function updateRowNumbers() {
-            Array.from(tableBody.children).forEach((row, index) => {
-                row.children[0].textContent = index + 1;
-            });
-        }
-
-        function updateTotals() {
-            let totalQty = 0;
-            let totalHarga = 0;
-            const rows = tableBody.querySelectorAll('tr');
-            rows.forEach(row => {
-                const qtyInput = row.querySelector('.qty-input');
-                const hargaInput = row.querySelector('.harga-input');
-                const qty = parseFloat(qtyInput.value) || 0;
-                const harga = parseFloat(hargaInput.value) || 0;
-                totalQty += qty;
-                totalHarga += qty * harga;
-                // Update the harga total per item
-                row.querySelector('input[name="harga_sparepart[]"]').value = qty * harga;
-            });
-            totalQtyInput.value = totalQty;
-            totalHargaInput.value = totalHarga.toLocaleString('id-ID');
-        }
     });
-</script>
+
+    // Memperbarui nomor baris pada tabel
+    function updateRowNumbers() {
+        Array.from(document.querySelectorAll('#biayaJasaTableBody tr')).forEach((row, index) => {
+            row.children[0].textContent = index + 1;
+        });
+        Array.from(document.querySelectorAll('#biayaSparepartTableBody tr')).forEach((row, index) => {
+            row.children[0].textContent = index + 1;
+        });
+    }
+</script> -->
 
 
-<script>
+<!-- <script>
     function formatRupiah(input) {
         // Ambil nilai input dan hapus semua karakter non-digit kecuali koma (jika ada)
         let angka = input.value.replace(/[^,\d]/g, "");
@@ -1347,7 +1374,7 @@
         // Hapus titik ribuan sebelum form dikirim ke server
         hargaInput.value = hargaInput.value.replace(/\./g, '');
     });
-</script>
+</script> -->
 <!-- Script untuk Mengelola Visibilitas No Polis -->
 <script>
     function updateNoPolisVisibility() {
