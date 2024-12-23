@@ -76,7 +76,7 @@ class Home extends BaseController
             'reportPendapatan' => $reportPendapatan,
             'role' => $roleLabel
         ];
-        return view('/index', $data);
+        return view('dashboard/index', $data);
     }
 
     public function dsb_keuangan()
