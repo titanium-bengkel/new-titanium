@@ -1,4 +1,4 @@
-<?
+<?php
 
 namespace App\Controllers;
 
@@ -73,7 +73,7 @@ class Home extends BaseController
             'reportPendapatan' => $reportPendapatan, // Laporan pendapatan harian
         ];
 
-        return view('/index', $data);
+        return view('dashboard/index', $data);
     }
 
     public function dsb_keuangan()

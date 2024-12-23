@@ -13,7 +13,7 @@ class AuthController extends Controller
     {
         $this->userModel = new UserModel();
     }
-    public function index()
+    public function login_page()
     {
         return view('auth/view_login');
     }
@@ -35,7 +35,7 @@ class AuthController extends Controller
                 'isLoggedIn' => true
             ]);
 
-            return redirect()->to('/index');
+            return redirect()->to('dashboard/index');
         } else {
             // Kembalikan ke halaman login dengan pesan error
             return redirect()->back()->with('error', 'Invalid login credentials');

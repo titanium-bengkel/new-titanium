@@ -268,7 +268,6 @@ class KlaimController extends BaseController
         $warnaModel = new M_Warna();
         $repairOrderModel = new M_RepairOrder();
 
-        // Ambil data PO yang ingin di-update berdasarkan id_terima_po
         $existingPO = $poModel->where('id_terima_po', $id_terima_po)->first();
         if (!$existingPO) {
             return redirect()->to('klaim/preorder')->with('error', 'Data PO tidak ditemukan.');
@@ -988,7 +987,6 @@ class KlaimController extends BaseController
             'tgl_estimasi' => $this->request->getPost('tgl_estimasi'),
             'biaya_jasa' => str_replace('.', '', $this->request->getPost('jasa')),
             'biaya_sparepart' => str_replace('.', '', $this->request->getPost('sparepart')),
-            'biaya_total' => str_replace('.', '', $this->request->getPost('nilai_total')),
             'nilai_or' => str_replace('.', '', $this->request->getPost('nilai_or')),
             'qty_or' => $this->request->getPost('qty_or'),
             'keterangan' => strtoupper($this->request->getPost('keterangan')),
@@ -1018,16 +1016,12 @@ class KlaimController extends BaseController
 
         // Simpan data ke database
         if ($model->saveAccAsuransi($data)) {
-            // Ambil tgl_acc dan harga_acc dari form input
             $tgl_acc = $this->request->getPost('tgl_acc');
-            $harga_acc = $data['biaya_total'];
 
-            // Update status, tgl_acc, dan harga_acc di tabel PO
             $updateStatus = $poModel->updateData($id_terima_po, [
                 'status' => 'Acc Asuransi',
                 'progres' => 'Menunggu Sparepart',
                 'tgl_acc' => $tgl_acc,
-                'harga_acc' => $harga_acc
             ]);
 
             if ($updateStatus) {

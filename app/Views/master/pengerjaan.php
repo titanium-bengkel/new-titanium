@@ -1,25 +1,54 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content') ?>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    <?php if (session()->getFlashdata('success')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '<?= session()->getFlashdata('success') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: '<?= session()->getFlashdata('error') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
+</script>
 <section class="section">
     <div class="row" id="table-bordered">
         <div class="col-12">
-            <h4 class="mb-0 ms-3 mb-3">Pengerjaan</h4>
             <div class="card">
-                <div class="card-header d-flex align-items-center gap-3">
-                    <button type="button" class="btn btn-success btn-sm mb-1" data-bs-toggle="modal" data-bs-target="#modalTambah">Entry Data</button>
-                    <h6 class="mb-0 ms-auto">List Data Pengerjaan</h6>
-                </div>
+                <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
+                    <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                        <a href="<?= base_url('/klaim/preorder') ?>" class="breadcrumb-link text-primary fw-bold">Pre Order</a>
+                        <span class="breadcrumb-divider text-muted mx-3">/</span>
+                        <span class="breadcrumb-current text-muted">Pengerjaan</span>
+                    </div>
+                    <h5 class="page-title mb-0 fw-bold">Pengerjaan</h5>
+                </header>
                 <div class="card-content">
-                    <div class="table-responsive" style="margin: 20px;">
-                        <table class="table table-bordered mb-0 text-center">
-                            <thead class="thead-dark">
+                    <div class="table-responsive" style="margin: 20px; font-size: 14px;">
+                        <button type="button" class="btn btn-success btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#modalTambah">Entry Data</button>
+                        <table class="table table-bordered table-striped table-hover mb-0 text-center" id="tablePengerjaan">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
-                                    <th>#</th>
-                                    <th>Kode</th>
-                                    <th>Nama Pengerjaan</th>
-                                    <th>Keterangan</th>
-                                    <th>User Input</th>
-                                    <th>Action</th>
+                                    <th class="text-center">#</th>
+                                    <th class="text-center">Kode</th>
+                                    <th class="text-center">Nama Pengerjaan</th>
+                                    <th class="text-center">Keterangan</th>
+                                    <th class="text-center">User Input</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="text-center">
@@ -28,7 +57,7 @@
                                         <tr>
                                             <td><?= $index + 1; ?></td>
                                             <td><?= esc($item['kode_pengerjaan']); ?></td>
-                                            <td><?= esc($item['nama_pengerjaan']); ?></td>
+                                            <td style="text-align: left;"><?= esc($item['nama_pengerjaan']); ?></td>
                                             <td><?= esc($item['keterangan_pengerjaan']); ?></td>
                                             <td><?= isset($item['username']) ? esc($item['username']) : 'N/A'; ?></td>
                                             <td>
@@ -118,41 +147,34 @@
     </div>
 <?php endforeach; ?>
 
-<!-- SweetAlert Script -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<!-- Script untuk menampilkan SweetAlert Toast -->
-<?php if (session()->getFlashdata('alert')) : ?>
-    <script>
-        $(document).ready(function() {
-            const alert = <?= json_encode(session()->getFlashdata('alert')) ?>;
-            Swal.fire(alert);
-        });
-    </script>
-<?php endif; ?>
-<script>
-    <?php if (session()->getFlashdata('success')) : ?>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: '<?= session()->getFlashdata('success') ?>',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-        });
-    <?php endif; ?>
+<!-- Link ke jQuery dan DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
-    <?php if (session()->getFlashdata('error')) : ?>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            title: '<?= session()->getFlashdata('error') ?>',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-        });
-    <?php endif; ?>
+<script>
+    $(document).ready(function() {
+        // Pastikan tabel dengan ID 'tablePengerjaan' ada sebelum menginisialisasi DataTable
+        if ($('#tablePengerjaan').length) {
+            $('#tablePengerjaan').DataTable({
+                "paging": true,
+                "pageLength": 20,
+                "lengthMenu": [20, 50, 100],
+                "ordering": true,
+                "language": {
+                    "lengthMenu": "Show _MENU_ entries",
+                    "paginate": {
+                        "first": "First",
+                        "last": "Last",
+                        "next": "Next",
+                        "previous": "Previous"
+                    },
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries"
+                },
+                "pagingType": "full_numbers"
+            });
+        }
+    });
 </script>
+
 
 <?= $this->endSection() ?>

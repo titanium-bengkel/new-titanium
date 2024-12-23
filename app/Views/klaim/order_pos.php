@@ -58,13 +58,6 @@
                                 <input type="text" id="pre-order-id" class="form-control" name="pre-order-id" value="<?= $preOrderId ?>" readonly>
                             </div>
 
-                            <!-- No Rangka -->
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="no-rangka">No. Rangka</label>
-                            </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="text" id="no-rangka" class="form-control" name="no_rangka">
-                            </div>
                             <!-- No. Kendaraan -->
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="no-kendaraan">Nopol</label>
@@ -76,6 +69,14 @@
                                 <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#kendaraanModal">
                                     <i class="fas fa-search"></i>
                                 </button>
+                            </div>
+
+                            <!-- No Rangka -->
+                            <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="no-rangka">No. Rangka</label>
+                            </div>
+                            <div class="col-lg-10 col-9 mb-3">
+                                <input type="text" id="no-rangka" class="form-control" name="no_rangka">
                             </div>
 
                             <!-- Jenis Mobil -->
@@ -221,10 +222,101 @@
                                 <label class="form-check-label" for="batal-mobil-masuk">Batal Mobil Masuk</label>
                             </div>
                         </div>
-                        <div class="mt-3">
+                        <!-- <div class="mt-3">
                             <button type="submit" class="btn btn-primary">Simpan</button>
                             <a href="<?= base_url('klaim/preorder') ?>" type="button" class="btn btn-danger">Batal</a>
+                        </div> -->
+
+                        <div class="mt-3">
+                            <form id="myForm" action="/submit" method="post">
+                                <button type="button" id="btnSimpan" class="btn btn-primary" onclick="flyButton()">Simpan</button>
+                                <a href="<?= base_url('klaim/preorder') ?>" type="button" class="btn btn-danger">Batal</a>
+                            </form>
                         </div>
+
+                        <style>
+                            /* Gaya dasar tombol */
+                            #btnSimpan {
+                                position: relative;
+                                /* Untuk memulai animasi */
+                                transition: transform 0.2s ease-in-out;
+                                z-index: 9999;
+                                /* Agar tombol terlihat di atas elemen lainnya */
+                            }
+
+                            /* Gaya untuk animasi saat terbang */
+                            .flying {
+                                animation: fly-around-page 10s ease-in-out;
+                                pointer-events: none;
+                                /* Mencegah interaksi selama animasi */
+                            }
+
+                            /* Keyframes untuk animasi terbang keliling halaman */
+                            @keyframes fly-around-page {
+                                0% {
+                                    transform: translate(0, 0);
+                                }
+
+                                10% {
+                                    transform: translate(100vw, -10vh) rotate(45deg);
+                                }
+
+                                30% {
+                                    transform: translate(70vw, 60vh) rotate(90deg);
+                                }
+
+                                50% {
+                                    transform: translate(-80vw, -40vh) rotate(180deg);
+                                }
+
+                                70% {
+                                    transform: translate(-20vw, 80vh) rotate(270deg);
+                                }
+
+                                90% {
+                                    transform: translate(0vw, -100vh) rotate(360deg);
+                                }
+
+                                100% {
+                                    transform: translate(0, 0);
+                                    /* Kembali ke posisi awal */
+                                }
+                            }
+                        </style>
+
+                        <script>
+                            let hasFlown = false; // Variabel untuk memastikan animasi hanya terjadi sekali
+
+                            function flyButton() {
+                                const button = document.getElementById('btnSimpan');
+                                const form = document.getElementById('myForm');
+
+                                if (hasFlown) {
+                                    // Jika animasi sudah selesai sebelumnya, ubah tombol jadi submit
+                                    button.setAttribute("type", "submit");
+                                    form.submit(); // Kirim form
+                                    return;
+                                }
+
+                                // Nonaktifkan tombol selama animasi
+                                button.disabled = true;
+
+                                // Tambahkan kelas "flying" untuk animasi
+                                button.classList.add('flying');
+
+                                // Set variabel "hasFlown" menjadi true agar tidak terbang lagi
+                                hasFlown = true;
+
+                                // Hapus kelas setelah animasi selesai agar tombol bisa digunakan untuk submit
+                                setTimeout(() => {
+                                    button.classList.remove('flying');
+                                    button.disabled = false; // Aktifkan tombol kembali
+                                    button.setAttribute("type", "submit"); // Ubah tombol menjadi submit
+                                }, 10000); // Durasi sesuai waktu animasi (10 detik)
+                            }
+                        </script>
+
+
                     </form>
                 </div>
             </div>
