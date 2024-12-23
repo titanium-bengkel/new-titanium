@@ -4,8 +4,6 @@
 <div id="mobileWarning" class="mobile-warning">
     <p>Tampilan ini hanya dapat diakses melalui PC. Mohon gunakan PC untuk melanjutkan.</p>
 </div>
-
-
 <section class="section">
     <div class="row" id="table-bordered">
         <div class="col-12">
