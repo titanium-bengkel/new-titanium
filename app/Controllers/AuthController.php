@@ -45,7 +45,7 @@ class AuthController extends Controller
                 'fitur_role'  => json_decode($role['fitur'], true), 
                 'isLoggedIn'  => true
             ]);
-            return redirect()->to('/index')->with('success', 'Login berhasil!');
+            return redirect()->to('/dashboard/index')->with('success', 'Login berhasil!');
         } else {
             return redirect()->back()->with('error', 'Username atau password salah!');
         }
