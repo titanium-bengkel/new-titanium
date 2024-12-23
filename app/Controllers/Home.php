@@ -1,4 +1,4 @@
-<?
+<?php
 
 namespace App\Controllers;
 
@@ -10,8 +10,6 @@ class Home extends BaseController
 {
     public function index()
     {
-
-
         // Instansiasi model
         $poModel = new M_Po();
         $repairModel = new M_RepairOrder();
@@ -55,6 +53,11 @@ class Home extends BaseController
         $bengkelTandameCount = $poModel->where('bengkel', 'TANDEM')->countAllResults();
         $repairOrderCount = $repairModel->countAllResults();
         $mobilMasuk = $repairModel->getDailyReport();
+        $roleLabel = session()->get('role_label');
+
+        if (!$roleLabel) {
+            $roleLabel = 'Role tidak tersedia';
+        }
 
         // Menyusun data untuk dikirim ke view
         $data = [
@@ -70,9 +73,9 @@ class Home extends BaseController
             'bengkelTandameCount' => $bengkelTandameCount,
             'repairOrder' => $repairOrderCount,
             'mobilMasuk' => $mobilMasuk,
-            'reportPendapatan' => $reportPendapatan, // Laporan pendapatan harian
+            'reportPendapatan' => $reportPendapatan,
+            'role' => $roleLabel
         ];
-
         return view('/index', $data);
     }
 

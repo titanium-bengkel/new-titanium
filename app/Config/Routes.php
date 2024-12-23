@@ -26,13 +26,21 @@ $routes->setAutoRoute(true);
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'AuthController::index');
+// $routes->get('/', 'AuthController::index');
 $routes->get('/index', 'Home::index');
 $routes->post('login', 'AuthController::login');
 $routes->get('logout', 'AuthController::logout');
 $routes->get('/profile', 'AuthController::profile');
 $routes->post('updateProfile', 'AuthController::updateProfile');
 $routes->get('dashboard_keuangan', 'Home::dsb_keuangan');
+
+// Register dan Forget Password
+$routes->get('register', 'AuthController::register');
+$routes->post('registerSubmit', 'AuthController::registerSubmit');
+$routes->get('forgot-password', 'AuthController::forgotPassword');
+$routes->post('forgotPasswordSubmit', 'AuthController::forgotPasswordSubmit');
+$routes->get('resetPassword', 'AuthController::resetPassword');
+$routes->post('resetPasswordSubmit', 'AuthController::resetPasswordSubmit');
 
 //routes superadmin
 $routes->get('kel_user', 'SuperController::kelola_user');

@@ -14,20 +14,9 @@
         padding: 0;
         font-family: Arial, sans-serif;
         color: #fff;
-    }
-
-    /* Fullscreen Background */
-    .background {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
         background: url('<?= base_url("./dist/assets/img/TITANIUM.webp") ?>') no-repeat center center/cover;
-        z-index: -1;
     }
 
-    /* Semi-transparent Overlay */
     .overlay {
         position: fixed;
         top: 0;
@@ -35,32 +24,28 @@
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.7);
-        z-index: -1;
-    }
-
-    /* Login Container */
-    .login-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
         z-index: 1;
     }
 
-    .login-box {
-        background: rgba(0, 0, 0, 0.4);
-        padding: 40px;
+    .form-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        padding: 30px;
         border-radius: 10px;
         width: 100%;
         max-width: 400px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
         text-align: center;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+        z-index: 2;
     }
 
-    .login-box h2 {
+    .form-container h2 {
+        color: #fff;
         margin-bottom: 20px;
-        font-size: 1.8rem;
-        color: #ffffff;
+        font-size: 24px;
     }
 
     .form-group {
@@ -75,25 +60,25 @@
         border-radius: 5px;
         background: rgba(255, 255, 255, 0.2);
         color: #fff;
-        margin-top: 10px;
     }
 
     .form-control::placeholder {
         color: #ccc;
     }
 
-    .btn-primary {
+    .btn-submit {
         width: 100%;
         padding: 10px;
         background-color: #007bff;
         border: none;
         border-radius: 5px;
-        font-size: 1rem;
+        font-size: 16px;
         color: #fff;
         cursor: pointer;
+        margin-top: 10px;
     }
 
-    .btn-primary:hover {
+    .btn-submit:hover {
         background-color: #0056b3;
     }
 
@@ -119,36 +104,38 @@
 </head>
 
 <body>
-    <div class="background"></div>
     <div class="overlay"></div>
 
-    <div class="login-container">
-        <div class="login-box">
-            <h2>Reset Password</h2>
+    <div class="form-container">
+        <h2>Reset Password</h2>
 
-            <!-- Flash Messages -->
-            <?php if (session()->getFlashdata('error')): ?>
-            <div class="error-message">
-                <?= session()->getFlashdata('error') ?>
-            </div>
-            <?php endif; ?>
-            <?php if (session()->getFlashdata('message')): ?>
-            <div class="success-message">
-                <?= session()->getFlashdata('message') ?>
-            </div>
-            <?php endif; ?>
-
-            <!-- Reset Password Form -->
-            <form action="<?= site_url('resetPasswordSubmit') ?>" method="POST">
-                <input type="hidden" name="token" value="<?= $token ?>">
-                <div class="form-group">
-                    <label for="password">Password Baru</label>
-                    <input type="password" class="form-control" name="password" id="password"
-                        placeholder="Masukkan password baru" required>
-                </div>
-                <button type="submit" class="btn-primary">Reset Password</button>
-            </form>
+        <!-- Flash Messages -->
+        <?php if (session()->getFlashdata('error')): ?>
+        <div class="error-message">
+            <?= session()->getFlashdata('error') ?>
         </div>
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('message')): ?>
+        <div class="success-message">
+            <?= session()->getFlashdata('message') ?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Reset Password Form -->
+        <form action="<?= site_url('resetPasswordSubmit') ?>" method="POST">
+            <input type="hidden" name="token" value="<?= $token ?>">
+            <div class="form-group">
+                <label for="password">Password Baru</label>
+                <input type="password" class="form-control" name="password" id="password"
+                    placeholder="Masukkan password baru" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Konfirmasi Password</label>
+                <input type="password" class="form-control" name="confirm_password" id="confirm-password"
+                    placeholder="Konfirmasi password baru" required>
+            </div>
+            <button type="submit" class="btn-submit">Reset Password</button>
+        </form>
     </div>
 </body>
 

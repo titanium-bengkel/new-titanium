@@ -22,26 +22,30 @@
         <div class="row h-100">
             <div class="col-lg-7 d-none d-lg-block">
                 <div id="auth-right">
-                    <img src="<?= base_url('./dist/assets/img/titanium.webp') ?>" alt="Titanium Workshop Background" style="width:100%; height:auto;">
+                    <img src="<?= base_url('./dist/assets/img/titanium.webp') ?>" alt="Titanium Workshop Background"
+                        style="width:100%; height:auto;">
                 </div>
             </div>
             <div class="col-lg-5 col-12">
                 <div id="auth-left">
                     <div class="auth-logo text-center mb-0">
                         <a href="#">
-                            <img src="<?= base_url('./dist/assets/img/titanium.png') ?>" alt="Logo" style="width:150px; height:auto;">
+                            <img src="<?= base_url('./dist/assets/img/titanium.png') ?>" alt="Logo"
+                                style="width:150px; height:auto;">
                         </a>
                     </div>
 
                     <form action="<?= base_url('login') ?>" method="POST">
                         <div class="form-group position-relative has-icon-left mb-4">
-                            <input type="text" class="form-control form-control-xl" placeholder="Username" name="username" required>
+                            <input type="text" class="form-control form-control-xl" placeholder="Username"
+                                name="username" required>
                             <div class="form-control-icon">
                                 <i class="bi bi-person"></i>
                             </div>
                         </div>
                         <div class="form-group position-relative has-icon-left mb-4">
-                            <input type="password" class="form-control form-control-xl" placeholder="Password" name="password" required>
+                            <input type="password" class="form-control form-control-xl" placeholder="Password"
+                                name="password" required>
                             <div class="form-control-icon">
                                 <i class="bi bi-shield-lock"></i>
                             </div>
@@ -55,9 +59,14 @@
                         <button class="btn btn-primary btn-block btn-lg shadow-lg mt-2">Log in</button>
                     </form>
 
-                    <div class="text-center mt-4 text-lg fs-4">
-                        <h6 class="text-gray-600">Don't have an account? <a href="#" class="font-bold">Contact Developer</a>.</h6>
-                        <!-- <p><a class="font-bold" href="auth-forgot-password.html">Forgot password?</a>.</p> -->
+                    <div class="text-center my-3">
+                        <p>Forgot your password? <a href="<?= site_url('forgot-password') ?>">Click here to reset</a>.
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <p>Don't have an account? <a
+                                href="https://api.whatsapp.com/send/?phone=6282250706412&text&type=phone_number&app_absent=0">Contact
+                                Developer</a>.</p>
                     </div>
                 </div>
             </div>
