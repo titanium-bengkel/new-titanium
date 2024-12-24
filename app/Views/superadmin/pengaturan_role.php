@@ -85,7 +85,7 @@
                                                                                 for="kelolamenu<?= $l['id'] ?>">Kelola
                                                                                 Menu</label>
                                                                         </div>
-                                                                        <div>
+                                                                        <!-- <div>
                                                                             <input type="checkbox"
                                                                                 id="registeradminonly<?= $l['id'] ?>"
                                                                                 name="registeradminonly"
@@ -94,7 +94,7 @@
                                                                             <label
                                                                                 for="registeradminonly<?= $l['id'] ?>">Tambahan
                                                                                 User</label>
-                                                                        </div>
+                                                                        </div> -->
                                                                     </div>
                                                                 </div>
                                                                 <!-- END SUPER ADMIN -->
@@ -597,31 +597,42 @@
                                                                     <div class="ms-3">
                                                                         <div>
                                                                             <input type="checkbox"
-                                                                                id="asuransi<?= $l['id'] ?>"
-                                                                                name="asuransi"
+                                                                                id="kategoribarang<?= $l['id'] ?>"
+                                                                                name="kategoribarang"
                                                                                 onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
-                                                                                <?= in_array('Asuransi', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                                <?= in_array('Kategori Barang', $l['fiturnya']) ? 'checked' : '' ?>>
                                                                             <label
-                                                                                for="asuransi<?= $l['id'] ?>">Asuransi</label>
+                                                                                for="kategoribarang<?= $l['id'] ?>">Kategori
+                                                                                Barang</label>
                                                                         </div>
                                                                         <div>
                                                                             <input type="checkbox"
-                                                                                id="cabang<?= $l['id'] ?>" name="cabang"
+                                                                                id="grupbarang<?= $l['id'] ?>"
+                                                                                name="grupbarang"
                                                                                 onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
-                                                                                <?= in_array('Cabang', $l['fiturnya']) ? 'checked' : '' ?>>
-                                                                            <label
-                                                                                for="cabang<?= $l['id'] ?>">Cabang</label>
+                                                                                <?= in_array('Grup Barang', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                            <label for="grupbarang<?= $l['id'] ?>">Grup
+                                                                                Barang</label>
                                                                         </div>
                                                                         <div>
                                                                             <input type="checkbox"
-                                                                                id="coa<?= $l['id'] ?>" name="coa"
+                                                                                id="msparepart<?= $l['id'] ?>"
+                                                                                name="msparepart"
                                                                                 onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
-                                                                                <?= in_array('Chart of Account', $l['fiturnya']) ? 'checked' : '' ?>>
-                                                                            <label for="coa<?= $l['id'] ?>">Chart of
-                                                                                Account</label>
+                                                                                <?= in_array('Sparepart', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                            <label
+                                                                                for="msparepart<?= $l['id'] ?>">Sparepart</label>
+                                                                        </div>
+                                                                        <div>
+                                                                            <input type="checkbox"
+                                                                                id="bahanm<?= $l['id'] ?>" name="bahanm"
+                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                <?= in_array('Bahan', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                            <label
+                                                                                for="bahanm<?= $l['id'] ?>">Bahan</label>
                                                                         </div>
 
-                                                                        <div>
+                                                                        <!-- <div>
                                                                             <input type="checkbox"
                                                                                 id="car<?= $l['id'] ?>" name="car"
                                                                                 onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
@@ -656,9 +667,52 @@
                                                                                         for="model<?= $l['id'] ?>">Model</label>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
+                                                                        </div> -->
 
                                                                         <div>
+                                                                            <input type="checkbox"
+                                                                                id="pengerjaan<?= $l['id'] ?>"
+                                                                                name="pengerjaan"
+                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                <?= in_array('Pengerjaan', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                            <label
+                                                                                for="pengerjaan<?= $l['id'] ?>">Pengerjaan</label>
+                                                                        </div>
+                                                                        <div>
+                                                                            <input type="checkbox"
+                                                                                id="asuransi<?= $l['id'] ?>"
+                                                                                name="asuransi"
+                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                <?= in_array('Asuransi', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                            <label
+                                                                                for="asuransi<?= $l['id'] ?>">Asuransi</label>
+                                                                        </div>
+                                                                        <div>
+                                                                            <input type="checkbox"
+                                                                                id="gudang<?= $l['id'] ?>" name="gudang"
+                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                <?= in_array('Gudang', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                            <label
+                                                                                for="asuransi<?= $l['id'] ?>">Gudang</label>
+                                                                        </div>
+                                                                        <div>
+                                                                            <input type="checkbox"
+                                                                                id="coa<?= $l['id'] ?>" name="coa"
+                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                <?= in_array('Chart of Account', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                            <label for="coa<?= $l['id'] ?>">Chart of
+                                                                                Account</label>
+                                                                        </div>
+                                                                        <div>
+                                                                            <input type="checkbox"
+                                                                                id="supplier<?= $l['id'] ?>"
+                                                                                name="supplier"
+                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                <?= in_array('Supplier', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                            <label
+                                                                                for="supplier<?= $l['id'] ?>">Supplier</label>
+                                                                        </div>
+                                                                        <!-- <div>
                                                                             <input type="checkbox"
                                                                                 id="customer<?= $l['id'] ?>"
                                                                                 name="customer"
@@ -666,9 +720,9 @@
                                                                                 <?= in_array('Customer', $l['fiturnya']) ? 'checked' : '' ?>>
                                                                             <label
                                                                                 for="customer<?= $l['id'] ?>">Customer</label>
-                                                                        </div>
+                                                                        </div> -->
 
-                                                                        <div>
+                                                                        <!-- <div>
                                                                             <input type="checkbox"
                                                                                 id="pengerjaan<?= $l['id'] ?>"
                                                                                 name="pengerjaan"
@@ -696,9 +750,9 @@
                                                                                         for="job_subblet<?= $l['id'] ?>">Subblet</label>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
+                                                                        </div> -->
 
-                                                                        <div>
+                                                                        <!-- <div>
                                                                             <input type="checkbox"
                                                                                 id="masterbahan<?= $l['id'] ?>"
                                                                                 name="masterbahan"
@@ -743,132 +797,138 @@
                                                                             <label
                                                                                 for="foreman<?= $l['id'] ?>">Foreman</label>
                                                                         </div>
+                                                                    </div> -->
                                                                     </div>
-                                                                </div>
-                                                                <!-- END MASTER -->
+                                                                    <!-- END MASTER -->
 
-                                                                <!-- MONITORING -->
+                                                                    <!-- MONITORING -->
+                                                                    <div>
+                                                                        <input type="checkbox"
+                                                                            id="monitoring<?= $l['id'] ?>"
+                                                                            name="monitoring"
+                                                                            class="label<?= $l['id'] ?>"
+                                                                            onchange="handleUbah(event, '<?= $l['id'] ?>')"
+                                                                            <?= in_array('Monitoring', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                        <label
+                                                                            for="monitoring<?= $l['id'] ?>">Monitoring</label>
+                                                                        <div class="ms-3">
+                                                                            <div>
+                                                                                <input type="checkbox"
+                                                                                    id="monitoring_history<?= $l['id'] ?>"
+                                                                                    name="monitoring_history"
+                                                                                    onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                    <?= in_array('Histori Edit', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                                <label
+                                                                                    for="monitoring_history<?= $l['id'] ?>">Histori
+                                                                                    Edit</label>
+                                                                            </div>
+                                                                            <div>
+                                                                                <input type="checkbox"
+                                                                                    id="monitoring_jadwal_keluar<?= $l['id'] ?>"
+                                                                                    name="monitoring_jadwal_keluar"
+                                                                                    onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                    <?= in_array('Jadwal Mobil Keluar', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                                <label
+                                                                                    for="monitoring_jadwal_keluar<?= $l['id'] ?>">Jadwal
+                                                                                    Mobil Keluar</label>
+                                                                            </div>
+                                                                            <div>
+                                                                                <input type="checkbox"
+                                                                                    id="monitoring_tracking_unit<?= $l['id'] ?>"
+                                                                                    name="monitoring_tracking_unit"
+                                                                                    onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                    <?= in_array('Tracking Unit', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                                <label
+                                                                                    for="monitoring_tracking_unit<?= $l['id'] ?>">Traking
+                                                                                    Unit</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!-- END MONITORING -->
+
+                                                                    <!-- WEBSITE -->
+                                                                    <div>
+                                                                        <input type="checkbox"
+                                                                            id="website<?= $l['id'] ?>" name="website"
+                                                                            class="label<?= $l['id'] ?>"
+                                                                            onchange="handleUbah(event, '<?= $l['id'] ?>')"
+                                                                            <?= in_array('Website', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                        <label
+                                                                            for="website<?= $l['id'] ?>">Website</label>
+                                                                        <div class="ms-3">
+                                                                            <div>
+                                                                                <input type="checkbox"
+                                                                                    id="video_home<?= $l['id'] ?>"
+                                                                                    name="video_home"
+                                                                                    onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                    <?= in_array('Video Home', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                                <label
+                                                                                    for="video_home<?= $l['id'] ?>">Video
+                                                                                    Home</label>
+                                                                            </div>
+                                                                            <div>
+                                                                                <input type="checkbox"
+                                                                                    id="tentang_kami<?= $l['id'] ?>"
+                                                                                    name="tentang_kami"
+                                                                                    onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                    <?= in_array('Tentang Kami (About Us)', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                                <label
+                                                                                    for="tentang_kami<?= $l['id'] ?>">Tentang
+                                                                                    Kami
+                                                                                    (About
+                                                                                    Us)</label>
+                                                                            </div>
+                                                                            <div>
+                                                                                <input type="checkbox"
+                                                                                    id="layanan<?= $l['id'] ?>"
+                                                                                    name="layanan"
+                                                                                    onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                    <?= in_array('Layanan (Service)', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                                <label
+                                                                                    for="layanan<?= $l['id'] ?>">Layanan
+                                                                                    (Service)</label>
+                                                                            </div>
+                                                                            <div>
+                                                                                <input type="checkbox"
+                                                                                    id="gallery<?= $l['id'] ?>"
+                                                                                    name="gallery"
+                                                                                    onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                    <?= in_array('Gallery', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                                <label
+                                                                                    for="gallery<?= $l['id'] ?>">Gallery</label>
+                                                                            </div>
+                                                                            <div>
+                                                                                <input type="checkbox"
+                                                                                    id="testimoni_konsumen<?= $l['id'] ?>"
+                                                                                    name="testimoni_konsumen"
+                                                                                    onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                    <?= in_array('Testimoni Konsumen', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                                <label
+                                                                                    for="testimoni_konsumen<?= $l['id'] ?>">Testimoni
+                                                                                    Konsumen</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!-- END WEBSITE -->
+                                                                </div>
+
                                                                 <div>
                                                                     <input type="checkbox"
-                                                                        id="monitoring<?= $l['id'] ?>" name="monitoring"
-                                                                        class="label<?= $l['id'] ?>"
-                                                                        onchange="handleUbah(event, '<?= $l['id'] ?>')"
-                                                                        <?= in_array('Monitoring', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                        id="pengaturan_role<?= $l['id'] ?>"
+                                                                        name="mpengaturan_role"
+                                                                        <?= in_array('Role', $l['fiturnya']) ? 'checked' : '' ?>
+                                                                        <?= session()->get('role_label') !== 'super admin' ? 'disabled' : '' ?>
+                                                                        onclick="handleRoleChange(event, '<?= session()->get('role_label') ?>')">
                                                                     <label
-                                                                        for="monitoring<?= $l['id'] ?>">Monitoring</label>
-                                                                    <div class="ms-3">
-                                                                        <div>
-                                                                            <input type="checkbox"
-                                                                                id="monitoring_history<?= $l['id'] ?>"
-                                                                                name="monitoring_history"
-                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
-                                                                                <?= in_array('Histori Edit', $l['fiturnya']) ? 'checked' : '' ?>>
-                                                                            <label
-                                                                                for="monitoring_history<?= $l['id'] ?>">Histori
-                                                                                Edit</label>
-                                                                        </div>
-                                                                        <div>
-                                                                            <input type="checkbox"
-                                                                                id="monitoring_jadwal_keluar<?= $l['id'] ?>"
-                                                                                name="monitoring_jadwal_keluar"
-                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
-                                                                                <?= in_array('Jadwal Mobil Keluar', $l['fiturnya']) ? 'checked' : '' ?>>
-                                                                            <label
-                                                                                for="monitoring_jadwal_keluar<?= $l['id'] ?>">Jadwal
-                                                                                Mobil Keluar</label>
-                                                                        </div>
-                                                                        <div>
-                                                                            <input type="checkbox"
-                                                                                id="monitoring_tracking_unit<?= $l['id'] ?>"
-                                                                                name="monitoring_tracking_unit"
-                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
-                                                                                <?= in_array('Tracking Unit', $l['fiturnya']) ? 'checked' : '' ?>>
-                                                                            <label
-                                                                                for="monitoring_tracking_unit<?= $l['id'] ?>">Traking
-                                                                                Unit</label>
-                                                                        </div>
-                                                                    </div>
+                                                                        for="pengaturan_role<?= $l['id'] ?>">Pengaturan
+                                                                        Role</label>
                                                                 </div>
-                                                                <!-- END MONITORING -->
-
-                                                                <!-- WEBSITE -->
-                                                                <div>
-                                                                    <input type="checkbox" id="website<?= $l['id'] ?>"
-                                                                        name="website" class="label<?= $l['id'] ?>"
-                                                                        onchange="handleUbah(event, '<?= $l['id'] ?>')"
-                                                                        <?= in_array('Website', $l['fiturnya']) ? 'checked' : '' ?>>
-                                                                    <label for="website<?= $l['id'] ?>">Website</label>
-                                                                    <div class="ms-3">
-                                                                        <div>
-                                                                            <input type="checkbox"
-                                                                                id="video_home<?= $l['id'] ?>"
-                                                                                name="video_home"
-                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
-                                                                                <?= in_array('Video Home', $l['fiturnya']) ? 'checked' : '' ?>>
-                                                                            <label for="video_home<?= $l['id'] ?>">Video
-                                                                                Home</label>
-                                                                        </div>
-                                                                        <div>
-                                                                            <input type="checkbox"
-                                                                                id="tentang_kami<?= $l['id'] ?>"
-                                                                                name="tentang_kami"
-                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
-                                                                                <?= in_array('Tentang Kami (About Us)', $l['fiturnya']) ? 'checked' : '' ?>>
-                                                                            <label
-                                                                                for="tentang_kami<?= $l['id'] ?>">Tentang
-                                                                                Kami
-                                                                                (About
-                                                                                Us)</label>
-                                                                        </div>
-                                                                        <div>
-                                                                            <input type="checkbox"
-                                                                                id="layanan<?= $l['id'] ?>"
-                                                                                name="layanan"
-                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
-                                                                                <?= in_array('Layanan (Service)', $l['fiturnya']) ? 'checked' : '' ?>>
-                                                                            <label for="layanan<?= $l['id'] ?>">Layanan
-                                                                                (Service)</label>
-                                                                        </div>
-                                                                        <div>
-                                                                            <input type="checkbox"
-                                                                                id="gallery<?= $l['id'] ?>"
-                                                                                name="gallery"
-                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
-                                                                                <?= in_array('Gallery', $l['fiturnya']) ? 'checked' : '' ?>>
-                                                                            <label
-                                                                                for="gallery<?= $l['id'] ?>">Gallery</label>
-                                                                        </div>
-                                                                        <div>
-                                                                            <input type="checkbox"
-                                                                                id="testimoni_konsumen<?= $l['id'] ?>"
-                                                                                name="testimoni_konsumen"
-                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
-                                                                                <?= in_array('Testimoni Konsumen', $l['fiturnya']) ? 'checked' : '' ?>>
-                                                                            <label
-                                                                                for="testimoni_konsumen<?= $l['id'] ?>">Testimoni
-                                                                                Konsumen</label>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- END WEBSITE -->
-                                                            </div>
-
-                                                            <div>
-                                                                <input type="checkbox"
-                                                                    id="pengaturan_role<?= $l['id'] ?>"
-                                                                    name="mpengaturan_role"
-                                                                    <?= in_array('Role', $l['fiturnya']) ? 'checked' : '' ?>
-                                                                    <?= session()->get('role_label') !== 'super admin' ? 'disabled' : '' ?>
-                                                                    onclick="handleRoleChange(event, '<?= session()->get('role_label') ?>')">
-                                                                <label for="pengaturan_role<?= $l['id'] ?>">Pengaturan
-                                                                    Role</label>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-end">
-                                                        <button type="submit"
-                                                            class="btn btn-primary mt-2">Simpan</button>
-                                                    </div>
+                                                        <div class="d-flex justify-content-end">
+                                                            <button type="submit"
+                                                                class="btn btn-primary mt-2">Simpan</button>
+                                                        </div>
                                                 </form>
                                             </div>
                                         </section>
