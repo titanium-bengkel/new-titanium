@@ -7,27 +7,27 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <script>
-    <?php if (session()->getFlashdata('success')) : ?>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: '<?= session()->getFlashdata('success') ?>',
-            showConfirmButton: false,
-            timer: 3000
-        });
-    <?php endif; ?>
+<?php if (session()->getFlashdata('success')) : ?>
+Swal.fire({
+    toast: true,
+    position: 'top-end',
+    icon: 'success',
+    title: '<?= session()->getFlashdata('success') ?>',
+    showConfirmButton: false,
+    timer: 3000
+});
+<?php endif; ?>
 
-    <?php if (session()->getFlashdata('error')) : ?>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            title: '<?= session()->getFlashdata('error') ?>',
-            showConfirmButton: false,
-            timer: 3000
-        });
-    <?php endif; ?>
+<?php if (session()->getFlashdata('error')) : ?>
+Swal.fire({
+    toast: true,
+    position: 'top-end',
+    icon: 'error',
+    title: '<?= session()->getFlashdata('error') ?>',
+    showConfirmButton: false,
+    timer: 3000
+});
+<?php endif; ?>
 </script>
 
 <!-- Main Section -->
@@ -35,7 +35,8 @@
     <div class="col-12">
         <div class="row" id="table-head">
             <div class="card">
-                <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
+                <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3"
+                    style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
                         <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
@@ -57,9 +58,11 @@
                             <!-- Right: Period Input (Pojok Kanan Atas) -->
                             <div class="d-flex align-items-center gap-2">
                                 <label for="start-date" class="form-label mb-0 text-muted fw-bold">Periode:</label>
-                                <input type="text" id="start-date" class="form-control form-control-sm rounded-2 w-auto" style="width: 120px;" placeholder="Start Date" readonly />
+                                <input type="text" id="start-date" class="form-control form-control-sm rounded-2 w-auto"
+                                    style="width: 120px;" placeholder="Start Date" readonly />
                                 <span class="mx-1 text-muted fw-bold">to</span>
-                                <input type="text" id="end-date" class="form-control form-control-sm rounded-2 w-auto" style="width: 120px;" placeholder="End Date" readonly />
+                                <input type="text" id="end-date" class="form-control form-control-sm rounded-2 w-auto"
+                                    style="width: 120px;" placeholder="End Date" readonly />
                                 <button class="btn btn-primary btn-sm rounded-2" id="filter-btn">
                                     <i class="fas fa-filter"></i> Filter
                                 </button>
@@ -70,7 +73,8 @@
                         <div class="d-flex justify-content-between align-items-center mt-4">
                             <!-- Left: Search -->
                             <div class="d-flex align-items-center gap-2">
-                                <input type="text" id="search-bar" class="form-control form-control-sm rounded-2" placeholder="Search data..." />
+                                <input type="text" id="search-bar" class="form-control form-control-sm rounded-2"
+                                    placeholder="Search data..." />
                                 <button class="btn btn-outline-secondary btn-sm rounded-2" id="search-btn">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -137,96 +141,97 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 
 <script>
-    // Data from PHP
-    const repairOrders = <?= json_encode($repairOrders); ?>; // Assuming the PHP variable contains repair order data
-    let filteredData = [...repairOrders]; // Data that will be filtered based on date
-    let rowsPerPage = 20; // Default number of rows per page
+// Data from PHP
+const repairOrders = <?= json_encode($repairOrders); ?>; // Assuming the PHP variable contains repair order data
+let filteredData = [...repairOrders]; // Data that will be filtered based on date
+let rowsPerPage = 20; // Default number of rows per page
 
-    // Initialize Flatpickr for date range picker
-    document.addEventListener("DOMContentLoaded", function() {
-        flatpickr("#start-date", {
-            dateFormat: "Y-m-d",
-            defaultDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1), // Default start date is the first day of the current month
-        });
-
-        flatpickr("#end-date", {
-            dateFormat: "Y-m-d",
-            defaultDate: new Date(), // Default end date is today's date
-        });
-
-        // Handle filter button click event
-        document.getElementById('filter-btn').addEventListener('click', function() {
-            const startDate = new Date(document.getElementById('start-date').value);
-            const endDate = new Date(document.getElementById('end-date').value);
-
-            // Filter the data based on the selected date range
-            filteredData = repairOrders.filter(item => {
-                const tglKlaim = new Date(item.tgl_klaim);
-                return tglKlaim >= startDate && tglKlaim <= endDate;
-            });
-
-            applySearch(); // Apply search after filter
-        });
-
-        // Handle rows per page change event
-        document.getElementById('rows-per-page').addEventListener('change', function() {
-            rowsPerPage = this.value === 'all' ? filteredData.length : parseInt(this.value);
-            updateTable(); // Update the table with new number of rows per page
-        });
-
-        // Handle search button click event
-        document.getElementById('search-btn').addEventListener('click', applySearch);
+// Initialize Flatpickr for date range picker
+document.addEventListener("DOMContentLoaded", function() {
+    flatpickr("#start-date", {
+        dateFormat: "Y-m-d",
+        defaultDate: new Date(new Date().getFullYear(), new Date().getMonth(),
+            1), // Default start date is the first day of the current month
     });
 
-    // Function to apply search filter
-    function applySearch() {
-        const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+    flatpickr("#end-date", {
+        dateFormat: "Y-m-d",
+        defaultDate: new Date(), // Default end date is today's date
+    });
 
-        // Filter the data based on the search term
-        filteredData = filteredData.filter(item => {
-            return Object.values(item).some(value =>
-                String(value).toLowerCase().includes(searchTerm)
-            );
+    // Handle filter button click event
+    document.getElementById('filter-btn').addEventListener('click', function() {
+        const startDate = new Date(document.getElementById('start-date').value);
+        const endDate = new Date(document.getElementById('end-date').value);
+
+        // Filter the data based on the selected date range
+        filteredData = repairOrders.filter(item => {
+            const tglKlaim = new Date(item.tgl_klaim);
+            return tglKlaim >= startDate && tglKlaim <= endDate;
         });
 
-        updateTable(); // Update the table with the filtered data
-    }
+        applySearch(); // Apply search after filter
+    });
 
-    function updateTable() {
-        const tableBody = document.getElementById('repairOrdersTableBody');
-        tableBody.innerHTML = ''; // Clear the existing table content
+    // Handle rows per page change event
+    document.getElementById('rows-per-page').addEventListener('change', function() {
+        rowsPerPage = this.value === 'all' ? filteredData.length : parseInt(this.value);
+        updateTable(); // Update the table with new number of rows per page
+    });
 
-        let totalPerPageEstimasi = 0; // Total untuk halaman saat ini
-        let totalPerPageAcc = 0; // Total untuk halaman saat ini
-        let grandTotalEstimasi = 0; // Total untuk semua data
-        let grandTotalAcc = 0; // Total untuk semua data
+    // Handle search button click event
+    document.getElementById('search-btn').addEventListener('click', applySearch);
+});
 
-        // Loop semua data untuk menghitung grand total
-        filteredData.forEach(item => {
-            if (item.asuransi === 'UMUM/PRIBADI') {
-                grandTotalEstimasi += item.harga_estimasi ? parseFloat(item.harga_estimasi) : 0;
-            } else {
-                grandTotalAcc += item.harga_acc ? parseFloat(item.harga_acc) : 0;
-            }
-        });
+// Function to apply search filter
+function applySearch() {
+    const searchTerm = document.getElementById('search-bar').value.toLowerCase();
 
-        // Data yang akan ditampilkan pada halaman ini (maksimal 20 data)
-        const dataToDisplay = filteredData.slice(0, rowsPerPage);
-        dataToDisplay.forEach((item, index) => {
-            // Perhitungan total untuk halaman ini
-            let hargaEstimasi = 0;
-            let hargaAcc = 0;
+    // Filter the data based on the search term
+    filteredData = filteredData.filter(item => {
+        return Object.values(item).some(value =>
+            String(value).toLowerCase().includes(searchTerm)
+        );
+    });
 
-            if (item.asuransi === 'UMUM/PRIBADI') {
-                hargaEstimasi = item.harga_estimasi ? parseFloat(item.harga_estimasi) : 0;
-                totalPerPageEstimasi += hargaEstimasi;
-            } else {
-                hargaAcc = item.harga_acc ? parseFloat(item.harga_acc) : 0;
-                totalPerPageAcc += hargaAcc;
-            }
+    updateTable(); // Update the table with the filtered data
+}
 
-            // Buat baris tabel
-            const row = `<tr class="text-center">
+function updateTable() {
+    const tableBody = document.getElementById('repairOrdersTableBody');
+    tableBody.innerHTML = ''; // Clear the existing table content
+
+    let totalPerPageEstimasi = 0; // Total untuk halaman saat ini
+    let totalPerPageAcc = 0; // Total untuk halaman saat ini
+    let grandTotalEstimasi = 0; // Total untuk semua data
+    let grandTotalAcc = 0; // Total untuk semua data
+
+    // Loop semua data untuk menghitung grand total
+    filteredData.forEach(item => {
+        if (item.asuransi === 'UMUM/PRIBADI') {
+            grandTotalEstimasi += item.harga_estimasi ? parseFloat(item.harga_estimasi) : 0;
+        } else {
+            grandTotalAcc += item.harga_acc ? parseFloat(item.harga_acc) : 0;
+        }
+    });
+
+    // Data yang akan ditampilkan pada halaman ini (maksimal 20 data)
+    const dataToDisplay = filteredData.slice(0, rowsPerPage);
+    dataToDisplay.forEach((item, index) => {
+        // Perhitungan total untuk halaman ini
+        let hargaEstimasi = 0;
+        let hargaAcc = 0;
+
+        if (item.asuransi === 'UMUM/PRIBADI') {
+            hargaEstimasi = item.harga_estimasi ? parseFloat(item.harga_estimasi) : 0;
+            totalPerPageEstimasi += hargaEstimasi;
+        } else {
+            hargaAcc = item.harga_acc ? parseFloat(item.harga_acc) : 0;
+            totalPerPageAcc += hargaAcc;
+        }
+
+        // Buat baris tabel
+        const row = `<tr class="text-center">
             <td>${index + 1}</td>
             <td><a href="<?= base_url('order_repair') ?>/${item.id_terima_po}">${item.id_terima_po}</a></td>
             <td>${item.tgl_masuk || '-'}</td>
@@ -243,57 +248,58 @@
             <td>${item.user_id}</td>
         </tr>`;
 
-            tableBody.innerHTML += row;
-        });
+        tableBody.innerHTML += row;
+    });
 
-        // Update total untuk halaman ini dan grand total
-        document.getElementById('totalPerPage').innerText = (totalPerPageEstimasi + totalPerPageAcc).toLocaleString('id-ID');
-        document.getElementById('grandTotal').innerText = (grandTotalEstimasi + grandTotalAcc).toLocaleString('id-ID');
+    // Update total untuk halaman ini dan grand total
+    document.getElementById('totalPerPage').innerText = (totalPerPageEstimasi + totalPerPageAcc).toLocaleString(
+        'id-ID');
+    document.getElementById('grandTotal').innerText = (grandTotalEstimasi + grandTotalAcc).toLocaleString('id-ID');
+}
+
+
+// Function to get the status badge for each item
+function getStatusBadge(status) {
+    if (!status) {
+        // Jika status null atau kosong, return string kosong untuk tidak menampilkan apa-apa
+        return '';
     }
 
-
-    // Function to get the status badge for each item
-    function getStatusBadge(status) {
-        if (!status) {
-            // Jika status null atau kosong, return string kosong untuk tidak menampilkan apa-apa
-            return '';
-        }
-
-        switch (status) {
-            case 'Belum Bayar':
-                return '<span class="badge bg-warning text-dark">Belum Bayar</span>';
-            case 'Belum Kwitansi':
-                return '<span class="badge bg-primary text-dark">Belum Kwitansi</span>';
-            case 'Sudah Kwitansi':
-                return '<span class="badge bg-secondary text-dark">Sudah Kwitansi</span>';
-            case 'Pernah Bayar':
-                return '<span class="badge bg-danger text-dark">Pernah Bayar</span>';
-            case 'Lunas':
-                return '<span class="badge bg-success">Lunas</span>';
-            default:
-                return status;
-        }
+    switch (status) {
+        case 'Belum Bayar':
+            return '<span class="badge bg-warning text-dark">Belum Bayar</span>';
+        case 'Belum Kwitansi':
+            return '<span class="badge bg-primary text-dark">Belum Kwitansi</span>';
+        case 'Sudah Kwitansi':
+            return '<span class="badge bg-secondary text-dark">Sudah Kwitansi</span>';
+        case 'Pernah Bayar':
+            return '<span class="badge bg-danger text-dark">Pernah Bayar</span>';
+        case 'Lunas':
+            return '<span class="badge bg-success">Lunas</span>';
+        default:
+            return status;
     }
+}
 
 
-    // Function to export the table data to an Excel file
-    function exportToExcel() {
-        const table = document.getElementById('repairOrdersTable');
-        const wb = XLSX.utils.table_to_book(table, {
-            sheet: "Repair Orders"
-        });
+// Function to export the table data to an Excel file
+function exportToExcel() {
+    const table = document.getElementById('repairOrdersTable');
+    const wb = XLSX.utils.table_to_book(table, {
+        sheet: "Repair Orders"
+    });
 
-        // Generate a file name with the current date and time
-        const date = new Date();
-        const formattedDate = date.toISOString().replace(/[-:.]/g, "").slice(0, 14);
-        const fileName = `Repair_Orders_${formattedDate}.xlsx`;
+    // Generate a file name with the current date and time
+    const date = new Date();
+    const formattedDate = date.toISOString().replace(/[-:.]/g, "").slice(0, 14);
+    const fileName = `Repair_Orders_${formattedDate}.xlsx`;
 
-        // Download the Excel file
-        XLSX.writeFile(wb, fileName);
-    }
+    // Download the Excel file
+    XLSX.writeFile(wb, fileName);
+}
 
-    // Initial call to load the table when the page is loaded
-    updateTable();
+// Initial call to load the table when the page is loaded
+updateTable();
 </script>
 
 <?= $this->endSection() ?>

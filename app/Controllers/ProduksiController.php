@@ -2,32 +2,38 @@
 
 namespace App\Controllers;
 
-use App\Models\ProduksiModel;
+use App\Models\M_RepairOrder;
 use CodeIgniter\Controller;
+
 
 
 class ProduksiController extends Controller
 {
-    protected $produksiModel;
+    protected $repairOrderModel;
 
     public function __construct()
     {
-        // $this->produksiModel = new ProduksiModel();
+        $this->repairOrderModel = new M_RepairOrder();
     }
 
     public function headproduksi()
     {
+        $ro = $this->repairOrderModel->findAll();
         $data = [
-            'title' => 'Head Produksi'
+            'title' => 'Head Produksi',
+            'ro' => $ro
         ];
         return view('produksi/headproduksi', $data);
     }
 
     public function kelolaproduksi()
     {
+        $ro = $this->repairOrderModel->findAll();
         $data = [
             'title' => 'Kelola Produksi',
+            'ro' => $ro
         ];
         return view('produksi/kelolaproduksi', $data);
     }
+
 }
