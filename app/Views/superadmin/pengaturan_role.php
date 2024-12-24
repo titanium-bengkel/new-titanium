@@ -99,6 +99,37 @@
                                                                 </div>
                                                                 <!-- END SUPER ADMIN -->
 
+                                                                <!-- PRODUK -->
+                                                                <div>
+                                                                    <input type="checkbox" id="produkp<?= $l['id'] ?>"
+                                                                        name="produkp" class="label<?= $l['id'] ?>"
+                                                                        onchange="handleUbah(event, '<?= $l['id'] ?>')"
+                                                                        <?= in_array('Produksi', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                    <label for="produkp<?= $l['id'] ?>">Produk</label>
+                                                                    <div class="ms-3">
+                                                                        <div>
+                                                                            <input type="checkbox"
+                                                                                id="headprodukp<?= $l['id'] ?>"
+                                                                                name="headprodukp"
+                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                <?= in_array('Head Produksi', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                            <label for="headprodukp<?= $l['id'] ?>">Head
+                                                                                Produk</label>
+                                                                        </div>
+                                                                        <div>
+                                                                            <input type="checkbox"
+                                                                                id="memberprodukp<?= $l['id'] ?>"
+                                                                                name="memberprodukp"
+                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                <?= in_array('Kelola Produksi', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                            <label
+                                                                                for="memberprodukp<?= $l['id'] ?>">Kelola
+                                                                                Produk</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- END PRODUK -->
+
                                                                 <!-- KLAIM -->
                                                                 <div>
                                                                     <input type="checkbox" id="klaim<?= $l['id'] ?>"

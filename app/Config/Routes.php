@@ -56,7 +56,12 @@ $routes->get('user_view', 'UserController::viewuser');
 
 // routes for klaim
 
-// dashboard
+// produksi
+// $routes->get('produksi', 'ProduksiController::produksi');
+$routes->get('/produksi/headproduksi', 'ProduksiController::headproduksi');
+$routes->get('/produksi/kelolaproduksi', 'ProduksiController::kelolaproduksi');
+
+
 
 
 // Pre Order

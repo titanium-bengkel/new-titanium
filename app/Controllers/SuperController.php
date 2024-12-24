@@ -201,6 +201,11 @@ class SuperController extends Controller
         $kelolamenu = $this->request->getVar('kelolamenu');
         $registeradminonly = $this->request->getVar('registeradminonly');
 
+        // produk
+        $produkp = $this->request->getVar('produkp');
+        $memberprodukp = $this->request->getVar('memberprodukp');
+        $headprodukp = $this->request->getVar('headprodukp');
+
         // klaim
         $klaim = $this->request->getVar('klaim');
         $estperbaikan = $this->request->getVar('estperbaikan');
@@ -337,6 +342,29 @@ class SuperController extends Controller
             // }
         }
         // END SUPER ADMIN
+
+        // PRODUK
+        if($produkp) {
+            array_push($features, [
+                "nama" => "Produksi",
+                "icon" => "bi bi-stack",
+                "children" => []
+            ]);
+            $index_cur = count($features) -1 ;
+            if($headprodukp) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Head Produksi',
+                    "url" => "/produksi/headproduksi"
+                ]);
+            }
+            if($memberprodukp) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Kelola Produksi',
+                    "url" => "/produksi/kelolaproduksi"
+                ]);
+            }
+        }
+        // END SPRODUK
         
         // KLAIM
         if ($klaim) {
