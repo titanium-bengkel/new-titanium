@@ -542,116 +542,6 @@ class SuperController extends Controller
         }
         // END SPAREPART
 
-        //KEUANGAN
-        if($keuangan) {
-            array_push($features, [
-                "nama" => "Keuangan",
-                "icon" => "bi bi-hexagon-fill",
-                "url" => "#",
-                "children" => []
-            ]);
-            $index_cur = count($features) - 1;
-    
-            if($hutang) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Hutang Per Supplier',
-                    "url" => "/hutang"
-                ]);
-            }
-            if($bayar_hutang) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Pembayaran Hutang',
-                    "url" => "/bayar_hutang"
-                ]);
-            }
-            if($pembelian) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Pembelian',
-                    "url" => "/pembelian"
-                ]);
-            }
-            if($kas_bank) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Kas & Bank',
-                    "url" => "/kas_bank"
-                ]);
-            }
-            if($kas_kecil) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Kas Kecil',
-                    "url" => "/kas_kecil"
-                ]);
-            }
-            if($keluar_kasbesar) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Pengeluaran Kas Besar',
-                    "url" => "/keluar_kasbesar"
-                ]);
-            }
-            if($kas_masuk) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Kas Masuk',
-                    "url" => "/kas_masuk"
-                ]);
-            }
-            if($kas_keluar) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Kas Keluar',
-                    "url" => "/kas_keluar"
-                ]);
-            }
-            if($ro_list) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Repair Order List',
-                    "url" => "/ro_list"
-                ]);
-            }
-            if($material_jasa) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Repair Material Jasa',
-                    "url" => "/material_jasa"
-                ]);
-            }
-        }
-        // END KEUANGAN
-
-        // REPORT
-        if($report) {
-            array_push($features, [
-                "nama" => "Report",
-                "icon" => "bi bi-file-earmark-text",
-                "url" => "#",
-                "children" => []
-            ]);
-            $index_cur = count($features) - 1;
-
-            if($report_jurnal) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Report Jurnal',
-                    "url" => "/report_jurnal"
-                ]);
-            }
-            if($buku_besar) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'General Ledger (Buku Besar)',
-                    "url" => "/buku_besar"
-                ]);
-            }
-            if($laba_rugi) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Income Statment (Laba Rugi)',
-                    "url" => "/laba_rugi"
-                ]);
-            }
-            if($neraca) {
-                array_push($features[$index_cur]['children'], [
-                    "nama" => 'Balance Sheet (Neraca)',
-                    "url" => "/neraca"
-                ]);
-            }
-        }
-        // END REPORT
-
         // MASTER
         if($master) {
             array_push($features, [
@@ -791,6 +681,118 @@ class SuperController extends Controller
             // }
         }
         // END MASTER
+
+        //KEUANGAN
+        if($keuangan) {
+            array_push($features, [
+                "nama" => "Keuangan",
+                "icon" => "bi bi-hexagon-fill",
+                "url" => "#",
+                "children" => []
+            ]);
+            $index_cur = count($features) - 1;
+    
+            if($hutang) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Hutang Per Supplier',
+                    "url" => "/hutang"
+                ]);
+            }
+            if($bayar_hutang) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Pembayaran Hutang',
+                    "url" => "/bayar_hutang"
+                ]);
+            }
+            if($pembelian) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Pembelian',
+                    "url" => "/pembelian"
+                ]);
+            }
+            if($kas_bank) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Kas & Bank',
+                    "url" => "/kas_bank"
+                ]);
+            }
+            if($kas_kecil) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Kas Kecil',
+                    "url" => "/kas_kecil"
+                ]);
+            }
+            if($keluar_kasbesar) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Pengeluaran Kas Besar',
+                    "url" => "/keluar_kasbesar"
+                ]);
+            }
+            if($kas_masuk) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Kas Masuk',
+                    "url" => "/kas_masuk"
+                ]);
+            }
+            if($kas_keluar) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Kas Keluar',
+                    "url" => "/kas_keluar"
+                ]);
+            }
+            if($ro_list) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Repair Order List',
+                    "url" => "/ro_list"
+                ]);
+            }
+            if($material_jasa) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Repair Material Jasa',
+                    "url" => "/material_jasa"
+                ]);
+            }
+        }
+        // END KEUANGAN
+
+        // REPORT
+        if($report) {
+            array_push($features, [
+                "nama" => "Report",
+                "icon" => "bi bi-file-earmark-text",
+                "url" => "#",
+                "children" => []
+            ]);
+            $index_cur = count($features) - 1;
+
+            if($report_jurnal) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Report Jurnal',
+                    "url" => "/report_jurnal"
+                ]);
+            }
+            if($buku_besar) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'General Ledger (Buku Besar)',
+                    "url" => "/buku_besar"
+                ]);
+            }
+            if($laba_rugi) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Income Statment (Laba Rugi)',
+                    "url" => "/laba_rugi"
+                ]);
+            }
+            if($neraca) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => 'Balance Sheet (Neraca)',
+                    "url" => "/neraca"
+                ]);
+            }
+        }
+        // END REPORT
+
+        
 
         // MONITORING
         if($monitoring) {
