@@ -63,42 +63,122 @@ class BahanController extends BaseController
     }
 
     // create barang
+    // public function create_bahan()
+    // {
+    //     $user_id = session()->get('user_id');
+    //     if (!$user_id) {
+    //         return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
+    //     }
+
+    //     $poBahanModel = new M_Po_Bahan();
+    //     $detailBarangModel = new M_Detail_Barang();
+    //     $GenerateId = $poBahanModel->generateId();
+
+    //     // Mengambil dan memproses input qty dan harga dengan str_replace untuk menghilangkan format angka yang salah
+    //     $qty = array_map(function ($qty) {
+    //         return (float) str_replace(',', '', $qty); // Remove commas for thousands
+    //     }, $this->request->getPost('qty'));
+
+    //     $harga = array_map(function ($harga) {
+    //         return (float) str_replace([',', '.'], '', $harga); // Remove commas and periods
+    //     }, $this->request->getPost('harga'));
+
+    // // Menghitung jumlah, total qty, dan total jumlah
+    // $jumlah = array_map(function ($qty, $harga) {
+    //     return $qty * $harga;
+    // }, $qty, $harga);
+
+    // $total_qty_b = array_sum($qty);
+    // $total_jumlah = array_sum($jumlah);
+
+    //     // Convert inputs to uppercase where applicable
+    // $data = [
+    //     'id_po_bahan' => strtoupper($this->request->getPost('id_po_bahan')),
+    //     'tanggal' => $this->request->getPost('tanggal'),
+    //     'kode_supplier' => strtoupper($this->request->getPost('kode_supplier')),
+    //     'supplier' => strtoupper($this->request->getPost('supplier')),
+    //     'keterangan' => strtoupper($this->request->getPost('keterangan')),
+    //     'total_qty_b' => $total_qty_b,
+    //     'total_jumlah' => $total_jumlah,
+    //     'user_id' => $user_id
+    // ];
+
+    // // Simpan data PO Bahan
+    // $poBahanModel->insert($data);
+
+    //     // Mengambil input tambahan qty_t, sat_t, qty_k, dan sat_k
+    //     $id_kode_barang = $this->request->getPost('id_id_kode_barang');
+    //     $nama_barang = $this->request->getPost('nama_barang');
+    //     $satuan = $this->request->getPost('satuan');
+    //     $qty = $this->request->getPost('qty');
+    //     $ceklis = $this->request->getPost('ceklis');
+
+    // if ($id_kode_barang) {
+    //     foreach ($id_kode_barang as $index => $kode) {
+    //         $barangData = [
+    //             'id_kode_barang' => strtoupper($kode),
+    //             'nama_barang' => strtoupper($nama_barang[$index]),
+    //             'qty' => $qty[$index],
+    //             'satuan' => strtoupper($satuan[$index]),
+    //             'harga' => $harga[$index],
+    //             'jumlah' => $jumlah[$index],
+    //             'id_po_bahan' => strtoupper($data['id_po_bahan']),
+    //             'ceklis' => isset($ceklis[$index]) ? 1 : 0
+    //         ];
+
+    //         // Simpan data barang
+    //         $detailBarangModel->insert($barangData);
+    //     }
+    //     }
+
+    //     return redirect()->to(base_url('/order_bahanprev/' . $GenerateId))->with('message', 'Success.');
+    // }
+
     public function create_bahan()
     {
-        $user_id = session()->get('user_id');
-        if (!$user_id) {
-            return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
-        }
-
         $poBahanModel = new M_Po_Bahan();
         $detailBarangModel = new M_Detail_Barang();
-        $GenerateId = $poBahanModel->generateId();
 
-        // Mengambil dan memproses input qty dan harga dengan str_replace untuk menghilangkan format angka yang salah
-        $qty = array_map(function ($qty) {
-            return (float) str_replace(',', '', $qty); // Remove commas for thousands
-        }, $this->request->getPost('qty'));
+        // Ambil data dari form
+        $id_po_bahan = strtoupper($this->request->getPost('id_po_bahan'));
+        $tanggal = $this->request->getPost('tanggal');
+        $kode_supplier = strtoupper($this->request->getPost('kode_supplier'));
+        $supplier = strtoupper($this->request->getPost('supplier'));
+        $keterangan = strtoupper($this->request->getPost('keterangan'));
+        $user_id = session()->get('user_id'); // Pastikan session user_id tersedia
 
-        $harga = array_map(function ($harga) {
-            return (float) str_replace([',', '.'], '', $harga); // Remove commas and periods
-        }, $this->request->getPost('harga'));
+        // Ambil data detail barang
+        $id_kode_barang = $this->request->getPost('id_kode_barang');
+        $nama_barang = $this->request->getPost('nama_barang');
+        $qty = $this->request->getPost('qty');
+        $satuan = $this->request->getPost('satuan');
+        $harga = $this->request->getPost('harga');
+        $ceklis = $this->request->getPost('ceklis');
+        $kategori = $this->request->getPost('kategori');
 
-        // Menghitung jumlah, total qty, dan total jumlah
+        // Konversi format angka di array $harga ke format numerik
+        $hargaFormatted = array_map(function ($value) {
+            $cleanedValue = str_replace('.', '', $value); // Hapus pemisah ribuan
+            $cleanedValue = str_replace('.', ',', $cleanedValue); // Ganti koma dengan titik untuk desimal
+            return (float)$cleanedValue; // Konversi ke float
+        }, $harga);
+
+        // Hitung jumlah berdasarkan qty dan harga yang diformat
         $jumlah = array_map(function ($qty, $harga) {
-            return $qty * $harga;
-        }, $qty, $harga);
+            return $qty * $harga; // Pastikan keduanya numerik
+        }, $qty, $hargaFormatted);
 
+        // Hitung total qty dan jumlah
         $total_qty_b = array_sum($qty);
         $total_jumlah = array_sum($jumlah);
 
-        // Convert inputs to uppercase where applicable
+        // Data PO Bahan
         $data = [
-            'id_po_bahan' => strtoupper($this->request->getPost('id_po_bahan')),
-            'tanggal' => $this->request->getPost('tanggal'),
-            'kode_supplier' => strtoupper($this->request->getPost('kode_supplier')),
-            'supplier' => strtoupper($this->request->getPost('supplier')),
-            'jatuh_tempo' => $this->request->getPost('jatuh_tempo'),
-            'keterangan' => strtoupper($this->request->getPost('keterangan')),
+            'id_po_bahan' => $id_po_bahan,
+            'tanggal' => $tanggal,
+            'kode_supplier' => $kode_supplier,
+            'supplier' => $supplier,
+            'keterangan' => $keterangan,
             'total_qty_b' => $total_qty_b,
             'total_jumlah' => $total_jumlah,
             'user_id' => $user_id
@@ -107,32 +187,29 @@ class BahanController extends BaseController
         // Simpan data PO Bahan
         $poBahanModel->insert($data);
 
-        // Mengambil input tambahan qty_t, sat_t, qty_k, dan sat_k
-        $id_kode_barang = $this->request->getPost('id_id_kode_barang');
-        $nama_barang = $this->request->getPost('nama_barang');
-        $satuan = $this->request->getPost('satuan');
-        $qty = $this->request->getPost('qty');
-        $ceklis = $this->request->getPost('ceklis');
-
+        // Simpan data detail barang jika ada
         if ($id_kode_barang) {
             foreach ($id_kode_barang as $index => $kode) {
                 $barangData = [
                     'id_kode_barang' => strtoupper($kode),
                     'nama_barang' => strtoupper($nama_barang[$index]),
+                    'kategori' => strtoupper($kategori[$index]),
                     'qty' => $qty[$index],
                     'satuan' => strtoupper($satuan[$index]),
-                    'harga' => $harga[$index],
-                    'jumlah' => $jumlah[$index],
-                    'id_po_bahan' => strtoupper($data['id_po_bahan']),
+                    'harga' => floatval($hargaFormatted[$index]), // Harga dalam format angka
+                    'jumlah' => $jumlah[$index], // Hasil perhitungan qty * harga
+                    'id_po_bahan' => $id_po_bahan,
+                    'supplier' => strtoupper($this->request->getPost('supplier')),
                     'ceklis' => isset($ceklis[$index]) ? 1 : 0
                 ];
 
-                // Simpan data barang
+                // Simpan data barang ke tabel detail_barang
                 $detailBarangModel->insert($barangData);
             }
         }
 
-        return redirect()->to(base_url('/order_bahanprev/' . $GenerateId))->with('message', 'Success.');
+        // Redirect ke halaman PO Bahan dengan pesan sukses
+        return redirect()->to(base_url('po_bahan'))->with('message', 'Data PO Bahan berhasil disimpan.');
     }
 
 
@@ -300,25 +377,20 @@ class BahanController extends BaseController
         $kode_barang = $this->request->getPost('id_kode_barang');
         $nama_barang = $this->request->getPost('nama_barang');
         $id_po_bahan = $this->request->getPost('id_po_bahan');
-        $qty_k = $this->request->getPost('qty_k');
-        $sat_k = $this->request->getPost('sat_k');
-        $qty_t = $this->request->getPost('qty_t');
-        $sat_t = $this->request->getPost('sat_t');
-        $qty_b = $this->request->getPost('qty_b');
-        $sat_b = $this->request->getPost('sat_b');
+        $qty = $this->request->getPost('qty');
+        $satuan = $this->request->getPost('satuan');
         $harga = $this->request->getPost('harga');
         $disc = $this->request->getPost('disc');
         $ceklis = $this->request->getPost('ceklis');
 
         if (!empty($kode_barang)) {
             foreach ($kode_barang as $index => $kode) {
-                $qty_b_clean = str_replace(',', '', $qty_b[$index]);
-                $qty_clean = str_replace(',', '', $qty_k[$index]);
+                $qty_clean = str_replace(',', '', $qty[$index]);
                 $harga_clean = str_replace(',', '', $harga[$index]);
                 $disc_clean = str_replace(',', '', $disc[$index]);
 
                 // Perhitungan jumlah dan diskon
-                $jumlah_sebelum_diskon = $qty_b_clean * $harga_clean;
+                $jumlah_sebelum_diskon = $qty_clean * $harga_clean;
                 $jumlah = $jumlah_sebelum_diskon - ($jumlah_sebelum_diskon * ($disc_clean / 100));
 
                 $dataBahan['total_qty'] += $qty_clean;
@@ -362,12 +434,8 @@ class BahanController extends BaseController
                 $detailTerima = [
                     'id_kode_barang' => $kode,
                     'nama_barang' => $nama_barang[$index],
-                    'qty_k' => $qty_clean,
-                    'sat_k' => $sat_k[$index],
-                    'qty_t' => $qty_t[$index],
-                    'sat_t' => $sat_t[$index],
-                    'qty_b' => $qty_b_clean,
-                    'sat_b' => $sat_b[$index],
+                    'qty' => $qty_clean,
+                    'satuan' => $satuan[$index],
                     'harga' => $harga_clean,
                     'disc' => $disc_clean,
                     'jumlah' => $jumlah,
@@ -728,15 +796,11 @@ class BahanController extends BaseController
         $generateId = $bahanRepairModel->generateId();
 
         // Menghitung total qty dan total hpp
-        $qty_B = $this->request->getPost('qty_B');
-        $qty_T = $this->request->getPost('qty_T');
-        $qty_K = $this->request->getPost('qty_K');
+        $qty = $this->request->getPost('qty');
         $hpp = $this->request->getPost('hpp');
 
         // Menghitung total qty dan hpp
-        $total_qty_B = array_sum($qty_B);
-        $total_qty_T = array_sum($qty_T);
-        $total_qty_K = array_sum($qty_K);
+        $total_qty = array_sum($qty);
         $total_hpp = array_sum($hpp);
 
         // Data untuk tabel bahan_repair
@@ -753,9 +817,7 @@ class BahanController extends BaseController
             'tahun' => $this->request->getPost('tahun'),
             'nama_pemilik' => strtoupper($this->request->getPost('nama_pemilik')),
             'keterangan' => strtoupper($this->request->getPost('keterangan')),
-            'total_qty_B' => $total_qty_B,
-            'total_qty_T' => $total_qty_T,
-            'total_qty_K' => $total_qty_K,
+            'total_qty' => $total_qty,
             'total_hpp' => $total_hpp,
         ];
 
@@ -765,9 +827,7 @@ class BahanController extends BaseController
         // Simpan detail repair ke tabel detail_repair
         $id_kode_barang = $this->request->getPost('id_kode_barang');
         $nama_barang = $this->request->getPost('nama_barang');
-        $sat_B = $this->request->getPost('sat_B');
-        $sat_T = $this->request->getPost('sat_T');
-        $sat_K = $this->request->getPost('sat_K');
+        $satuan = $this->request->getPost('satuan');
 
         if ($id_kode_barang) {
             foreach ($id_kode_barang as $index => $kode) {
@@ -779,8 +839,8 @@ class BahanController extends BaseController
 
                 if ($existingBahan) {
                     // Mengurangi stok jika qty_B tidak kosong atau > 0
-                    $newStok = $existingBahan['stok'] - $qty_K[$index];
-                    $newCredit = $existingBahan['credit'] + $qty_K[$index]; // Menambahkan qty_B ke kolom credit
+                    $newStok = $existingBahan['stok'] - $qty[$index];
+                    $newCredit = $existingBahan['credit'] + $qty[$index];
 
                     // Update stok dan credit pada tabel bahan_data
                     $gdBahanModel->update($existingBahan['id'], [
@@ -797,14 +857,15 @@ class BahanController extends BaseController
                 $detailData = [
                     'id_kode_barang' => $kode,
                     'nama_barang' => $nama_barang[$index],
-                    'qty_B' => $qty_B[$index],
-                    'sat_B' => $sat_B[$index],
-                    'qty_T' => $qty_T[$index],
-                    'sat_T' => $sat_T[$index],
-                    'qty_K' => $qty_K[$index],
-                    'sat_K' => $sat_K[$index],
+                    'qty' => $qty[$index],
+                    'satuan' => $satuan[$index],
                     'hpp' => $hpp[$index],
-                    'id_material' => $data['id_material']
+                    'nilai' => $qty[$index] * $hpp[$index],  // Perhitungan qty * hpp dan simpan sebagai nilai
+                    'id_material' => $data['id_material'],
+                    'wo' => strtoupper($this->request->getPost('no_ro')),
+                    'nopol' => strtoupper($this->request->getPost('no_kendaraan')),
+                    'jenis_mobil' => strtoupper($this->request->getPost('jenis_mobil')),
+                    'asuransi' => strtoupper($this->request->getPost('asuransi')),
                 ];
 
                 // Simpan data detail repair
@@ -816,8 +877,8 @@ class BahanController extends BaseController
                     'nama_barang' => $nama_barang[$index],
                     'tanggal' => $this->request->getPost('tanggal'),
                     'transaksi' => strtoupper($this->request->getPost('jenis_mobil')) . '-' . strtoupper($this->request->getPost('no_kendaraan')) . '-' . strtoupper($this->request->getPost('nama_pemilik')) . '-' . strtoupper($this->request->getPost('asuransi')),
-                    'credit' => $qty_K[$index],
-                    'saldo' => $qty_K[$index],
+                    'credit' => $qty[$index],
+                    'saldo' => $qty[$index],
                     'gudang' => strtoupper($this->request->getPost('gudang'))
                 ];
 
@@ -845,15 +906,11 @@ class BahanController extends BaseController
             $detailData = $detailRepairModel->where('id_material', $id_material)->findAll();
 
             // Calculate total quantities and HPP
-            $totalQtyB = 0;
-            $totalQtyT = 0;
-            $totalQtyK = 0;
+            $totalQty = 0;
             $totalHpp = 0;
 
             foreach ($detailData as $detail) {
-                $totalQtyB += $detail['qty_B'];
-                $totalQtyT += $detail['qty_T'];
-                $totalQtyK += $detail['qty_K'];
+                $totalQty += $detail['qty'];
                 $totalHpp += $detail['hpp'];
             }
 
@@ -861,9 +918,7 @@ class BahanController extends BaseController
                 'title' => 'Repair Material Bahan',
                 'repair' => $repairData,
                 'detail_repair' => $detailData,
-                'total_qty_B' => $totalQtyB,
-                'total_qty_T' => $totalQtyT,
-                'total_qty_K' => $totalQtyK,
+                'total_qty' => $totalQty,
                 'total_hpp' => $totalHpp,
             ];
 

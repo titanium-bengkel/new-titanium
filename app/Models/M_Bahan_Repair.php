@@ -21,9 +21,7 @@ class M_Bahan_Repair extends Model
         'tahun',
         'nama_pemilik',
         'keterangan',
-        'total_qty_B',
-        'total_qty_T',
-        'total_qty_K',
+        'total_qty',
         'total_hpp'
     ];
 

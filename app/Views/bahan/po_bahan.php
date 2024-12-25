@@ -59,7 +59,7 @@
                                             <td><?= $item['tanggal']; ?></td>
                                             <td><?= $item['kode_supplier']; ?></td>
                                             <td><?= $item['supplier']; ?></td>
-                                            <td><?= number_format($item['total_jumlah'], 0, ',', '.'); ?></td>
+                                            <td><?= number_format($item['total_jumlah'], 2, ',', '.'); ?></td>
                                             <td><?= $item['no_faktur']; ?></td>
                                             <td><?= $item['keterangan']; ?></td>
                                             <td><?= $item['user_id']; ?></td>

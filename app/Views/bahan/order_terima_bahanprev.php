@@ -183,12 +183,8 @@
                                 <tr>
                                     <th>Kode Barang</th>
                                     <th>Nama Barang</th>
-                                    <th>Qty B</th>
-                                    <th>Sat B</th>
-                                    <th>Qty T</th>
-                                    <th>Sat T</th>
-                                    <th>Qty K</th>
-                                    <th>Sat K</th>
+                                    <th>Qty</th>
+                                    <th>Satuan</th>
                                     <th>Harga</th>
                                     <th>Disc</th>
                                     <th>Jumlah</th>
@@ -204,15 +200,11 @@
                                         <tr>
                                             <td><?= $detail['id_kode_barang'] ?></td>
                                             <td><?= $detail['nama_barang'] ?></td>
-                                            <td><?= $detail['qty_b'] ?></td>
-                                            <td><?= $detail['sat_b'] ?></td>
-                                            <td><?= $detail['qty_t'] ?></td>
-                                            <td><?= $detail['sat_t'] ?></td>
-                                            <td><?= $detail['qty_k'] ?></td>
-                                            <td><?= $detail['sat_k'] ?></td>
-                                            <td><?= number_format($detail['harga'], 0, ',', '.'); ?></td>
-                                            <td><?= number_format($detail['disc'], 0, ',', '.'); ?></td>
-                                            <td><?= number_format($detail['jumlah'], 0, ',', '.'); ?></td>
+                                            <td><?= $detail['qty'] ?></td>
+                                            <td><?= $detail['satuan'] ?></td>
+                                            <td><?= number_format($detail['harga'], 2, ',', '.'); ?></td>
+                                            <td><?= number_format($detail['disc'], 2, ',', '.'); ?></td>
+                                            <td><?= number_format($detail['jumlah'], 2, ',', '.'); ?></td>
                                             <td><?= $detail['no_po'] ?></td>
                                             <td><?= $index + 1 ?></td>
                                             <td><input type="checkbox" class="form-check-input pilih-checkbox" name="ceklis[]" value="<?= $detail['ceklis']; ?>" <?= $detail['ceklis'] == 1 ? 'checked' : ''; ?> disabled></td>
@@ -231,10 +223,10 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="6">Total Qty</td>
+                                    <td colspan="2">Total Qty</td>
                                     <td style="text-align: center;"><?= $terima['total_qty'] ?></td>
                                     <td colspan="3">Total Jumlah</td>
-                                    <td style="text-align: center;"> <?= number_format($terima['total_jumlah'], 0, ',', '.'); ?></td>
+                                    <td style="text-align: center;"> <?= number_format($terima['total_jumlah'], 2, ',', '.'); ?></td>
                                     <td colspan="5"></td>
                                 </tr>
                             </tfoot>
@@ -302,7 +294,7 @@
 
 
 <!-- modal nopol -->
-<div class="modal fade text-left" id="no-ken" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+<!-- <div class="modal fade text-left" id="no-ken" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable" role="document" style="max-width: 60%" ;>
         <div class="modal-content">
             <div class="modal-header">
@@ -368,7 +360,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 <!-- End -->
 
 
@@ -401,10 +393,10 @@
                         <tbody>
                             <?php if (!empty($bahan)) : ?>
                                 <?php foreach ($bahan as $b) : ?>
-                                    <tr data-kode="<?= $b->kode_bahan ?>" data-nama="<?= $b->nama_bahan ?>" data-harga="<?= $b->sat_t ?>">
+                                    <tr data-kode="<?= $b->kode_bahan ?>" data-nama="<?= $b->nama_bahan ?>" data-harga="<?= $b->satuan ?>">
                                         <td><?= $b->kode_bahan ?></td>
                                         <td><?= $b->nama_bahan ?></td>
-                                        <td><?= $b->sat_t ?></td>
+                                        <td><?= $b->satuan ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else : ?>

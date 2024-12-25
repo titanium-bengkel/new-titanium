@@ -75,6 +75,7 @@
                                 <tr>
                                     <th>Kode Barang</th>
                                     <th>Nama Barang</th>
+                                    <th>Kategori</th>
                                     <th>Qty</th>
                                     <th>Satuan</th>
                                     <th>Harga</th>
@@ -90,10 +91,11 @@
                                         <tr>
                                             <td><input type="text" name="id_kode_barang[]" value="<?= $detail['id_kode_barang']; ?>" class="form-control" readonly></td>
                                             <td><input type="text" name="nama_barang[]" value="<?= $detail['nama_barang']; ?>" class="form-control" readonly></td>
+                                            <td><input type="text" name="kategori[]" value="<?= $detail['kategori'];?>" class="form-control" readonly></td>
                                             <td><input type="text" name="qty[]" value="<?= $detail['qty']; ?>" class="form-control" readonly></td>
                                             <td><input type="text" name="satuan[]" value="<?= $detail['satuan']; ?>" class="form-control" readonly></td>
-                                            <td><input type="text" name="harga[]" value="<?= number_format($detail['harga'], 0, ',', '.'); ?>" class="form-control"></td>
-                                            <td><input type="text" name="jumlah[]" value="<?= number_format($detail['jumlah'], 0, ',', '.'); ?>" class="form-control" readonly></td>
+                                            <td><input type="text" name="harga[]" value="<?= number_format($detail['harga'], 2, ',', '.'); ?>" class="form-control"></td>
+                                            <td><input type="text" name="jumlah[]" value="<?= number_format($detail['jumlah'], 2, ',', '.'); ?>" class="form-control" readonly></td>
                                             <td><input type="text" name="no_faktur[]" value="<?= $detail['no_faktur']; ?>" class="form-control" readonly></td>
                                             <td><input type="text" name="tgl_faktur[]" value="<?= $detail['tgl_faktur']; ?>" class="form-control" readonly></td>
                                             <td><input type="checkbox" class="form-check-input pilih-checkbox" name="ceklis[]" value="1" <?= $detail['ceklis'] == 1 ? 'checked' : ''; ?> disabled></td>
@@ -107,10 +109,10 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="2" style="text-align: end;">Total Qty</td>
+                                    <td colspan="3" style="text-align: end;">Total Qty</td>
                                     <td><input type="number" name="total_qty_b" value="<?= $total_qty_b; ?>" class="form-control" readonly></td>
                                     <td colspan="2" style="text-align: end;">Total Jumlah</td>
-                                    <td><input type="text" name="total_jumlah" value="<?= number_format($total_jumlah, 0, ',', '.'); ?>" class="form-control" readonly></td>
+                                    <td><input type="text" name="total_jumlah" value="<?= number_format($total_jumlah, 2, ',', '.'); ?>" class="form-control" readonly></td>
                                     <td colspan="7"></td>
                                 </tr>
                             </tfoot>

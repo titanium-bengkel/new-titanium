@@ -81,10 +81,10 @@
                                             <td><?= $data['kode_supplier'] ?></td>
                                             <td><?= $data['supplier'] ?></td>
                                             <td><?= $data['gudang'] ?></td>
-                                            <td><?= number_format($data['total_jumlah'], 0, ',', '.'); ?></td>
+                                            <td><?= number_format($data['total_jumlah'], 2, ',', '.'); ?></td>
                                             <td><?= $data['ppn'] ?></td>
-                                            <td><?= number_format($data['nilai_ppn'], 0, ',', '.'); ?></td>
-                                            <td><?= number_format($data['netto'], 0, ',', '.'); ?></td>
+                                            <td><?= number_format($data['nilai_ppn'], 2, ',', '.'); ?></td>
+                                            <td><?= number_format($data['netto'], 2, ',', '.'); ?></td>
                                             <td><?= $data['total_qty'] ?></td>
                                             <td><?= $data['keterangan'] ?></td>
                                             <td><?= $data['user_id'] ?></td>

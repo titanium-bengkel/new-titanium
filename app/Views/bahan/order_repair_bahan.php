@@ -109,12 +109,8 @@
                                     <tr>
                                         <th>Kode barang</th>
                                         <th>Nama barang</th>
-                                        <th>QtyB</th>
-                                        <th>SatB</th>
-                                        <th>QtyT</th>
-                                        <th>SatT</th>
-                                        <th>QtyK</th>
-                                        <th>SatK</th>
+                                        <th>Qty</th>
+                                        <th>Satuan</th>
                                         <th>HPP</th>
                                         <th>Nilai</th>
                                         <th>Pilih All <input type="checkbox" id="pilih-all" class="form-check-input"></th>
@@ -125,12 +121,8 @@
                                     <tr>
                                         <td><input type="text" name="id_kode_barang[]" class="form-control form-control-sm" data-bs-toggle="modal" data-bs-target="#kodeBarangModal" readonly></td>
                                         <td><input type="text" name="nama_barang[]" class="form-control form-control-sm"></td>
-                                        <td><input type="text" name="qty_B[]" class="form-control form-control-sm"></td>
-                                        <td><input type="text" name="sat_B[]" class="form-control form-control-sm"></td>
-                                        <td><input type="text" name="qty_T[]" class="form-control form-control-sm"></td>
-                                        <td><input type="text" name="sat_T[]" class="form-control form-control-sm"></td>
-                                        <td><input type="text" name="qty_K[]" class="form-control form-control-sm"></td>
-                                        <td><input type="text" name="sat_K[]" class="form-control form-control-sm"></td>
+                                        <td><input type="text" name="qty[]" class="form-control form-control-sm"></td>
+                                        <td><input type="text" name="satuan[]" class="form-control form-control-sm"></td>
                                         <td><input type="text" name="hpp[]" class="form-control form-control-sm"></td>
                                         <td></td>
                                         <td><input type="checkbox" class="form-check-input pilih-checkbox"></td>
@@ -142,11 +134,7 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="2"></td>
-                                        <td><input type="text" class="form-control form-control-sm" id="total-qtyB" name="total_qty_B" readonly></td>
-                                        <td></td>
-                                        <td><input type="text" class="form-control form-control-sm" id="total-qtyT" name="total_qty_T" readonly></td>
-                                        <td></td>
-                                        <td><input type="text" class="form-control form-control-sm" id="total-qtyK" name="total_qty_K" readonly></td>
+                                        <td><input type="text" class="form-control form-control-sm" id="total-qtyB" name="total_qty" readonly></td>
                                         <td></td>
                                         <td><input type="text" class="form-control form-control-sm" id="total-hpp" name="total_hpp" readonly></td>
                                         <td colspan="3"></td>
@@ -269,7 +257,7 @@
                         <tbody>
                             <?php if (!empty($bahan)) : ?>
                                 <?php foreach ($bahan as $item) : ?>
-                                    <tr data-satuanb="<?= $item['sat_b'] ?>" data-satuant="<?= $item['sat_t'] ?>" data-satuank="<?= $item['sat_k'] ?>">
+                                    <tr data-satuan="<?= $item['satuan'] ?>">
                                         <td><?= $item['kode_bahan'] ?></td>
                                         <td><?= $item['nama_bahan'] ?></td>
                                         <td><?= $item['harga_beli'] ?></td>
@@ -373,12 +361,8 @@
             var row = '<tr>' +
                 '<td><input type="text" name="id_kode_barang[]" class="form-control form-control-sm" data-bs-toggle="modal" data-bs-target="#kodeBarangModal" readonly></td>' +
                 '<td><input type="text" name="nama_barang[]" class="form-control form-control-sm"></td>' +
-                '<td><input type="text" name="qty_B[]" class="form-control form-control-sm"></td>' +
-                '<td><input type="text" name="sat_B[]" class="form-control form-control-sm"></td>' +
-                '<td><input type="text" name="qty_T[]" class="form-control form-control-sm"></td>' +
-                '<td><input type="text" name="sat_T[]" class="form-control form-control-sm"></td>' +
-                '<td><input type="text" name="qty_K[]" class="form-control form-control-sm"></td>' +
-                '<td><input type="text" name="sat_K[]" class="form-control form-control-sm"></td>' +
+                '<td><input type="text" name="qty[]" class="form-control form-control-sm"></td>' +
+                '<td><input type="text" name="satuan[]" class="form-control form-control-sm"></td>' +
                 '<td><input type="text" name="hpp[]" class="form-control form-control-sm"></td>' +
                 '<td></td>' +
                 '<td><input type="checkbox" class="form-check-input pilih-checkbox"></td>' +
@@ -402,17 +386,13 @@
             var kode = $(this).find('td:eq(0)').text();
             var nama = $(this).find('td:eq(1)').text();
             var harga = $(this).find('td:eq(2)').text(); // Perbaiki akses harga
-            var satuanB = $(this).data('satuanb');
-            var satuanT = $(this).data('satuant');
-            var satuanK = $(this).data('satuank');
+            var satuan = $(this).data('satuan');
 
             // Mengisi data ke dalam input di baris yang dipilih
             selectedRow.find('input[name="id_kode_barang[]"]').val(kode);
             selectedRow.find('input[name="nama_barang[]"]').val(nama);
             selectedRow.find('input[name="hpp[]"]').val(harga);
-            selectedRow.find('input[name="sat_B[]"]').val(satuanB);
-            selectedRow.find('input[name="sat_T[]"]').val(satuanT);
-            selectedRow.find('input[name="sat_K[]"]').val(satuanK);
+            selectedRow.find('input[name="satuan[]"]').val(satuan);
 
             $('#kodeBarangModal').modal('hide');
         });
@@ -465,38 +445,28 @@
 
     document.addEventListener("DOMContentLoaded", function() {
         const repairMaterialDetail = document.getElementById("repair_material_detail");
-        const totalQtyB = document.getElementById("total-qtyB");
-        const totalQtyT = document.getElementById("total-qtyT");
-        const totalQtyK = document.getElementById("total-qtyK");
+        const totalQty = document.getElementById("total-qty");
         const totalHpp = document.getElementById("total-hpp");
 
         function calculateTotals() {
-            let sumQtyB = 0;
-            let sumQtyT = 0;
-            let sumQtyK = 0;
+            let sumQty = 0;
             let sumHpp = 0;
 
             repairMaterialDetail.querySelectorAll("tr").forEach(function(row) {
-                const qtyB = parseFloat(row.querySelector("input[name='qty_B[]']").value) || 0;
-                const qtyT = parseFloat(row.querySelector("input[name='qty_T[]']").value) || 0;
-                const qtyK = parseFloat(row.querySelector("input[name='qty_K[]']").value) || 0;
+                const qty = parseFloat(row.querySelector("input[name='qty[]']").value) || 0;
                 const hpp = parseFloat(row.querySelector("input[name='hpp[]']").value) || 0;
 
-                sumQtyB += qtyB;
-                sumQtyT += qtyT;
-                sumQtyK += qtyK;
+                sumQty += qty;
                 sumHpp += hpp;
             });
 
-            totalQtyB.value = sumQtyB.toFixed(0);
-            totalQtyT.value = sumQtyT.toFixed(0);
-            totalQtyK.value = sumQtyK.toFixed(0);
+            totalQty.value = sumQty.toFixed(0);
             totalHpp.value = sumHpp.toFixed(0);
         }
 
         // Event listener untuk perubahan nilai QtyB, QtyT, QtyK, dan HPP
         repairMaterialDetail.addEventListener("input", function(event) {
-            if (event.target.matches("input[name='qty_B[]'], input[name='qty_T[]'], input[name='qty_K[]'], input[name='hpp[]']")) {
+            if (event.target.matches("input[name='qty[]'], input[name='hpp[]']")) {
                 calculateTotals();
             }
         });

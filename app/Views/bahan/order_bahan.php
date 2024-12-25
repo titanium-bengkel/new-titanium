@@ -69,6 +69,7 @@
                                     <tr>
                                         <th>Kode Barang</th>
                                         <th>Nama Barang</th>
+                                        <th>Kategori</th>
                                         <th>Qty</th>
                                         <th>Satuan</th>
                                         <th>Harga</th>
@@ -83,6 +84,7 @@
                                     <tr>
                                         <td><input type="text" class="form-control" name="id_kode_barang[]" data-bs-toggle="modal" data-bs-target="#kodeBarangModal" readonly></td>
                                         <td><input type="text" class="form-control" name="nama_barang[]"></td>
+                                        <td><input type="text" class="form-control" name="kategori[]"></td>
                                         <td><input type="text" class="form-control" name="qty[]"></td>
                                         <td><input type="text" class="form-control" name="satuan[]"></td>
                                         <td><input type="text" class="form-control harga" name="harga[]"></td>
@@ -97,7 +99,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="2">Total Qty</td>
+                                        <td colspan="3">Total Qty</td>
                                         <td><input type="text" class="form-control" id="total-qty" name="total-qty[]" readonly></td>
                                         <td colspan="2">Total Jumlah</td>
                                         <td><input type="text" class="form-control" id="total-jumlah" name="total-jumlah[]" readonly></td>
@@ -196,15 +198,17 @@
                                 <th>Kode</th>
                                 <th>Nama</th>
                                 <th>Harga</th>
+                                <th>Kategori</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!empty($bahan)) : ?>
                                 <?php foreach ($bahan as $b) : ?>
-                                    <tr data-satuan="<?= $b['sat_b'] ?>">
+                                    <tr data-satuan="<?= $b['satuan'] ?>">
                                         <td><?= $b['kode_bahan'] ?></td>
                                         <td><?= $b['nama_bahan'] ?></td>
-                                        <td><?= number_format($b['harga_beli'], 0, ',', '.'); ?></td>
+                                        <td><?= number_format($b['harga_beli'], 2, ',', '.'); ?></td>
+                                        <td><?= $b['kode_group'] ?> - <?= $b['nama_group'] ?> </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else : ?>
@@ -243,35 +247,6 @@
 <!-- Tabel Script -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Menambahkan event listener ke semua baris tabel dalam modal
-    $(document).ready(function() {
-        // Fungsi untuk menangani klik pada baris tabel
-        $('#repair tbody tr').on('click', function() {
-            // Ambil data dari atribut data-pemilik
-            var customerName = $(this).data('pemilik');
-
-            // Ambil data dari kolom dalam baris yang diklik
-            var noOrder = $(this).find('td:eq(0)').text();
-            var jenisMobil = $(this).find('td:eq(1)').text();
-            var nopol = $(this).find('td:eq(2)').text();
-            var warna = $(this).find('td:eq(3)').text();
-            var tahun = $(this).find('td:eq(4)').text();
-            var asuransi = $(this).find('td:eq(5)').text();
-
-            // Isi data ke dalam input field
-            $('#no_ro').val(noOrder);
-            $('#jenis_mobil').val(jenisMobil);
-            $('#no_kendaraan').val(nopol);
-            $('#warna').val(warna);
-            $('#tahun').val(tahun);
-            $('#asuransi').val(asuransi);
-            $('#nama_pemilik').val(customerName);
-
-            // Tutup modal
-            $('#repair').modal('hide');
-        });
-    });
-
     document.addEventListener('DOMContentLoaded', function() {
         // Function to filter supplier list based on search input
         document.getElementById('search-supplier').addEventListener('input', function() {
@@ -347,7 +322,8 @@
             var row = '<tr>' +
                 '<td><input type="text" class="form-control" name="id_kode_barang[]" data-bs-toggle="modal" data-bs-target="#kodeBarangModal" readonly></td>' +
                 '<td><input type="text" class="form-control" name="nama_barang[]"></td>' +
-                '<td><input type="text" class="form-control qty" name="qty[]"></td>' +
+                '<td><input type="text" class="form-control" name="kategori[]"></td>' +
+                '<td><input type="text" class="form-control" name="qty[]"></td>' +
                 '<td><input type="text" class="form-control" name="satuan[]"></td>' +
                 '<td><input type="text" class="form-control harga" name="harga[]"></td>' +
                 '<td><input type="text" class="form-control jumlah" name="jumlah[]" readonly></td>' +
@@ -373,6 +349,7 @@
             const kodeBarang = $(this).find('td:eq(0)').text();
             const namaBarang = $(this).find('td:eq(1)').text();
             const hargaBarang = $(this).find('td:eq(2)').text();
+            const kategori = $(this).find('td:eq(3)').text();
             const satuan = $(this).data('satuan'); // Mendapatkan data satuan satuan dari atribut data-satb
 
             // Mengisi data ke baris yang sedang dipilih di tabel utama
@@ -380,6 +357,7 @@
                 selectedRow.find('input[name="id_kode_barang[]"]').val(kodeBarang);
                 selectedRow.find('input[name="nama_barang[]"]').val(namaBarang);
                 selectedRow.find('input[name="harga[]"]').val(hargaBarang);
+                selectedRow.find('input[name="kategori[]"]').val(kategori); // Mengisi input kategori
                 selectedRow.find('input[name="satuan[]"]').val(satuan); // Mengisi input satuan
             }
 

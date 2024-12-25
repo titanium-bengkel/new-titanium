@@ -987,77 +987,68 @@ class MasterController extends BaseController
     }
 
     public function createBahan()
-{
-    // Load the models
-    $m_Barang_Bahan = new M_Barang_Bahan();
-    $m_Gd_Bahan = new M_Gd_Bahan();
-    $m_Kartu_Stok = new M_Kartu_Stok();
+    {
+        // Load the models
+        $m_Barang_Bahan = new M_Barang_Bahan();
+        $m_Gd_Bahan = new M_Gd_Bahan();
+        $m_Kartu_Stok = new M_Kartu_Stok();
 
-    $generateid = $m_Kartu_Stok -> generateId();
+        $generateid = $m_Kartu_Stok->generateId();
+        $kode_group = strtoupper($this->request->getPost('kode_group'));
+        $group_parts = explode(' - ', $kode_group);
 
-    // Validasi data jika diperlukan
-    if (!$this->validate([
-        'kode_bahan'    => 'required|max_length[50]',
-        'nama_bahan'    => 'required|max_length[100]',
-        'harga_beli'    => 'required|decimal',
-    ])) {
-        return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        $kode_group_id = isset($group_parts[0]) ? $group_parts[0] : '';
+        $nama_group = isset($group_parts[1]) ? $group_parts[1] : '';
+
+
+        $data = [
+            'kode_bahan'    => strtoupper($this->request->getPost('kode_bahan')),
+            'nama_bahan'    => strtoupper($this->request->getPost('nama_bahan')),
+            'kode_kategori' => strtoupper($this->request->getPost('kode_kategori')),
+            'kode_group'    => $kode_group_id, // Hanya menyimpan kode_group_id
+            'nama_group'    => $nama_group,
+            'satuan'        => strtoupper($this->request->getPost('satuan')),
+            'stok'          => $this->request->getPost('stok'),
+            'harga_beli'    => $this->request->getPost('harga_beli'),
+            'harga_jual'    => $this->request->getPost('harga_jual'),
+            'stok_minimal'  => $this->request->getPost('stok_minimal'),
+            'tanggal'       => $this->request->getPost('tanggal'),
+        ];
+
+        // Simpan data ke dalam tabel barang_bahan
+        $m_Barang_Bahan->insert($data);
+
+        // Ambil stok yang dimasukkan dari form
+        $stok = $this->request->getPost('stok');
+
+        // Menyiapkan data untuk tabel gd_bahan
+        $gd_bahan_data = [
+            'kode_bahan'    => $data['kode_bahan'],
+            'nama_bahan'    => $data['nama_bahan'],
+            'stok_awal'     => $stok,  // Menggunakan stok awal dari form
+            'stok'          => $stok,
+            'gudang'        => 'GUDANG BAHAN',  // Format Gudang
+        ];
+
+        // Simpan data ke dalam tabel kartustok
+        $m_Gd_Bahan->insert($gd_bahan_data);
+
+        $kartu_data = [
+            'nomor'         => $generateid,
+            'transaksi'     => 'STOK AWAL',
+            'id_kode_barang'    => $data['kode_bahan'],
+            'nama_barang'    => $data['nama_bahan'],
+            'debit'         => $stok,  // Menggunakan stok awal dari form
+            'saldo'         => $stok,
+            'gudang'        => 'GUDANG BAHAN',  // Format Gudang
+        ];
+
+        // Simpan data ke dalam tabel gd_bahan
+        $m_Kartu_Stok->insert($kartu_data);
+
+        // Redirect ke halaman yang diinginkan setelah penyimpanan
+        return redirect()->to('master/masterbahan')->with('message', 'Data berhasil ditambahkan');
     }
-
-    // Mengambil data dari form
-    $data = [
-        'kode_bahan'    => strtoupper($this->request->getPost('kode_bahan')),
-        'nama_bahan'    => strtoupper($this->request->getPost('nama_bahan')),
-        'kode_kategori' => strtoupper($this->request->getPost('kode_kategori')),
-        'kode_group'    => strtoupper($this->request->getPost('kode_group')),
-        'sat_b'         => strtoupper($this->request->getPost('sat_b')),
-        'isi_b'         => $this->request->getPost('isi_b'),
-        'sat_t'         => strtoupper($this->request->getPost('sat_t')),
-        'isi_t'         => $this->request->getPost('isi_t'),
-        'sat_k'         => strtoupper($this->request->getPost('sat_k')),
-        'isi_k'         => $this->request->getPost('isi_k'),
-        'harga_beli'    => $this->request->getPost('harga_beli'),
-        'harga_jualawal'    => $this->request->getPost('harga_jualawal'),
-        'harga_jualbaru'    => $this->request->getPost('harga_jualbaru'),
-        'stok_minimal'  => $this->request->getPost('stok_minimal'),
-        'stok_maksimal' => $this->request->getPost('stok_maksimal'),
-        'tanggal'       => $this->request->getPost('tanggal'),
-    ];
-
-    // Simpan data ke dalam tabel barang_bahan
-    $m_Barang_Bahan->insert($data);
-
-    // Ambil stok yang dimasukkan dari form
-    $stok = $this->request->getPost('stok'); 
-
-    // Menyiapkan data untuk tabel gd_bahan
-    $gd_bahan_data = [
-        'kode_bahan'    => $data['kode_bahan'],
-        'nama_bahan'    => $data['nama_bahan'],
-        'stok_awal'     => $stok,  // Menggunakan stok awal dari form
-        'stok'          => $stok,
-        'gudang'        => 'GUDANG BAHAN',  // Format Gudang
-    ];
-
-    // Simpan data ke dalam tabel kartustok
-    $m_Gd_Bahan->insert($gd_bahan_data);
-
-    $kartu_data = [
-        'nomor'         => $generateid,
-        'transaksi'     => 'STOK AWAL',
-        'id_kode_barang'    => $data['kode_bahan'],
-        'nama_barang'    => $data['nama_bahan'],
-        'debit'         => $stok,  // Menggunakan stok awal dari form
-        'saldo'         => $stok,
-        'gudang'        => 'GUDANG BAHAN',  // Format Gudang
-    ];
-
-    // Simpan data ke dalam tabel gd_bahan
-    $m_Kartu_Stok->insert($kartu_data);
-
-    // Redirect ke halaman yang diinginkan setelah penyimpanan
-    return redirect()->to('master/masterbahan')->with('message', 'Data berhasil ditambahkan');
-}
 
 
     public function updateBahan($id_bahan)
@@ -1065,32 +1056,33 @@ class MasterController extends BaseController
         // Load the model
         $m_Barang_Bahan = new M_Barang_Bahan();
 
-        // Validasi data jika diperlukan
-        if (!$this->validate([
-            'kode_bahan'    => 'required',
-            'nama_bahan'    => 'required',
-            'harga_beli'    => 'required',
-        ])) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
+        // // Validasi data jika diperlukan
+        // if (!$this->validate([
+        //     'kode_bahan'    => 'required',
+        //     'nama_bahan'    => 'required',
+        //     'harga_beli'    => 'required',
+        // ])) {
+        //     return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        // }
+
+        $kode_group = strtoupper($this->request->getPost('kode_group'));
+        $group_parts = explode(' - ', $kode_group);
+
+        $kode_group_id = isset($group_parts[0]) ? $group_parts[0] : '';
+        $nama_group = isset($group_parts[1]) ? $group_parts[1] : '';
 
         // Mengambil data dari form
         $data = [
             'kode_bahan'    => strtoupper($this->request->getPost('kode_bahan')),
             'nama_bahan'    => strtoupper($this->request->getPost('nama_bahan')),
             'kode_kategori' => strtoupper($this->request->getPost('kode_kategori')),
-            'kode_group'    => strtoupper($this->request->getPost('kode_group')),
-            'sat_b'         => strtoupper($this->request->getPost('sat_b')),
-            'isi_b'         => $this->request->getPost('isi_b'), // 'isi' tetap integer, tidak diubah ke huruf besar
-            'sat_t'         => strtoupper($this->request->getPost('sat_t')),
-            'isi_t'         => $this->request->getPost('isi_t'), // 'isi' tetap integer
-            'sat_k'         => strtoupper($this->request->getPost('sat_k')),
-            'isi_k'         => $this->request->getPost('isi_k'), // 'isi' tetap integer
+            'kode_group'    => $kode_group_id, // Hanya menyimpan kode_group_id
+            'nama_group'    => $nama_group,
+            'satuan'         => strtoupper($this->request->getPost('satuan')),
+            'stok'         => $this->request->getPost('stok'),
             'harga_beli'    => $this->request->getPost('harga_beli'),
-            'harga_jualawal' => $this->request->getPost('harga_jualawal'),
-            'harga_jualbaru' => $this->request->getPost('harga_jualbaru'),
+            'harga_jual' => $this->request->getPost('harga_jualawal'),
             'stok_minimal'  => $this->request->getPost('stok_minimal'),
-            'stok_maksimal' => $this->request->getPost('stok_maksimal'),
             'tanggal'       => $this->request->getPost('tanggal'),
         ];
 

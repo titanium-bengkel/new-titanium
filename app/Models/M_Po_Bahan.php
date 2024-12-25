@@ -36,7 +36,7 @@ class M_Po_Bahan extends Model
             ->join(
                 '(SELECT id_po_bahan, 
                     MIN(harga) AS harga, 
-                    SUM(qty_b) AS total_qty 
+                    SUM(qty) AS total_qty 
                 FROM detail_barang 
                 GROUP BY id_po_bahan) AS detail',
                 'po_bahan.id_po_bahan = detail.id_po_bahan'

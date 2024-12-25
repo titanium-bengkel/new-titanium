@@ -13,19 +13,16 @@ class M_Detail_Terima extends Model
         'id',
         'id_kode_barang',
         'nama_barang',
-        'qty_b',
-        'sat_b',
-        'qty_t',
-        'sat_t',
-        'qty_k',
-        'sat_k',
+        'qty',
+        'satuan',
         'harga',
         'disc',
         'jumlah',
         'no_po',
         'po_id',
         'ceklis',
-        'id_penerimaan'
+        'id_penerimaan',
+        'kategori',
     ];
 
     public function getAllDetails($no_po)

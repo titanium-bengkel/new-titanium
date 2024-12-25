@@ -19,7 +19,6 @@ class M_Terima_Bahan extends Model
         'nomor',
         'kota',
         'alamat',
-        'nopol',
         'pembayaran',
         'ppn',
         'term',
@@ -63,7 +62,7 @@ class M_Terima_Bahan extends Model
     public function getAllBahan()
     {
         $builder = $this->db->table('barang_bahan');
-        $builder->select('kode_bahan, nama_bahan, sat_t, harga_beli');
+        $builder->select('kode_bahan, nama_bahan, satuan, harga_beli');
         $query = $builder->get();
         return $query->getResult();
     }

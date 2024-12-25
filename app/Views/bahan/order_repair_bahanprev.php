@@ -51,13 +51,8 @@
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="no_repair">No. Repair Order</label>
                             </div>
-                            <div class="col-lg-9 col-7 mb-3">
+                            <div class="col-lg-10 col-7 mb-3">
                                 <input type="text" id="no_repair" class="form-control form-control-sm" name="no_repair" value="<?= $repair['no_repair'] ?>">
-                            </div>
-                            <div class="col-lg-1 col-2 mb-3">
-                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#repair">
-                                    <i class="fas fa-search"></i>
-                                </button>
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="tanggal_masuk">Tanggal Masuk</label>
@@ -115,12 +110,8 @@
                                 <tr>
                                     <th>Kode barang</th>
                                     <th>Nama barang</th>
-                                    <th>QtyB</th>
-                                    <th>SatB</th>
-                                    <th>QtyT</th>
-                                    <th>SatT</th>
-                                    <th>QtyK</th>
-                                    <th>SatK</th>
+                                    <th>Qty</th>
+                                    <th>Satuan</th>
                                     <th>HPP</th>
                                     <th>Nilai</th>
                                     <th>Act</th>
@@ -132,34 +123,26 @@
                                         <tr>
                                             <td><?= $item['id_kode_barang'] ?></td>
                                             <td><?= $item['nama_barang'] ?></td>
-                                            <td><?= $item['qty_B'] ?></td>
-                                            <td><?= $item['sat_B'] ?></td>
-                                            <td><?= $item['qty_T'] ?></td>
-                                            <td><?= $item['sat_T'] ?></td>
-                                            <td><?= $item['qty_K'] ?></td>
-                                            <td><?= $item['sat_K'] ?></td>
-                                            <td><?= number_format($item['hpp'], 0, ',', '.'); ?></td>
-                                            <td></td>
+                                            <td><?= $item['qty'] ?></td>
+                                            <td><?= $item['satuan'] ?></td>
+                                            <td><?= number_format($item['hpp'], 2, ',', '.'); ?></td>
+                                            <td><?= $item['nilai'] ?></td>
                                             <td>-</td>
                                         </tr>
                                     <?php endforeach; ?>
 
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="12" class="text-center">Data Tidak Ditemukan</td>
+                                        <td colspan="7" class="text-center">Data Tidak Ditemukan</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td colspan="2"></td>
-                                    <td><?= $total_qty_B ?></td>
+                                    <td><?= $total_qty ?></td>
                                     <td></td>
-                                    <td><?= $total_qty_T ?></td>
-                                    <td></td>
-                                    <td><?= $total_qty_K ?></td>
-                                    <td></td>
-                                    <td><?= number_format($total_hpp, 0, ',', '.'); ?></td>
+                                    <td><?= number_format($total_hpp, 2, ',', '.'); ?></td>
                                     <td colspan="3"></td>
                                 </tr>
                             </tfoot>
@@ -174,143 +157,11 @@
 
 <!-- Horizontal Input end -->
 
-<!-- <div class="col-md-12">
-    <div class="card">
-        <div class="card-body">
-            <button type="button" class="btn btn-success btn-sm" id="add-row-btn"><i class="fas fa-plus"></i>Add</button>
-            <div class="table-responsive">
-                <table class="table table-bordered mt-2">
-                    <thead>
-                        <tr>
-                            <th>Kode barang</th>
-                            <th>Nama barang</th>
-                            <th>QtyB</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td class="text-center">
 
-                                <button type="button" class="btn btn-danger btn-sm delete-user-btn"><i class="fas fa-trash-alt"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div> -->
 
-<!-- modal asuransi -->
-<div class="modal fade text-left" id="supply" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close rounded-pill" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="search-input">Cari</label>
-                    </div>
-                    <div class="col-md-8">
-                        <input type="text" id="search-input" class="form-control" name="search">
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered mb-0">
-                        <thead>
-                            <tr>
-                                <th>Kode</th>
-                                <th>Nama Supplier</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" data-dismiss="modal">
-                        <i class="bx bx-x d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Close</span>
-                    </button>
-                    <button type="button" class="btn btn-primary ms-1" data-bs-dismiss="modal">
-                        <i class="bx bx-check d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Submit</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end -->
 
-<!-- modal RP -->
-<div class="modal fade text-left" id="repair" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close rounded-pill" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="search-input">Cari</label>
-                    </div>
-                    <div class="col-md-8">
-                        <input type="text" id="search-input" class="form-control" name="search">
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered mb-0">
-                        <thead>
-                            <tr>
-                                <th>No.Order</th>
-                                <th>Type mobil</th>
-                                <th>Nopol</th>
-                                <th>Warna</th>
-                                <th>Tahun</th>
-                                <th>Asuransi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" data-dismiss="modal">
-                        <i class="bx bx-x d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Close</span>
-                    </button>
-                    <button type="button" class="btn btn-primary ms-1" data-bs-dismiss="modal">
-                        <i class="bx bx-check d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Submit</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -187,12 +187,8 @@
                                     <tr>
                                         <th>Kode Barang</th>
                                         <th>Nama Barang</th>
-                                        <th>Qty B</th>
-                                        <th>Sat B</th>
-                                        <th>Qty T</th>
-                                        <th>Sat T</th>
-                                        <th>Qty K</th>
-                                        <th>Sat K</th>
+                                        <th>Qty</th>
+                                        <th>Satuan</th>
                                         <th>Harga</th>
                                         <th>Disc</th>
                                         <th>Jumlah</th>
@@ -330,7 +326,7 @@
                                         <td><?= $po['tanggal']; ?></td>
                                         <td><?= $po['kode_supplier']; ?></td>
                                         <td><?= $po['supplier']; ?></td>
-                                        <td><?= number_format($po['total_jumlah'], 0, ',', '.'); ?></td>
+                                        <td><?= number_format($po['total_jumlah'], 2, ',', '.'); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else : ?>
@@ -374,7 +370,7 @@
                         <tbody>
                             <?php if (!empty($bahan)) : ?>
                                 <?php foreach ($bahan as $b) : ?>
-                                    <tr data-satuan="<?= $b->sat_t ?>">
+                                    <tr data-satuan="<?= $b->satuan ?>">
                                         <td><?= $b->kode_bahan ?></td>
                                         <td><?= $b->nama_bahan ?></td>
                                         <td><?= number_format($b->harga_beli, 0, ',', '.'); ?></td>
@@ -409,12 +405,8 @@
         newRow.innerHTML = `
         <td><input type="text" name="id_kode_barang[]" class="form-control"></td>
         <td><input type="text" name="nama_barang[]" class="form-control"></td>
-        <td><input type="text" name="qty_b[]" class="form-control"></td>
-        <td><input type="text" name="sat_b[]" class="form-control"></td>
-        <td><input type="text" name="qty_t[]" class="form-control"></td>
-        <td><input type="text" name="sat_t[]" class="form-control"></td>
-        <td><input type="number" name="qty_k[]" class="form-control" min="1" required></td>
-        <td><input type="text" name="sat_k[]" class="form-control"></td>
+        <td><input type="number" name="qty[]" class="form-control"></td>
+        <td><input type="text" name="satuan[]" class="form-control"></td>
         <td><input type="text" name="harga[]" class="form-control"></td>
         <td><input type="text" name="disc[]" class="form-control"></td>
         <td><input type="text" name="jumlah[]" class="form-control" readonly></td>
@@ -491,7 +483,7 @@
                 success: function(data) {
                     $('#detail-barang-body').empty(); // Kosongkan tabel sebelum menambahkan data
                     $.each(data, function(index, item) {
-                        const jumlah = item.qty_b * item.harga;
+                        const jumlah = item.qty * item.harga;
                         const isChecked = item.ceklis == 1 ? 'checked' : '';
                         const isDisabled = item.ceklis == 1 ? 'disabled' : '';
 
@@ -499,12 +491,8 @@
                     <tr>
                         <td><input type="text" class="form-control" name="id_kode_barang[]" value="${item.id_kode_barang}" readonly></td>
                         <td><input type="text" class="form-control" name="nama_barang[]" value="${item.nama_barang}" readonly></td>
-                        <td><input type="text" class="form-control" name="qty_b[]" value="${item.qty_b}" oninput="updateJumlah(this)"></td>
-                        <td><input type="text" class="form-control" name="sat_b[]" value="${item.sat_b}" readonly></td>
-                        <td><input type="text" name="qty_t[]" class="form-control" value="${item.qty_t}"></td>
-                        <td><input type="text" name="sat_t[]" class="form-control" value="${item.sat_t}"></td>
-                        <td><input type="number" name="qty_k[]" class="form-control qty" value="${item.qty_k}" min="1" required></td>
-                        <td><input type="text" name="sat_k[]" class="form-control" value="${item.sat_k}"></td>
+                        <td><input type="text" class="form-control" name="qty[]" value="${item.qty}" oninput="updateJumlah(this)"></td>
+                        <td><input type="text" class="form-control" name="satuan[]" value="${item.satuan}" readonly></td>
                         <td><input type="text" class="form-control harga" name="harga[]" value="${item.harga}" oninput="updateJumlah(this)"></td>
                         <td><input type="text" class="form-control disc" name="disc[]" value="${item.disc || 0}" oninput="updateJumlah(this)"></td>
                         <td><input type="text" class="form-control jumlah" name="jumlah[]" value="${formatNumber(jumlah)}" readonly></td>

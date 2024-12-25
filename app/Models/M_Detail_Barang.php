@@ -19,8 +19,10 @@ class M_Detail_Barang extends Model
         'jumlah',
         'no_faktur',
         'tgl_faktur',
+        'kategori',
         'ceklis',
-        'id_po_bahan'
+        'id_po_bahan',
+        'supplier'
     ];
 
     public function getDetailByIdPoBahan($id_po_bahan)

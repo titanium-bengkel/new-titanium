@@ -13,13 +13,16 @@ class M_Detail_Repair extends Model
         'id',
         'id_kode_barang',
         'nama_barang',
-        'qty_B',
-        'sat_B',
-        'qty_T',
-        'sat_T',
-        'qty_K',
-        'sat_K',
+        'qty',
+        'satuan',
         'hpp',
-        'id_material'
+        'nilai',
+        'id_material',
+        'no_repair_order',
+        'no_rangka',
+        'asuransi',
+        'jenis_mobil',
+        'nopol',
+        'kategori',
     ];
 }
