@@ -302,6 +302,7 @@ class SuperController extends Controller
         $katergoribarang = $this->request->getVar('kategoribarang');
         $grupbarang = $this->request->getVar('grupbarang');
         $gudang = $this->request->getVar('gudang');
+        $jasarm = $this->request->getVar('jasarm');
 
         
 
@@ -643,6 +644,12 @@ class SuperController extends Controller
                 array_push($features[$index_cur]['children'], [
                     "nama" => "Pengerjaan",
                     "url" => "/master/pengerjaan"
+                ]);
+            }
+            if($jasarm) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => "Jasa RM",
+                    "url" => "/master/jasa"
                 ]);
             }
             if($asuransi) {

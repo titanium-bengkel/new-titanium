@@ -711,6 +711,14 @@
                                                                         </div>
                                                                         <div>
                                                                             <input type="checkbox"
+                                                                                id="jasarm<?= $l['id'] ?>" name="jasarm"
+                                                                                onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
+                                                                                <?= in_array('Jasa RM', $l['fiturnya']) ? 'checked' : '' ?>>
+                                                                            <label for="jasarm<?= $l['id'] ?>">Jasa
+                                                                                RM</label>
+                                                                        </div>
+                                                                        <div>
+                                                                            <input type="checkbox"
                                                                                 id="asuransi<?= $l['id'] ?>"
                                                                                 name="asuransi"
                                                                                 onchange="handleUbahAnak(event, '<?= $l['id'] ?>')"
