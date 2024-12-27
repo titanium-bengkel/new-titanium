@@ -15,6 +15,7 @@ class M_Bahan_Repair extends Model
         'no_repair',
         'tanggal_masuk',
         'no_kendaraan',
+        'no_rangka',
         'asuransi',
         'jenis_mobil',
         'warna',

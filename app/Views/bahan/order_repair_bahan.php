@@ -28,6 +28,17 @@
                                 <input type="text" id="id_material" name="id_material" class="form-control form-control-sm" value="<?= $generateIdrepair ?>" readonly>
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="no_ro">No. Repair Order</label>
+                            </div>
+                            <div class="col-lg-9 col-7 mb-3">
+                                <input type="text" id="no_ro" class="form-control form-control-sm" name="no_ro">
+                            </div>
+                            <div class="col-lg-1 col-2 mb-3">
+                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#repair">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                            <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="tanggal">Tanggal</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
@@ -46,19 +57,9 @@
                         </div>
 
                         <h5>Data</h5>
+                        <input type="text" id="no_rangka" class="form-control form-control-sm" name="no_rangka" hidden>
                         <input type="text" id="asuransi" class="form-control form-control-sm" name="asuransi" hidden>
                         <div class="form-group row align-items-center">
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="no_ro">No. Repair Order</label>
-                            </div>
-                            <div class="col-lg-9 col-7 mb-3">
-                                <input type="text" id="no_ro" class="form-control form-control-sm" name="no_ro">
-                            </div>
-                            <div class="col-lg-1 col-2 mb-3">
-                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#repair">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="tanggal_masuk">Tanggal Masuk</label>
                             </div>
@@ -180,7 +181,7 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-bordered table-hover" style="font-size: 12px;">
                         <thead>
                             <tr>
                                 <th>No.Order</th>
@@ -190,6 +191,7 @@
                                 <th>Warna</th>
                                 <th>Tahun</th>
                                 <th>Asuransi</th>
+                                <th>No Rangka</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -203,6 +205,7 @@
                                         <td><?= $data->warna ?></td>
                                         <td><?= $data->tahun_kendaraan ?></td>
                                         <td><?= $data->asuransi ?></td>
+                                        <td><?= $data->no_rangka ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else : ?>
@@ -412,6 +415,7 @@
         $('#repair tbody tr').on('click', function() {
             // Ambil data dari atribut data-pemilik
             var customerName = $(this).data('pemilik');
+            // var Rangka = $(this).data('no_rangka');
 
             // Ambil data dari kolom dalam baris yang diklik
             var noOrder = $(this).find('td:eq(0)').text();
@@ -421,6 +425,7 @@
             var warna = $(this).find('td:eq(4)').text();
             var tahun = $(this).find('td:eq(5)').text();
             var asuransi = $(this).find('td:eq(6)').text();
+            var rangka = $(this).find('td:eq(7)').text();
 
             // Konversi format tanggal dari dd-mm-yyyy menjadi yyyy-mm-dd
             var parts = tgl_masuk.split('-');
@@ -436,6 +441,7 @@
             $('#asuransi').val(asuransi);
             $('#nama_pemilik').val(customerName); // Isi nama pemilik ke input field
             $('#asuransi').val(asuransi); // Isi nama pemilik ke
+            $('#no_rangka').val(rangka);
 
             // Tutup modal
             $('#repair').modal('hide');
@@ -484,6 +490,53 @@
             const isChecked = this.checked;
             document.querySelectorAll(".pilih-checkbox").forEach(function(checkbox) {
                 checkbox.checked = isChecked;
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Menambahkan event listener untuk input pencarian
+        document.getElementById('search-input').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase(); // Ambil nilai input dan ubah ke huruf kecil
+            const rows = document.querySelectorAll('#repair tbody tr'); // Seleksi semua baris di dalam modal
+
+            rows.forEach(row => {
+                const noOrder = row.cells[0].innerText.toLowerCase(); // Kolom Kode
+                const jenisMobil = row.cells[2].innerText.toLowerCase(); // Kolom Nama
+                const nopol = row.cells[3].innerText.toLowerCase();
+                const asurasni = row.cells[6].innerText.toLowerCase();
+                const noRangka = row.cells[7].innerText.toLowerCase();
+
+                // Tampilkan baris jika nilai input cocok dengan Kode atau Nama
+                if (noOrder.includes(searchValue) || jenisMobil.includes(searchValue) || nopol.includes(searchValue) || noRangka.includes(searchValue) || asurasni.includes(searchValue)) {
+                    row.style.display = ''; // Tampilkan baris
+                } else {
+                    row.style.display = 'none'; // Sembunyikan baris
+                }
+            });
+        });
+    });
+</script>
+<!-- search barang -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Menambahkan event listener untuk input pencarian
+        document.getElementById('search-barang').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase(); // Ambil nilai input dan ubah ke huruf kecil
+            const rows = document.querySelectorAll('#kodeBarangModal tbody tr'); // Seleksi semua baris di dalam modal
+
+            rows.forEach(row => {
+                const kodePart = row.cells[0].innerText.toLowerCase(); // Kolom Kode
+                const namaPart = row.cells[1].innerText.toLowerCase(); // Kolom Nama
+
+                // Tampilkan baris jika nilai input cocok dengan Kode atau Nama
+                if (kodePart.includes(searchValue) || namaPart.includes(searchValue)) {
+                    row.style.display = ''; // Tampilkan baris
+                } else {
+                    row.style.display = 'none'; // Sembunyikan baris
+                }
             });
         });
     });

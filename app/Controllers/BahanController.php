@@ -62,78 +62,6 @@ class BahanController extends BaseController
         return view('bahan/order_bahan', $data);
     }
 
-    // create barang
-    // public function create_bahan()
-    // {
-    //     $user_id = session()->get('user_id');
-    //     if (!$user_id) {
-    //         return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
-    //     }
-
-    //     $poBahanModel = new M_Po_Bahan();
-    //     $detailBarangModel = new M_Detail_Barang();
-    //     $GenerateId = $poBahanModel->generateId();
-
-    //     // Mengambil dan memproses input qty dan harga dengan str_replace untuk menghilangkan format angka yang salah
-    //     $qty = array_map(function ($qty) {
-    //         return (float) str_replace(',', '', $qty); // Remove commas for thousands
-    //     }, $this->request->getPost('qty'));
-
-    //     $harga = array_map(function ($harga) {
-    //         return (float) str_replace([',', '.'], '', $harga); // Remove commas and periods
-    //     }, $this->request->getPost('harga'));
-
-    // // Menghitung jumlah, total qty, dan total jumlah
-    // $jumlah = array_map(function ($qty, $harga) {
-    //     return $qty * $harga;
-    // }, $qty, $harga);
-
-    // $total_qty_b = array_sum($qty);
-    // $total_jumlah = array_sum($jumlah);
-
-    //     // Convert inputs to uppercase where applicable
-    // $data = [
-    //     'id_po_bahan' => strtoupper($this->request->getPost('id_po_bahan')),
-    //     'tanggal' => $this->request->getPost('tanggal'),
-    //     'kode_supplier' => strtoupper($this->request->getPost('kode_supplier')),
-    //     'supplier' => strtoupper($this->request->getPost('supplier')),
-    //     'keterangan' => strtoupper($this->request->getPost('keterangan')),
-    //     'total_qty_b' => $total_qty_b,
-    //     'total_jumlah' => $total_jumlah,
-    //     'user_id' => $user_id
-    // ];
-
-    // // Simpan data PO Bahan
-    // $poBahanModel->insert($data);
-
-    //     // Mengambil input tambahan qty_t, sat_t, qty_k, dan sat_k
-    //     $id_kode_barang = $this->request->getPost('id_id_kode_barang');
-    //     $nama_barang = $this->request->getPost('nama_barang');
-    //     $satuan = $this->request->getPost('satuan');
-    //     $qty = $this->request->getPost('qty');
-    //     $ceklis = $this->request->getPost('ceklis');
-
-    // if ($id_kode_barang) {
-    //     foreach ($id_kode_barang as $index => $kode) {
-    //         $barangData = [
-    //             'id_kode_barang' => strtoupper($kode),
-    //             'nama_barang' => strtoupper($nama_barang[$index]),
-    //             'qty' => $qty[$index],
-    //             'satuan' => strtoupper($satuan[$index]),
-    //             'harga' => $harga[$index],
-    //             'jumlah' => $jumlah[$index],
-    //             'id_po_bahan' => strtoupper($data['id_po_bahan']),
-    //             'ceklis' => isset($ceklis[$index]) ? 1 : 0
-    //         ];
-
-    //         // Simpan data barang
-    //         $detailBarangModel->insert($barangData);
-    //     }
-    //     }
-
-    //     return redirect()->to(base_url('/order_bahanprev/' . $GenerateId))->with('message', 'Success.');
-    // }
-
     public function create_bahan()
     {
         $poBahanModel = new M_Po_Bahan();
@@ -809,6 +737,7 @@ class BahanController extends BaseController
             'tanggal' => $this->request->getPost('tanggal'),
             'gudang' => strtoupper($this->request->getPost('gudang')),
             'no_repair' => strtoupper($this->request->getPost('no_ro')),
+            'no_rangka' => strtoupper($this->request->getPost('no_rangka')),
             'tanggal_masuk' => $this->request->getPost('tanggal_masuk'),
             'no_kendaraan' => strtoupper($this->request->getPost('no_kendaraan')),
             'asuransi' => strtoupper($this->request->getPost('asuransi')),
