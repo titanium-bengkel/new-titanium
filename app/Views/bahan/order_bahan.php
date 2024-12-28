@@ -407,5 +407,52 @@
     });
 </script>
 
+<!-- search barang -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Menambahkan event listener untuk input pencarian
+        document.getElementById('search-barang').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase(); // Ambil nilai input dan ubah ke huruf kecil
+            const rows = document.querySelectorAll('#kodeBarangModal tbody tr'); // Seleksi semua baris di dalam modal
+
+            rows.forEach(row => {
+                const kodePart = row.cells[0].innerText.toLowerCase(); // Kolom Kode
+                const namaPart = row.cells[1].innerText.toLowerCase(); // Kolom Nama
+
+                // Tampilkan baris jika nilai input cocok dengan Kode atau Nama
+                if (kodePart.includes(searchValue) || namaPart.includes(searchValue)) {
+                    row.style.display = ''; // Tampilkan baris
+                } else {
+                    row.style.display = 'none'; // Sembunyikan baris
+                }
+            });
+        });
+    });
+</script>
+
+<!-- search supplier -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Menambahkan event listener untuk input pencarian
+        document.getElementById('search-supplier').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase(); // Ambil nilai input dan ubah ke huruf kecil
+            const rows = document.querySelectorAll('#supp tbody tr'); // Seleksi semua baris di dalam modal
+
+            rows.forEach(row => {
+                const kodeSupp = row.cells[0].innerText.toLowerCase(); // Kolom Kode
+                const namaSupp = row.cells[1].innerText.toLowerCase(); // Kolom Nama
+
+                // Tampilkan baris jika nilai input cocok dengan Kode atau Nama
+                if (kodeSupp.includes(searchValue) || namaSupp.includes(searchValue)) {
+                    row.style.display = ''; // Tampilkan baris
+                } else {
+                    row.style.display = 'none'; // Sembunyikan baris
+                }
+            });
+        });
+    });
+</script> 
+
+
 
 <?= $this->endSection() ?>
