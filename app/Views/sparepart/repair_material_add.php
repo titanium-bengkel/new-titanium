@@ -238,7 +238,7 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover table-striped" style="font-size: 14px;">
+                    <table class="table table-bordered table-hover table-striped" id="repair" style="font-size: 14px;">
                         <thead class="table-secondary">
                             <tr>
                                 <th>Work Order</th>

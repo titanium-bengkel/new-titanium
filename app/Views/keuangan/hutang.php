@@ -65,8 +65,8 @@
                                 endif;
 
                                 // Hitung nilai total dan saldo
-                                $nilai_total = $sup['nilai_total'];
-                                $pembayaran = $sup['pembayaran'];
+                                $nilai_total = $sup['total_jumlah'];
+                                $pembayaran = $sup['total_jumlah'];
                                 $saldo = $pembayaran - $nilai_total;
 
                                 // Tambahkan ke subtotal

@@ -1,21 +1,50 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content') ?>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    <?php if (session()->getFlashdata('success')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '<?= session()->getFlashdata('success') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: '<?= session()->getFlashdata('error') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
+</script>
 <!-- Table Jasa -->
 <section class="section">
-    <div class="row" id="table-bordered">
+    <div class="row">
         <div class="col-12">
-            <h4 class="mb-0 ms-3 mb-3">Jasa</h4>
             <div class="card">
-                <div class="card-header d-flex align-items-center gap-3">
-                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambahJasa">
+                <header class="d-flex justify-content-between align-items-center border-bottom" style="border-color: #6c757d; padding: 15px 20px;">
+                    <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                        <a href="<?= base_url('/dashboard') ?>" class="breadcrumb-link text-primary fw-bold">List Jasa RM</a>
+                        <span class="breadcrumb-divider text-muted mx-3">/</span>
+                        <span class="breadcrumb-current text-muted">Jasa RM</span>
+                    </div>
+                    <h5 class="page-title mb-0 fw-bold">Jasa RM</h5>
+                </header>
+
+                <div class="table-responsive" style="margin: 20px; font-size:14px;">
+                    <button type="button" class="btn btn-success btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#modalTambahJasa">
                         Entry Data
                     </button>
-                    <h6 class="mb-0 ms-auto">List Data Jasa</h6>
-                </div>
-                <div class="table-responsive text-center" style="margin: 20px; font-size:14px;">
-                    <table class="table table-bordered mb-0">
-                        <thead class="thead-dark">
+                    <table class="table table-bordered table-hover table-striped text-center mb-0">
+                        <thead class="thead-dark table-secondary">
                             <tr>
                                 <th>#</th>
                                 <th>Kode</th>
@@ -23,9 +52,9 @@
                                 <th>Kode Biaya</th>
                                 <th>Ket. Biaya</th>
                                 <th>Kode Alokasi</th>
-                                <th>Ket Alokasi</th>
+                                <th>Ket. Alokasi</th>
                                 <th>Keterangan</th>
-                                <th>User Input</th>
+                                <th>User ID</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -40,7 +69,7 @@
                                     <td><?= $item['kode_alokasi'] ?></td>
                                     <td><?= $item['ket_alokasi'] ?></td>
                                     <td><?= $item['keterangan'] ?></td>
-                                    <td><?= $item['username'] ?></td>
+                                    <td><?= $item['user_id'] ?></td>
                                     <td>
                                         <button type="button" class="btn btn-secondary btn-sm" onclick="populateEditModal(
                                             '<?= $item['id_jasa']; ?>',
@@ -71,66 +100,61 @@
 <div class="modal fade" id="modalTambahJasa" tabindex="-1" aria-labelledby="modalTambahJasaLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTambahJasaLabel">Tambah Data Jasa</h5>
+            <div class="modal-header bg-gradient-ltr">
+                <h5 class="modal-title text-white" id="modalTambahJasaLabel">Tambah Data Jasa</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= base_url('createJasa') ?>" method="post">
                 <div class="modal-body">
-                    <div class="row">
-                        <!-- Bagian kiri -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="kode" class="form-label">Kode</label>
-                                <input type="text" class="form-control" id="kode" name="kode">
-                            </div>
-                            <div class="mb-3">
-                                <label for="nama_jasa" class="form-label">Nama Jasa</label>
-                                <input type="text" class="form-control" id="nama_jasa" name="nama_jasa">
-                            </div>
-                            <div class="mb-3">
-                                <label for="kode_biaya" class="form-label">Kode Biaya</label>
-                                <select class="form-control" id="kode_biaya" name="kode_biaya" onchange="updateKetBiaya()">
-                                    <option value="">Pilih Kode Biaya</option>
-                                    <?php foreach ($coa as $item) : ?>
-                                        <option value="<?= $item['kode']; ?>" data-nama="<?= $item['nama_account']; ?>">
-                                            <?= $item['kode']; ?> - <?= $item['nama_account']; ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <input type="hidden" id="ket_biaya" name="ket_biaya">
-                        </div>
-                        <!-- Bagian kanan -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="kode_alokasi" class="form-label">Kode Alokasi</label>
-                                <select class="form-control" id="kode_alokasi" name="kode_alokasi" onchange="updateKetAlokasi()">
-                                    <option value="">Pilih Kode Alokasi</option>
-                                    <?php foreach ($coa as $item) : ?>
-                                        <option value="<?= $item['kode']; ?>" data-nama="<?= $item['nama_account']; ?>">
-                                            <?= $item['kode']; ?> - <?= $item['nama_account']; ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <input type="hidden" id="ket_alokasi" name="ket_alokasi">
-                            <div class="mb-3">
-                                <label for="keterangan" class="form-label">Keterangan</label>
-                                <textarea class="form-control" id="keterangan" name="keterangan" rows="3"></textarea>
-                            </div>
-                            <input type="hidden" name="user_id" value="<?= session()->get('user_id') ?>">
-                        </div>
+                    <div class="mb-3">
+                        <label for="kode" class="form-label">Kode</label>
+                        <input type="text" class="form-control" id="kode" name="kode">
                     </div>
+                    <div class="mb-3">
+                        <label for="nama_jasa" class="form-label">Nama Jasa</label>
+                        <input type="text" class="form-control" id="nama_jasa" name="nama_jasa">
+                    </div>
+                    <div class="mb-3">
+                        <label for="kode_biaya" class="form-label">Kode Biaya</label>
+                        <select class="form-control" id="kode_biaya" name="kode_biaya" onchange="updateKetBiaya()">
+                            <option value="">Pilih Kode Biaya</option>
+                            <?php foreach ($coa as $item) : ?>
+                                <option value="<?= $item['kode']; ?>" data-nama="<?= $item['nama_account']; ?>">
+                                    <?= $item['kode']; ?> - <?= $item['nama_account']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <input type="hidden" id="ket_biaya" name="ket_biaya">
+                    <div class="mb-3">
+                        <label for="kode_alokasi" class="form-label">Kode Alokasi</label>
+                        <select class="form-control" id="kode_alokasi" name="kode_alokasi" onchange="updateKetAlokasi()">
+                            <option value="">Pilih Kode Alokasi</option>
+                            <?php foreach ($coa as $item) : ?>
+                                <option value="<?= $item['kode']; ?>" data-nama="<?= $item['nama_account']; ?>">
+                                    <?= $item['kode']; ?> - <?= $item['nama_account']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <input type="hidden" id="ket_alokasi" name="ket_alokasi">
+                    <div class="mb-3">
+                        <label for="keterangan" class="form-label">Keterangan</label>
+                        <textarea class="form-control" id="keterangan" name="keterangan" rows="3"></textarea>
+                    </div>
+                    <input type="hidden" name="user_id" value="<?= session()->get('user_id') ?>">
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                <div class="modal-footer bg-light">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+
+
 <!-- Modal Edit -->
 <div class="modal fade" id="modalEdit" tabindex="-1" aria-labelledby="modalEditLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">

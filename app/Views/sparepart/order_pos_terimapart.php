@@ -633,7 +633,7 @@
 
             rows.forEach(row => {
                 const idPesan = row.cells[0].innerText.toLowerCase();
-                const nopol = row.cells[4].innerText.toLowerCase();
+                const nopol = row.cells[3].innerText.toLowerCase();
 
                 if (idPesan.includes(searchValue) || nopol.includes(searchValue)) {
                     row.style.display = '';

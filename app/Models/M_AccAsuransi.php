@@ -14,6 +14,7 @@ class M_AccAsuransi extends Model
         'id_terima_po',
         'tgl_acc',
         'no_kendaraan',
+        'no_rangka',
         'jenis_mobil',
         'warna',
         'customer_name',

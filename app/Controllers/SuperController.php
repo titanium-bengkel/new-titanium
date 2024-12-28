@@ -24,7 +24,7 @@ class SuperController extends Controller
     public function kelola_user()
     {
         $users = $this->userModel->findAll();
-        $roles = $this->roleModel->findAll(); 
+        $roles = $this->roleModel->findAll();
         foreach ($users as &$user) {
             $role = array_filter($roles, function ($r) use ($user) {
                 return $r['id'] == $user['id_role'];
@@ -81,7 +81,7 @@ class SuperController extends Controller
         if (!empty($password)) {
             $data['password'] = password_hash($password, PASSWORD_DEFAULT);
         }
-        $hasilUpdate = $this->userModel->where(['id'=> $id ])->set($data)->update();
+        $hasilUpdate = $this->userModel->where(['id' => $id])->set($data)->update();
         // dd($hasilUpdate);
         if ($hasilUpdate) {
             return redirect()->to('/supercontroller/kelola_user')->with('success', 'Pengguna berhasil diperbarui.');
@@ -159,20 +159,21 @@ class SuperController extends Controller
     }
 
 
-    public function pengaturan_role(){
+    public function pengaturan_role()
+    {
         $role = $this->roleModel->findAll();
         $data = [];
-        
-        foreach($role as $ind_r => $r){
+
+        foreach ($role as $ind_r => $r) {
             $arraykosong = [];
             $feature = json_decode($r["fitur"], true);
-            foreach($feature as $ind_rf => $rf){
+            foreach ($feature as $ind_rf => $rf) {
                 array_push($arraykosong, $rf["nama"]);
-                
+
                 if (isset($rf["children"])) {
                     foreach ($rf["children"] as $ind_rfc => $rfc) {
                         array_push($arraykosong, $rfc["nama"]);
-                        
+
                         if (isset($rfc["children"])) {
                             foreach ($rfc["children"] as $ind_rfcc => $rfcc) {
                                 array_push($arraykosong, $rfcc["nama"]);
@@ -181,15 +182,15 @@ class SuperController extends Controller
                     }
                 }
             }
-            
+
             $role[$ind_r]['fiturnya'] = $arraykosong;
         }
-        
+
         $data = [
             'title' => 'Pengaturan Role',
             'label' => $role,
         ];
-    
+
         return view('superadmin/pengaturan_role', $data);
     }
 
@@ -276,7 +277,7 @@ class SuperController extends Controller
         $layanan = $this->request->getVar('layanan');
         $gallery = $this->request->getVar('gallery');
         $testimoni_konsumen = $this->request->getVar('testimoni_konsumen');
-        
+
         // ROLE
         $mpengaturan_role = $this->request->getVar('mpengaturan_role');
 
@@ -304,32 +305,32 @@ class SuperController extends Controller
         $gudang = $this->request->getVar('gudang');
         $jasarm = $this->request->getVar('jasarm');
 
-        
+
 
         $features = [];
-        if($dashboard) {
+        if ($dashboard) {
             array_push($features, [
                 "nama" => "Dashboard",
                 "icon" => "bi bi-grid-fill",
                 "url" => "/dashboard/index",
-            ]);    
+            ]);
         }
 
         // SUPER ADMIN
-        if($superadmin) {
+        if ($superadmin) {
             array_push($features, [
                 "nama" => "Super Admin",
                 "icon" => "bi bi-stack",
                 "children" => []
             ]);
-            $index_cur = count($features) -1 ;
-            if($kelolauser) {
+            $index_cur = count($features) - 1;
+            if ($kelolauser) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Kelola User',
                     "url" => "/kel_user"
                 ]);
             }
-            if($kelolamenu) {
+            if ($kelolamenu) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Kelola Menu',
                     "url" => "/menu_akses"
@@ -345,20 +346,20 @@ class SuperController extends Controller
         // END SUPER ADMIN
 
         // PRODUK
-        if($produkp) {
+        if ($produkp) {
             array_push($features, [
                 "nama" => "Produksi",
                 "icon" => "bi bi-stack",
                 "children" => []
             ]);
-            $index_cur = count($features) -1 ;
-            if($headprodukp) {
+            $index_cur = count($features) - 1;
+            if ($headprodukp) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Head Produksi',
                     "url" => "/produksi/headproduksi"
                 ]);
             }
-            if($memberprodukp) {
+            if ($memberprodukp) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Kelola Produksi',
                     "url" => "/produksi/kelolaproduksi"
@@ -366,7 +367,7 @@ class SuperController extends Controller
             }
         }
         // END SPRODUK
-        
+
         // KLAIM
         if ($klaim) {
             array_push($features, [
@@ -377,19 +378,19 @@ class SuperController extends Controller
             $index_cur = count($features) - 1;
             if ($estperbaikan) {
                 array_push($features[$index_cur]['children'], [
-                    "nama" => 'Estimasi Perbaikan',
+                    "nama" => 'Pre Order',
                     "url" => "/klaim/preorder"
                 ]);
             }
             if ($orderlist_asuransi) {
                 array_push($features[$index_cur]['children'], [
-                    "nama" => 'Approval Asuransi',
+                    "nama" => 'Asuransi',
                     "url" => "/orderlist_asuransi"
                 ]);
             }
             if ($repair_order) {
                 array_push($features[$index_cur]['children'], [
-                    "nama" => 'Work Order',
+                    "nama" => 'Repair Order',
                     "url" => "/repair_order"
                 ]);
             }
@@ -445,7 +446,7 @@ class SuperController extends Controller
         }
         // END KLAIM
 
-        
+
 
         // BAHAN
         if ($bahan) {
@@ -572,26 +573,26 @@ class SuperController extends Controller
         // END SPAREPART
 
         // MASTER
-        if($master) {
+        if ($master) {
             array_push($features, [
                 "nama" => "Master",
                 "icon" => "bi bi-journal-check",
                 "children" => []
             ]);
             $index_cur = count($features) - 1;
-            if($katergoribarang) {
+            if ($katergoribarang) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => "Kategori Barang",
                     "url" => "/master/barangkategori"
                 ]);
             }
-            if($grupbarang) {
+            if ($grupbarang) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => "Grup Barang",
                     "url" => "/master/baranggroup"
                 ]);
             }
-            if($msparepart) {
+            if ($msparepart) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => "Sparepart",
                     "url" => "/master/mastersparepart"
@@ -603,7 +604,7 @@ class SuperController extends Controller
             //         "url" => "/master/mastersparepart"
             //     ]);
             // }
-            if($bahanm) {
+            if ($bahanm) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => "Bahan",
                     "url" => "/master/masterbahan"
@@ -640,19 +641,19 @@ class SuperController extends Controller
             //         "url" => "/master/customer"
             //     ]);
             // }
-            if($pengerjaan) {
+            if ($pengerjaan) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => "Pengerjaan",
                     "url" => "/master/pengerjaan"
                 ]);
             }
-            if($jasarm) {
+            if ($jasarm) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => "Jasa RM",
                     "url" => "/master/jasa"
                 ]);
             }
-            if($asuransi) {
+            if ($asuransi) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => "Asuransi",
                     "url" => "/master/asuransi"
@@ -677,13 +678,13 @@ class SuperController extends Controller
             //         ]);
             //     }
             // }
-            if($gudang) {
+            if ($gudang) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => "Gudang",
                     "url" => "/master/gudang"
                 ]);
             }
-            if($coa) {
+            if ($coa) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => "Chart of Account",
                     "url" => "/master/coa"
@@ -701,8 +702,8 @@ class SuperController extends Controller
             //         "url" => "/master/mekanik"
             //     ]);
             // }
-            
-            if($supplier) {
+
+            if ($supplier) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => "Supplier",
                     "url" => "/master/supplier"
@@ -718,7 +719,7 @@ class SuperController extends Controller
         // END MASTER
 
         //KEUANGAN
-        if($keuangan) {
+        if ($keuangan) {
             array_push($features, [
                 "nama" => "Keuangan",
                 "icon" => "bi bi-hexagon-fill",
@@ -726,62 +727,62 @@ class SuperController extends Controller
                 "children" => []
             ]);
             $index_cur = count($features) - 1;
-    
-            if($hutang) {
+
+            if ($hutang) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Hutang Per Supplier',
                     "url" => "/hutang"
                 ]);
             }
-            if($bayar_hutang) {
+            if ($bayar_hutang) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Pembayaran Hutang',
                     "url" => "/bayar_hutang"
                 ]);
             }
-            if($pembelian) {
+            if ($pembelian) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Pembelian',
                     "url" => "/pembelian"
                 ]);
             }
-            if($kas_bank) {
+            if ($kas_bank) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Kas & Bank',
                     "url" => "/kas_bank"
                 ]);
             }
-            if($kas_kecil) {
+            if ($kas_kecil) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Kas Kecil',
                     "url" => "/kas_kecil"
                 ]);
             }
-            if($keluar_kasbesar) {
+            if ($keluar_kasbesar) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Pengeluaran Kas Besar',
                     "url" => "/keluar_kasbesar"
                 ]);
             }
-            if($kas_masuk) {
+            if ($kas_masuk) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Kas Masuk',
                     "url" => "/kas_masuk"
                 ]);
             }
-            if($kas_keluar) {
+            if ($kas_keluar) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Kas Keluar',
                     "url" => "/kas_keluar"
                 ]);
             }
-            if($ro_list) {
+            if ($ro_list) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Repair Order List',
                     "url" => "/ro_list"
                 ]);
             }
-            if($material_jasa) {
+            if ($material_jasa) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Repair Material Jasa',
                     "url" => "/material_jasa"
@@ -791,7 +792,7 @@ class SuperController extends Controller
         // END KEUANGAN
 
         // REPORT
-        if($report) {
+        if ($report) {
             array_push($features, [
                 "nama" => "Report",
                 "icon" => "bi bi-file-earmark-text",
@@ -800,25 +801,25 @@ class SuperController extends Controller
             ]);
             $index_cur = count($features) - 1;
 
-            if($report_jurnal) {
+            if ($report_jurnal) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Report Jurnal',
                     "url" => "/report_jurnal"
                 ]);
             }
-            if($buku_besar) {
+            if ($buku_besar) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'General Ledger (Buku Besar)',
                     "url" => "/buku_besar"
                 ]);
             }
-            if($laba_rugi) {
+            if ($laba_rugi) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Income Statment (Laba Rugi)',
                     "url" => "/laba_rugi"
                 ]);
             }
-            if($neraca) {
+            if ($neraca) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Balance Sheet (Neraca)',
                     "url" => "/neraca"
@@ -827,10 +828,10 @@ class SuperController extends Controller
         }
         // END REPORT
 
-        
+
 
         // MONITORING
-        if($monitoring) {
+        if ($monitoring) {
             array_push($features, [
                 "nama" => "Monitoring",
                 "icon" => "bi bi-eye-fill",
@@ -839,19 +840,19 @@ class SuperController extends Controller
             ]);
             $index_cur = count($features) - 1;
 
-            if($monitoring_history) {
+            if ($monitoring_history) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Histori Edit',
                     "url" => "/monitoring/history"
                 ]);
             }
-            if($monitoring_jadwal_keluar) {
+            if ($monitoring_jadwal_keluar) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Jadwal Mobil Keluar',
                     "url" => "/monitoring/jadwal_keluar"
                 ]);
             }
-            if($monitoring_tracking_unit) {
+            if ($monitoring_tracking_unit) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Tracking Unit',
                     "url" => "/monitoring/tracking_unit"
@@ -861,40 +862,40 @@ class SuperController extends Controller
         // END MONITORING
 
         // WEBSITE
-        if($website) {
+        if ($website) {
             array_push($features, [
                 "nama" => "Website",
                 "icon" => "bi bi-globe",
-                "url" => "#", 
+                "url" => "#",
                 "children" => []
             ]);
             $index_cur = count($features) - 1;
 
-            if($video_home) {
+            if ($video_home) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Video Home',
                     "url" => "/website/video_home"
                 ]);
             }
-            if($tentang_kami) {
+            if ($tentang_kami) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Tentang Kami (About Us)',
                     "url" => "/website/tentang_kami"
                 ]);
             }
-            if($layanan) {
+            if ($layanan) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Layanan (Service)',
                     "url" => "/website/layanan"
                 ]);
             }
-            if($gallery) {
+            if ($gallery) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Gallery',
                     "url" => "/website/gallery"
                 ]);
             }
-            if($testimoni_konsumen) {
+            if ($testimoni_konsumen) {
                 array_push($features[$index_cur]['children'], [
                     "nama" => 'Testimoni Konsumen',
                     "url" => "/website/testimoni_konsumen"
@@ -903,18 +904,18 @@ class SuperController extends Controller
         }
         // END WEBSITE
 
-        
+
 
         // PENGATURAN ROLE
-        if($mpengaturan_role) {
+        if ($mpengaturan_role) {
             array_push($features, [
                 "nama" => "Role",
-                "icon" => "bi bi-person-lock", 
+                "icon" => "bi bi-person-lock",
                 "url" => "/pengaturan_role",
             ]);
         }
         // END PENGATURAN ROLE
-        
+
         $this->roleModel->update($roleId, ['fitur' => json_encode($features)]);
         return redirect()->to('/pengaturan_role')->with('message', 'Perubahan Telah di Simpan. Silahkan Logout dan Login kembali');
     }

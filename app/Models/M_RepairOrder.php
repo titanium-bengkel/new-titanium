@@ -18,6 +18,7 @@ class M_RepairOrder extends Model
         'jam_keluar',
         'tingkat',
         'status_bayar',
+        'status',
         'progres_pengerjaan',
         'user_id',
         'harga_estimasi',

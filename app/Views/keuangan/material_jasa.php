@@ -1,59 +1,53 @@
-<!-- File: app/Views/sparepart/permintaan_part.php -->
 <?= $this->extend('layout/template'); ?>
-
 <?= $this->section('content') ?>
-<h3>Repair Material Jasa</h3>
 
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    <?php if (session()->getFlashdata('success')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '<?= session()->getFlashdata('success') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: '<?= session()->getFlashdata('error') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
+</script>
 <!-- Table Pre-order -->
 <section class="section">
-    <div class="row" id="table-head">
+    <div class="row">
         <div class="col-12">
             <div class="card">
+                <header class="d-flex justify-content-between align-items-center border-bottom" style="border-color: #6c757d; padding: 15px 20px;">
+                    <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                        <a href="<?= base_url('/dashboard') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                        <span class="breadcrumb-divider text-muted mx-3">/</span>
+                        <span class="breadcrumb-current text-muted">Repair Jasa</span>
+                    </div>
+                    <h5 class="page-title mb-0 fw-bold">Repair Jasa</h5>
+                </header>
                 <div class="card-content">
-                    <div class="card-header d-flex align-items-center" style="width: fit-content;">
-                        <div class="buttons d-flex align-items-center">
-                            <a href="<?= base_url('material_jasaadd') ?>" class="btn btn-primary mt-3 mr-2" style="width: 100px; margin-right:10px;">Add</a>
-                            <input type="text" id="helperText" class="form-control mt-2" placeholder="Nama Suplier" style="margin-right:10px; width: 150px;">
-                            <a href="#" class="btn btn-info btn-sm mt-3 mr-2" style="width: 90px; margin-left:10px;">Show</a>
-                            <input type="date" class="form-control flatpickr-range mt-2" placeholder="Select date.." style="margin-left:50px; width: 250px;">
-                        </div>
-                        <div class="mt-2 mr-2" style="margin-left:10px; width: 100px;">
-                            <select class="form-control" id="selectMonth">
-                                <option value="1">Januari</option>
-                                <option value="2">Februari</option>
-                                <option value="3">Maret</option>
-                                <option value="4">April</option>
-                                <option value="5">Mei</option>
-                                <option value="6">Juni</option>
-                                <option value="7">Juli</option>
-                                <option value="8">Agustus</option>
-                                <option value="9">September</option>
-                                <option value="10">Oktober</option>
-                                <option value="11">November</option>
-                                <option value="12">Desember</option>
-                            </select>
-                        </div>
-                        <div class="mt-2 mr-2" style="margin-left:10px; width: 100px;">
-                            <select class="form-control" id="selectYear">
-                                <option>2020</option>
-                                <option>2021</option>
-                                <option>2022</option>
-                                <option>2023</option>
-                                <option>2024</option>
-                                <option>2025</option>
-                                <option>2026</option>
-                                <option>2027</option>
-                                <option>2028</option>
-                                <option>2029</option>
-                                <option>2030</option>
-                                <!-- Tambahkan pilihan tahun sesuai kebutuhan -->
-                            </select>
+                    <div class="card-content">
+                        <div class="card-header d-flex align-items-center" style="width: fit-content;">
+                            <a href="<?= base_url('material_jasaadd') ?>" class="btn btn-primary mr-2">Add Repair Jasa</a>
                         </div>
                     </div>
-                    <!-- table head dark -->
-                    <div class="table-responsive" style="margin:20px" ;>
-                        <table class="table table-bordered mb-0">
-                            <thead class="thead-dark">
+                    <div class="table-responsive" style="margin:20px; font-size: 14px;">
+                        <table class="table table-bordered table-hover table-striped mb-0">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th style="text-align: center;">#</th>
                                     <th style="text-align: center;">Nomor</th>
@@ -64,10 +58,10 @@
                                     <th style="text-align: center;">Nopol</th>
                                     <th style="text-align: center;">Tahun</th>
                                     <th style="text-align: center;">Warna</th>
-                                    <th style="text-align: center;">Nama Pemilik</th>
+                                    <th style="text-align: center;">Nama Pelanggan</th>
                                     <th style="text-align: center;">Keterangan</th>
                                     <th style="text-align: center;">Subtotal</th>
-                                    <th style="text-align: center;">User</th>
+                                    <th style="text-align: center;">User ID</th>
                                     <th style="text-align: center;">Action</th>
                                 </tr>
                             </thead>
@@ -90,16 +84,20 @@
                                             <td><?= $data['nama_pemilik'] ?></td>
                                             <td><?= $data['keterangan'] ?></td>
                                             <td class="subtotal"><?= $data['total'] ?></td>
-                                            <td><?= $data['username'] ?></td>
-                                            <td></td>
+                                            <td><?= $data['user_id'] ?></td>
+                                            <td>
+                                                <!-- Tombol Hapus -->
+                                                <button class="btn btn-sm delete-btn" data-id="<?= $data['id_jasa'] ?>"><i class="fas fa-trash-alt"></i></button>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="14">Data tidak ditemukan</td>
+                                        <td colspan="14">No data available</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
+
 
                             <thead>
                                 <tr>
@@ -109,23 +107,40 @@
                                 </tr>
                             </thead>
                         </table>
-                        <div class="card-body">
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination pagination-primary">
-                                    <li class="page-item"><a class="page-link" href="#">Prev</a></li>
-                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                                </ul>
-                            </nav>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Event listener untuk tombol hapus
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const idJasa = this.getAttribute('data-id'); // Mendapatkan id_jasa dari tombol
+
+            // Menampilkan SweetAlert konfirmasi
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: 'Data ini akan dihapus secara permanen!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect ke controller untuk menghapus data
+                    window.location.href = '<?= base_url("deleteRepairJasa/") ?>' + idJasa;
+                }
+            });
+        });
+    });
+</script>
 
 
 <script>

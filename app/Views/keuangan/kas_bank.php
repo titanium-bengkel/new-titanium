@@ -30,7 +30,7 @@
     <div class="row" id="table-head">
         <div class="col-12">
             <div class="card">
-                <header class="d-flex justify-content-between align-items-center border-bottom pb-3" style="border-color: #6c757d; padding: 15px 20px;">
+                <header class="d-flex justify-content-between align-items-center border-bottom" style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
                         <a href="<?= base_url('/dashboard') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
@@ -38,21 +38,18 @@
                     </div>
                     <h5 class="page-title mb-0 fw-bold">Jurnal Kas & Bank</h5>
                 </header>
-                <div class="card-content">
-                    <div class="card-header d-flex align-items-center" style="width: fit-content;">
-                        <div class="buttons d-flex align-items-center">
-                            <button type="button" class="btn btn-info btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#record">
-                                New Record
-                            </button>
-                            <button type="button" class="btn btn-secondary btn-sm mr-2">
-                                Export to Excel
-                            </button>
-                        </div>
+                <div class="card-content" style="margin:20px; font-size: 12px;">
+                    <div class="buttons d-flex align-items-center mt-2 mb-2">
+                        <button type="button" class="btn btn-info btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#record">
+                            New Record
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm mr-2">
+                            Export to Excel
+                        </button>
                     </div>
-
-                    <div class="table-responsive" style="margin:20px; font-size: 12px;">
-                        <table id="myTable" class="table table-bordered mb-0 text-center">
-                            <thead class="thead-dark">
+                    <div class="table-responsive">
+                        <table id="myTable" class="table table-bordered table-striped table-hover mb-0 text-center">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th style="text-align: center;">#</th>
                                     <th style="text-align: center;">Date</th>
@@ -82,7 +79,21 @@
                                         <td><?= number_format($row['kredit'], 0, ',', '.'); ?></td>
                                         <td><?= $row['username']; ?></td>
                                         <td><?= $row['tgl_input']; ?></td>
-                                        <td><button class="btn btn-sm"><i class="fas fa-edit"></i></button></td>
+                                        <td>
+                                            <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editModal"
+                                                data-tanggal="<?= $row['tanggal']; ?>"
+                                                data-doc_no="<?= $row['doc_no']; ?>"
+                                                data-kode_account="<?= $row['kode_account']; ?>"
+                                                data-nama_account="<?= $row['nama_account']; ?>"
+                                                data-deskripsi="<?= $row['deskripsi']; ?>"
+                                                data-debit="<?= $row['debit']; ?>"
+                                                data-kredit="<?= $row['kredit']; ?>"
+                                                data-username="<?= $row['username']; ?>"
+                                                data-tgl_input="<?= $row['tgl_input']; ?>">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -103,6 +114,65 @@
     </div>
 </section>
 <!-- Table head options end -->
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" action="process_edit.php" method="POST">
+                    <!-- Input fields -->
+                    <div class="mb-3">
+                        <label for="tanggal" class="form-label">Tanggal</label>
+                        <input type="date" class="form-control" id="tanggal" name="tanggal" value="<?= $row['tanggal']; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="doc_no" class="form-label">Document Number</label>
+                        <input type="text" class="form-control" id="doc_no" name="doc_no" value="<?= $row['doc_no']; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="kode_account" class="form-label">Kode Account</label>
+                        <input type="text" class="form-control" id="kode_account" name="kode_account" value="<?= $row['kode_account']; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nama_account" class="form-label">Nama Account</label>
+                        <input type="text" class="form-control" id="nama_account" name="nama_account" value="<?= $row['nama_account']; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deskripsi" class="form-label">Deskripsi</label>
+                        <input type="text" class="form-control" id="deskripsi" name="deskripsi" value="<?= $row['deskripsi']; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="debit" class="form-label">Debit</label>
+                        <input type="number" class="form-control" id="debit" name="debit" value="<?= $row['debit']; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="kredit" class="form-label">Kredit</label>
+                        <input type="number" class="form-control" id="kredit" name="kredit" value="<?= $row['kredit']; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" value="<?= $row['username']; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tgl_input" class="form-label">Tanggal Input</label>
+                        <input type="date" class="form-control" id="tgl_input" name="tgl_input" value="<?= $row['tgl_input']; ?>" required>
+                    </div>
+                    <input type="hidden" name="id" id="editId" value="<?= $row['id_kasbank']; ?>"> <!-- Hidden input to store ID for updates -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Modal New Record -->
 <div class="modal fade" id="record" tabindex="-1" aria-labelledby="myModalLabel1" aria-hidden="true">

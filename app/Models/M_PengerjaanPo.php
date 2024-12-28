@@ -24,9 +24,9 @@ class M_PengerjaanPo extends Model
         return $this->where('id_terima_po', $id_po)->findAll();
     }
 
-    public function getPengerjaanByKode($kode_pengerjaan)
+    public function getPengerjaanByKode($id)
     {
-        return $this->where('kode_pengerjaan', $kode_pengerjaan)->first();
+        return $this->where('id_pengerjaan_po', $id)->first();
     }
 
     public function getAllPengerjaanPo()

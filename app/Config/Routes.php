@@ -85,7 +85,7 @@ $routes->get('getSparepartData/(:segment)', 'KlaimController::getSparepartData/$
 $routes->get('deleteSparepartPo/(:num)', 'KlaimController::deleteSparepartPo/$1');
 
 $routes->post('/createGambarPo', 'KlaimController::createGambarPo');
-$routes->delete('deleteGambarPo/(:num)', 'KlaimController::deleteGambarPo/$1');
+$routes->get('deleteGambarPo/(:any)', 'KlaimController::deleteGambarPo/$1');
 $routes->get('downloadAllGambar/(:any)', 'KlaimController::downloadAllGambar/$1');
 
 
@@ -308,6 +308,7 @@ $routes->get('kas_keluar', 'KeuanganController::jurnal_kaskeluar');
 $routes->get('material_jasa', 'KeuanganController::repair_materialjasa');
 $routes->get('material_jasaadd', 'KeuanganController::repair_materialjasaadd');
 $routes->post('createRepairJasa', 'KeuanganController::createRepairJasa');
+$routes->get('deleteRepairJasa/(:any)', 'KeuanganController::deleteRepairJasa/$1');
 $routes->get('material_jasaprev/(:any)', 'KeuanganController::repair_materialjasaprev/$1');
 $routes->post('updateOrCreateJasa', 'KeuanganController::updateOrCreateJasa');
 $routes->post('update_rmjasa', 'KeuanganController::updateJasa');

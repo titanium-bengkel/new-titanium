@@ -118,18 +118,29 @@
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="text" id="panel" class="form-control" name="panel">
                             </div>
+                            <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="tingkat">Tingkat Kerusakan</label>
+                            </div>
+                            <div class="col-lg-10 col-9 mb-3">
+                                <select id="tingkat" class="form-select" name="tingkat">
+                                    <option value="" disabled <?= empty($po['tingkat']) ? 'selected' : '' ?>>Pilih Tingkat Kerusakan</option>
+                                    <option value="HEAVY">HEAVY</option>
+                                    <option value="MEDIUM">MEDIUM</option>
+                                    <option value="LIGHT">LIGHT</option>
+                                </select>
+                            </div>
                         </div>
                         <hr>
-                        <h5 class="text-center mb-3">Data Customer</h5>
+                        <h5 class="text-center mb-3">Data Pelanggan</h5>
                         <div class="form-group row align-items-center">
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="customer-name">Customer Name</label>
+                                <label class="col-form-label" for="customer-name">Nama Pelanggan</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="text" id="customer-name" class="form-control" name="customer-name" required>
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="no-contact">No. Contact</label>
+                                <label class="col-form-label" for="no-contact">Kontak</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="text" id="no-contact" class="form-control" name="no-contact">
@@ -222,99 +233,10 @@
                                 <label class="form-check-label" for="batal-mobil-masuk">Batal Mobil Masuk</label>
                             </div>
                         </div>
-                        <!-- <div class="mt-3">
+                        <div class="mt-3">
                             <button type="submit" class="btn btn-primary">Simpan</button>
                             <a href="<?= base_url('klaim/preorder') ?>" type="button" class="btn btn-danger">Batal</a>
-                        </div> -->
-
-                        <div class="mt-3">
-                            <form id="myForm" action="/submit" method="post">
-                                <button type="button" id="btnSimpan" class="btn btn-primary" onclick="flyButton()">Simpan</button>
-                                <a href="<?= base_url('klaim/preorder') ?>" type="button" class="btn btn-danger">Batal</a>
-                            </form>
                         </div>
-
-                        <style>
-                            /* Gaya dasar tombol */
-                            #btnSimpan {
-                                position: relative;
-                                /* Untuk memulai animasi */
-                                transition: transform 0.2s ease-in-out;
-                                z-index: 9999;
-                                /* Agar tombol terlihat di atas elemen lainnya */
-                            }
-
-                            /* Gaya untuk animasi saat terbang */
-                            .flying {
-                                animation: fly-around-page 10s ease-in-out;
-                                pointer-events: none;
-                                /* Mencegah interaksi selama animasi */
-                            }
-
-                            /* Keyframes untuk animasi terbang keliling halaman */
-                            @keyframes fly-around-page {
-                                0% {
-                                    transform: translate(0, 0);
-                                }
-
-                                10% {
-                                    transform: translate(100vw, -10vh) rotate(45deg);
-                                }
-
-                                30% {
-                                    transform: translate(70vw, 60vh) rotate(90deg);
-                                }
-
-                                50% {
-                                    transform: translate(-80vw, -40vh) rotate(180deg);
-                                }
-
-                                70% {
-                                    transform: translate(-20vw, 80vh) rotate(270deg);
-                                }
-
-                                90% {
-                                    transform: translate(0vw, -100vh) rotate(360deg);
-                                }
-
-                                100% {
-                                    transform: translate(0, 0);
-                                    /* Kembali ke posisi awal */
-                                }
-                            }
-                        </style>
-
-                        <script>
-                            let hasFlown = false; // Variabel untuk memastikan animasi hanya terjadi sekali
-
-                            function flyButton() {
-                                const button = document.getElementById('btnSimpan');
-                                const form = document.getElementById('myForm');
-
-                                if (hasFlown) {
-                                    // Jika animasi sudah selesai sebelumnya, ubah tombol jadi submit
-                                    button.setAttribute("type", "submit");
-                                    form.submit(); // Kirim form
-                                    return;
-                                }
-
-                                // Nonaktifkan tombol selama animasi
-                                button.disabled = true;
-
-                                // Tambahkan kelas "flying" untuk animasi
-                                button.classList.add('flying');
-
-                                // Set variabel "hasFlown" menjadi true agar tidak terbang lagi
-                                hasFlown = true;
-
-                                // Hapus kelas setelah animasi selesai agar tombol bisa digunakan untuk submit
-                                setTimeout(() => {
-                                    button.classList.remove('flying');
-                                    button.disabled = false; // Aktifkan tombol kembali
-                                    button.setAttribute("type", "submit"); // Ubah tombol menjadi submit
-                                }, 10000); // Durasi sesuai waktu animasi (10 detik)
-                            }
-                        </script>
 
 
                     </form>

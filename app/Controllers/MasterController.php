@@ -496,23 +496,13 @@ class MasterController extends BaseController
 
     public function jasa()
     {
-        $user_id = session()->get('user_id');
         $jasa = $this->m_Jasa->findAll();
-        $coa = $this->m_Coa->getCoa();
-
-        $username = '';
-        if ($user_id) {
-            $user = $this->userModel->find($user_id);
-            if ($user) {
-                $username = $user['username'];
-            }
-        }
+        $coa = $this->m_Coa->findAll();
 
         $data = [
             'title' => 'Jasa',
             'jasa' => $jasa,
             'coa' => $coa,
-            'username' => $username
         ];
 
         return view('master/jasa', $data);
@@ -529,6 +519,8 @@ class MasterController extends BaseController
             'kode' => strtoupper($this->request->getPost('kode')),
             'nama_jasa' => strtoupper($this->request->getPost('nama_jasa')),
             'kode_biaya' => strtoupper($this->request->getPost('kode_biaya')),
+            'ket_biaya' => strtoupper($this->request->getPost('ket_biaya')),
+            'ket_alokasi' => strtoupper($this->request->getPost('ket_alokasi')),
             'kode_alokasi' => strtoupper($this->request->getPost('kode_alokasi')),
             'keterangan' => strtoupper($this->request->getPost('keterangan')),
             'user_id' => strtoupper($user_id)

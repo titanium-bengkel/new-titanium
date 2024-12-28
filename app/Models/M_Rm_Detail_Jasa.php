@@ -13,7 +13,8 @@ class M_Rm_Detail_Jasa extends Model
         'nama_jasa',
         'harga',
         'jenis_bayar',
-        'id_jasa'
+        'id_jasa',
+        'keterangan'
     ];
 
     // Tidak ada fungsi generateId karena primary key adalah AUTO_INCREMENT

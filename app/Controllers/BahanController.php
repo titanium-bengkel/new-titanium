@@ -136,6 +136,11 @@ class BahanController extends BaseController
 
     public function create_bahan()
     {
+        $user_id = session()->get('user_id');
+        if (!$user_id) {
+            return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
+        }
+
         $poBahanModel = new M_Po_Bahan();
         $detailBarangModel = new M_Detail_Barang();
 
@@ -333,7 +338,7 @@ class BahanController extends BaseController
 
     public function create_terima()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return $this->response->setJSON([
                 'status' => 'error',

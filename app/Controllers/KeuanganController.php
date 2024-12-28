@@ -2,18 +2,14 @@
 
 namespace App\Controllers;
 
-use App\Models\M_Bahan_Repair;
 use App\Models\M_Detail_Terima;
 use App\Models\M_K_Pembelian;
 use App\Models\M_K_DPembelian;
-use App\Models\M_Kwitansi;
-use App\Models\M_Part_Repair;
-use App\Models\M_Pdetail_Terima;
+use App\Models\M_Part_Terima;
 use App\Models\M_RepairOrder;
 use App\Models\M_Supplier;
 use App\Models\M_Terima_Bahan;
 use App\Models\M_HutangSupplier;
-use App\Models\M_Kdetail_Pembelian;
 use App\Models\M_Rm_Jasa;
 use App\Models\M_Jasa;
 use App\Models\M_Rm_Detail_Jasa;
@@ -22,13 +18,14 @@ use App\Models\M_K_Pembayaran_Detail;
 use App\Models\M_KasBank;
 use App\Models\M_KasBank_Form;
 use App\Models\M_Coa;
-use App\Models\M_KasMasuk;
 use App\Models\M_P_KasBesar;
 use App\Models\M_KasKecil;
 use App\Models\M_KasKeluar;
 use App\Models\M_ReportJurnal;
 use App\Models\UserModel;
-
+use App\Models\M_AuditLogCreate;
+use App\Models\M_AuditLogEdit;
+use App\Models\M_AuditLog;
 
 
 class KeuanganController extends BaseController
@@ -36,15 +33,23 @@ class KeuanganController extends BaseController
 
     public function hutang_supp()
     {
-        $model = new M_HutangSupplier();
-        $supplier = $model->findAll();
+        $suppartM = new M_Part_Terima();
+        $suppbaM = new M_Terima_Bahan();
+
+        $part = $suppartM->findAll();
+        $bahan = $suppbaM->findAll();
+
+        $suppdata = array_merge($part, $bahan);
 
         $data = [
             'title' => 'Rekap Hutang',
-            'supplier' => $supplier
+            'supplier' => $suppdata
         ];
+
+        // Tampilkan view
         return view('keuangan/hutang', $data);
     }
+
 
 
     //------------------------------------------------------------------------------------------------------------------- 
@@ -894,14 +899,8 @@ class KeuanganController extends BaseController
     public function repair_materialjasa()
     {
         $modelJasa = new M_Rm_Jasa();
-        $userModel = new UserModel();
 
         $dataJasa = $modelJasa->orderBy('id_jasa', 'DESC')->findAll();
-
-        foreach ($dataJasa as &$item) {
-            $user = $userModel->find($item['user_id']);
-            $item['username'] = $user ? $user['username'] : 'Unknown';
-        }
 
         $data = [
             'title' => 'RM Jasa',
@@ -915,28 +914,93 @@ class KeuanganController extends BaseController
     public function repair_materialjasaadd()
     {
         $modelJasa = new M_Rm_Jasa();
-        $poData = $modelJasa->getAllPO();
+        $roM = new M_RepairOrder();
+
+        $roData = $roM->findAll();
+
 
         $data = [
             'title' => 'RM Jasa',
             'generateId' => $modelJasa->generateId(),
-            'po' => $poData,
+            'ro' => $roData,
         ];
         return view('keuangan/material_jasaadd', $data);
     }
 
     public function createRepairJasa()
     {
-        $modelJasa = new M_Rm_Jasa();
-        $generateId = $modelJasa->generateId();
+        $user_id = session()->get('username');
+        if (!$user_id) {
+            return redirect()->to('/')->with('error', 'User ID not found in session');
+        }
 
-        // Mengambil data dari input form
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        $rjasaM = new M_Rm_Jasa();
+        $auditM = new M_AuditLog();
+        $generateId = $rjasaM->generateId();
+
+        $id_jasa = $this->request->getPost('id_jasa');
         $data = [
-            'id_jasa' => $this->request->getPost('id_jasa'),
+            'id_jasa' => $id_jasa,
             'tanggal' => $this->request->getPost('tanggal'),
             'no_ro' => strtoupper($this->request->getPost('no_ro')),
             'tanggal_masuk' => $this->request->getPost('tanggal_masuk'),
             'nopol' => strtoupper($this->request->getPost('nopol')),
+            'no_rangka' => strtoupper($this->request->getPost('no_rangka')),
+            'jenis_mobil' => strtoupper($this->request->getPost('jenis_mobil')),
+            'warna' => strtoupper($this->request->getPost('warna')),
+            'tahun' => $this->request->getPost('tahun'),
+            'nama_pemilik' => strtoupper($this->request->getPost('nama_pemilik')),
+            'keterangan' => strtoupper($this->request->getPost('keterangan')),
+            'user_id' => $user_id
+        ];
+
+        $rjasaM->insert($data);
+
+        $description = "$user_id Menambahkan Repair Material Jasa dengan id $id_jasa";
+
+        $auditM->logCreate('Repair Material Jasa', $user_id, $description);
+
+        // Selesaikan transaksi
+        $db->transComplete();
+
+        // Cek status transaksi
+        if ($db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Gagal menyimpan data');
+        }
+
+        return redirect()->to(base_url('/material_jasaprev/' . $generateId))->with('success', 'Repair Jasa berhasil disimpan.');
+    }
+
+    public function updateJasa()
+    {
+        $user_id = session()->get('username');
+        if (!$user_id) {
+            return redirect()->to('/')->with('error', 'User ID not found in session');
+        }
+
+        $modelJasa = new M_Rm_Jasa();
+        $auditM = new M_AuditLog();
+
+        $id_jasa = $this->request->getPost('id_jasa');
+
+        $oldData = $modelJasa->find($id_jasa);
+
+        if (!$oldData) {
+            return redirect()->back()->with('error', 'Repair Jasa tidak ditemukan');
+        }
+
+        log_message('debug', 'Data Lama: ' . print_r($oldData, true));
+
+        $data = [
+            'id_jasa' => $id_jasa,
+            'tanggal' => $this->request->getPost('tanggal'),
+            'no_ro' => strtoupper($this->request->getPost('no_ro')),
+            'tanggal_masuk' => $this->request->getPost('tanggal_masuk'),
+            'nopol' => strtoupper($this->request->getPost('nopol')),
+            'no_rangka' => strtoupper($this->request->getPost('no_rangka')),
             'jenis_mobil' => strtoupper($this->request->getPost('jenis_mobil')),
             'warna' => strtoupper($this->request->getPost('warna')),
             'tahun' => $this->request->getPost('tahun'),
@@ -944,37 +1008,69 @@ class KeuanganController extends BaseController
             'keterangan' => strtoupper($this->request->getPost('keterangan')),
         ];
 
-        // Menyimpan data ke database
-        $modelJasa->insert($data);
+        log_message('debug', 'Data Baru: ' . print_r($data, true));
 
-        // Mengarahkan pengguna ke halaman lain
-        return redirect()->to(base_url('/material_jasaprev/' . $generateId))->with('message', 'Data berhasil disimpan.');
+        $modelJasa->update($id_jasa, $data);
+
+        $description = "$user_id Mengedit Repair Material Jasa dengan id $id_jasa";
+
+        foreach ($data as $column => $newValue) {
+            $oldValue = isset($oldData[$column]) ? $oldData[$column] : null;
+
+            log_message('debug', "Perubahan pada $column: Old Value - $oldValue, New Value - $newValue");
+
+            if (trim(strtolower($oldValue)) != trim(strtolower($newValue))) {
+                $auditM->logEdit('Repair Material Jasa', $id_jasa, $column, $oldValue, $newValue, $user_id, $description);
+            }
+        }
+
+        $auditM->insert([
+            'action' => 'EDIT',
+            'table_name' => 'Repair Material Jasa',
+            'record_id' => $id_jasa,
+            'username' => $user_id,
+            'description' => $description,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        return redirect()->to(base_url('material_jasaprev/' . $id_jasa))->with('success', 'Repair Jasa berhasil diperbarui.');
     }
 
-    public function updateJasa()
+    public function deleteRepairJasa($id_jasa)
     {
-        $modelJasa = new M_Rm_Jasa();
+        $user_id = session()->get('username');
+        if (!$user_id) {
+            return redirect()->to('/')->with('error', 'User ID not found in session');
+        }
 
-        // Mengambil data dari input form
-        $data = [
-            'id_jasa' => $this->request->getPost('id_jasa'),
-            'tanggal' => $this->request->getPost('tanggal'),
-            'no_ro' => strtoupper($this->request->getPost('no_ro')), // Mengubah ke huruf besar
-            'tanggal_masuk' => $this->request->getPost('tanggal_masuk'),
-            'nopol' => strtoupper($this->request->getPost('nopol')), // Mengubah ke huruf besar
-            'jenis_mobil' => strtoupper($this->request->getPost('jenis_mobil')), // Mengubah ke huruf besar
-            'warna' => strtoupper($this->request->getPost('warna')), // Mengubah ke huruf besar
-            'tahun' => $this->request->getPost('tahun'),
-            'nama_pemilik' => strtoupper($this->request->getPost('nama_pemilik')), // Mengubah ke huruf besar
-            'keterangan' => strtoupper($this->request->getPost('keterangan')), // Mengubah ke huruf besar
-        ];
+        $db = \Config\Database::connect();
+        $db->transStart();
 
-        // Memperbarui data di M_Rm_Jasa
-        $modelJasa->update($data['id_jasa'], $data);
+        $rjasaM = new M_Rm_Jasa();
+        $auditM = new M_AuditLog();
 
-        // Mengarahkan ke halaman preview dengan id_jasa
-        return redirect()->to(base_url('material_jasaprev/' . $data['id_jasa']))->with('message', 'Data berhasil diperbarui.');
+        $oldData = $rjasaM->find($id_jasa);
+
+        if (!$oldData) {
+            return redirect()->back()->with('error', 'Repair Jasa tidak ditemukan');
+        }
+
+        $rjasaM->delete($id_jasa);
+
+        $description = "$user_id Menghapus Repair Material Jasa dengan id $id_jasa";
+
+        $auditM->logDelete('Repair Material Jasa', $id_jasa, $user_id, $oldData, $description);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Gagal menghapus data');
+        }
+
+        return redirect()->to(base_url('/material_jasa'))->with('success', 'Repair Jasa berhasil dihapus.');
     }
+
+
 
 
 
@@ -984,9 +1080,8 @@ class KeuanganController extends BaseController
         $masterJasaModel = new M_Jasa();
         $modelDetailJasa = new M_Rm_Detail_Jasa();
 
-        // Mengambil data berdasarkan id_jasa
-        $dataJasa = $modelJasa->find($id_jasa); // Menggunakan find untuk mendapatkan satu data
-        $masterjasa = $masterJasaModel->findAll(); //
+        $dataJasa = $modelJasa->find($id_jasa);
+        $masterjasa = $masterJasaModel->findAll();
         $dataDetailJasa = $modelDetailJasa->where('id_jasa', $id_jasa)->findAll(); //
         $data = [
             'title' => 'RM Jasa',
@@ -1003,35 +1098,119 @@ class KeuanganController extends BaseController
     {
         $modelDetailJasa = new M_Rm_Detail_Jasa();
         $modelJasa = new M_Rm_Jasa();
+        $modelAuditLog = new M_AuditLog();
+        $modelJurnal = new M_ReportJurnal();
+        $modelCoa = new M_Coa();
+        $modelMasterJasa = new M_Jasa();
 
-        // Mengambil data dari input form
+        $username = session()->get('username');
         $data = [
             'id_jasa' => $this->request->getPost('id_jasa'),
-            'kode_jasa' => strtoupper($this->request->getPost('kode_jasa')), // Mengubah ke huruf besar
-            'nama_jasa' => strtoupper($this->request->getPost('nama_jasa')), // Mengubah ke huruf besar
-            'harga' => $this->request->getPost('harga'),
-            'jenis_bayar' => strtoupper($this->request->getPost('jenis_bayar')), // Mengubah ke huruf besar
+            'kode_jasa' => strtoupper($this->request->getPost('kode_jasa')),
+            'nama_jasa' => strtoupper($this->request->getPost('nama_jasa')),
+            'harga' => str_replace([',', '.'], '', $this->request->getPost('harga')),
+            'jenis_bayar' => strtoupper($this->request->getPost('jenis_bayar')),
+            'keterangan' => strtoupper($this->request->getPost('keterangan')),
         ];
 
-        // Cek apakah id_jasa sudah ada
         if ($modelDetailJasa->find($data['id_jasa'])) {
-            // Update jika id_jasa sudah ada
+            $oldData = $modelDetailJasa->find($data['id_jasa']);
             $modelDetailJasa->update($data['id_jasa'], $data);
+
+            foreach ($data as $column => $newValue) {
+                if (isset($oldData[$column]) && $oldData[$column] !== $newValue) {
+                    $modelAuditLog->logEdit(
+                        'rm_detail_jasa',
+                        $data['id_jasa'],
+                        $column,
+                        $oldData[$column],
+                        $newValue,
+                        $username
+                    );
+                }
+            }
         } else {
-            // Insert jika id_jasa belum ada
             $modelDetailJasa->insert($data);
+
+            $modelAuditLog->logCreate(
+                'rm_detail_jasa',
+                $username,
+                "User {$username} Menambahkan Jasa dengan ID {$data['id_jasa']}"
+            );
         }
 
-        // Menghitung total harga untuk id_jasa
         $total = $modelDetailJasa->selectSum('harga')
             ->where('id_jasa', $data['id_jasa'])
             ->first();
 
-        // Memperbarui total di M_Rm_Jasa
         $modelJasa->update($data['id_jasa'], ['total' => $total['harga']]);
 
-        return redirect()->to(base_url('material_jasaprev/' . $data['id_jasa']))->with('message', 'Data berhasil disimpan.');
+        $modelAuditLog->logEdit(
+            'rm_jasa',
+            $data['id_jasa'],
+            'total',
+            '',
+            $total['harga'],
+            $username,
+            "User {$username} Mengubah Total Jasa pada ID {$data['id_jasa']}"
+        );
+
+        // Pencatatan ke jurnal
+        $coaData = $modelCoa->where('kode', $data['jenis_bayar'])->first();
+        $masterJasaData = $modelMasterJasa->where('kode', $data['kode_jasa'])->first();
+
+        if ($coaData && $masterJasaData) {
+            $docNo = "HPP.{$data['id_jasa']}";
+            $description = "{$data['nama_jasa']} {$data['keterangan']}";
+
+            // Entri jurnal untuk DEBET
+            $jurnalDebit = [
+                'date' => date('Y-m-d'),
+                'doc_no' => $docNo,
+                'account' => $coaData['kode'],
+                'name' => $coaData['nama_account'],
+                'description' => $description,
+                'debit' => $total['harga'],
+                'kredit' => 0,
+                'aksi' => 'Posted',
+                'user_id' => $username,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+            $modelJurnal->insert($jurnalDebit);
+
+            // Entri jurnal untuk KREDIT
+            if (!empty($masterJasaData['kode_alokasi'])) {
+                $coaAlokasi = $modelCoa->where('kode', $masterJasaData['kode_alokasi'])->first();
+                if ($coaAlokasi) {
+                    $jurnalKredit = [
+                        'date' => date('Y-m-d'),
+                        'doc_no' => $docNo,
+                        'account' => $coaAlokasi['kode'],
+                        'name' => $coaAlokasi['nama_account'],
+                        'description' => $description,
+                        'debit' => 0,
+                        'kredit' => $total['harga'],
+                        'aksi' => '',
+                        'user_id' => $username,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    $modelJurnal->insert($jurnalKredit);
+                } else {
+                    return redirect()->back()->with('error', 'Kode Alokasi tidak ditemukan di COA.');
+                }
+            } else {
+                return redirect()->back()->with('error', 'Kode Alokasi kosong pada Master Jasa.');
+            }
+        } else {
+            return redirect()->back()->with('error', 'Jenis Bayar atau Kode Jasa tidak ditemukan di COA atau Master Jasa.');
+        }
+
+        return redirect()->to(base_url('material_jasaprev/' . $data['id_jasa']))->with('success', 'Jasa berhasil ditambahkan.');
     }
+
+
+
+
 
 
     public function add_bayar_hutang()

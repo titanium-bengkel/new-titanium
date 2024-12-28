@@ -370,26 +370,22 @@
 
                     <div class="mt-3">
                         <div class="d-flex mt-3">
-                            <button type="submit" class="btn btn-sm btn-primary me-2">Update</button>
+                            <button type="submit" class="btn btn-primary me-2">Update</button>
                             <!-- <button type="button" class="btn btn-sm btn-secondary" style="margin-left: 20px;">Cetak Estimasi</button> -->
-                            <a href="<?= base_url('cetakEstimasi/' . $po['id_terima_po']) ?>" target="_blank" class="btn btn-secondary btn-sm">Cetak Estimasi</a>
+                            <a href="<?= base_url('cetakEstimasi/' . $po['id_terima_po']) ?>" target="_blank" class="btn btn-secondary">Cetak Estimasi</a>
 
 
                             <div id="approval-buttons">
                                 <?php if ($isApproved) : ?>
-                                    <a href="<?= base_url('order_pos_asprev/' . $po['id_terima_po']); ?>" class="btn btn-sm btn-success" style="margin-left: 10px;">
+                                    <a href="<?= base_url('order_pos_asprev/' . $po['id_terima_po']); ?>" class="btn btn-success" style="margin-left: 10px;">
                                         Sudah Approve
                                     </a>
                                 <?php else : ?>
-                                    <button type="button" class="btn btn-sm btn-success" style="margin-left: 10px;" data-bs-toggle="modal" data-bs-target="#asur-acc">
+                                    <button type="button" class="btn btn-success" style="margin-left: 10px;" data-bs-toggle="modal" data-bs-target="#asur-acc">
                                         Approve Asuransi
                                     </button>
                                 <?php endif; ?>
                             </div>
-                        </div>
-                        <div class="alert alert-info mt-3 alert-dismissible fade show" role="alert" id="infoAlert">
-                            PASTIKAN SELALU UPDATE AGAR HARGA ESTIMASI TERINPUT.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     </div>
 
@@ -723,13 +719,9 @@
                                             </td>
                                             <td><?= htmlspecialchars($gambar['deskripsi']) ?></td>
                                             <td>
-                                                <form action="<?= base_url('deleteGambarPo/' . $gambar['id_gambar_po']) ?>" method="post" style="display:inline;">
-                                                    <?= csrf_field() ?> <!-- Jika menggunakan CSRF protection -->
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <button type="submit" class="btn btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus gambar ini?');">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn btn-sm" onclick="confirmDelete(<?= $gambar['id_gambar_po'] ?>)">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
                                             </td>
 
                                         </tr>
@@ -748,6 +740,27 @@
     </div>
 </section>
 <!-- Horizontal Input end -->
+
+<script>
+    function confirmDelete(gambarId) {
+        // Menampilkan SweetAlert2 konfirmasi penghapusan
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Gambar ini akan dihapus dan tidak dapat dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Jika pengguna memilih Ya, hapus, maka panggil fungsi penghapusan
+                window.location.href = "<?= base_url('deleteGambarPo/') ?>" + gambarId; // Redirect ke URL penghapusan
+            }
+        });
+    }
+</script>
 
 <!-- modal pengerjaan -->
 <div class="modal fade" id="pengerjaanModal" tabindex="-1" aria-labelledby="pengerjaanModalLabel" aria-hidden="true">
@@ -1044,7 +1057,13 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="jenis_mobil" class="col-sm-3 col-form-label" style="font-weight: 500;">Jenis Mobil</label>
+                            <label for="no_rangka" class="col-sm-3 col-form-label" style="font-weight: 500;">No. Rangka</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="no_rangka" class="form-control" name="no_rangka" value="<?= isset($po['no_rangka']) ? esc($po['no_rangka']) : '' ?>">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="jenis_mobil" class="col-sm-3 col-form-label" style="font-weight: 500;">Car Model</label>
                             <div class="col-sm-9">
                                 <input type="text" id="jenis_mobil" class="form-control" name="jenis_mobil" value="<?= isset($po['jenis_mobil']) ? esc($po['jenis_mobil']) : '' ?>">
                             </div>
@@ -1056,19 +1075,19 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="customer_name" class="col-sm-3 col-form-label" style="font-weight: 500;">Nama Customer</label>
+                            <label for="customer_name" class="col-sm-3 col-form-label" style="font-weight: 500;">Nama Pelanggan</label>
                             <div class="col-sm-9">
                                 <input type="text" id="customer_name" class="form-control" name="customer_name" value="<?= isset($po['customer_name']) ? esc($po['customer_name']) : '' ?>">
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="no_contact" class="col-sm-3 col-form-label" style="font-weight: 500;">No. Kontak</label>
+                            <label for="no_contact" class="col-sm-3 col-form-label" style="font-weight: 500;">Kontak</label>
                             <div class="col-sm-9">
                                 <input type="text" id="no_contact" class="form-control" name="no_contact" value="<?= isset($po['no_contact']) ? esc($po['no_contact']) : '' ?>">
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="tahun_mobil" class="col-sm-3 col-form-label" style="font-weight: 500;">Tahun Kendaraan</label>
+                            <label for="tahun_mobil" class="col-sm-3 col-form-label" style="font-weight: 500;">Tahun</label>
                             <div class="col-sm-9">
                                 <input type="text" id="tahun_mobil" class="form-control" name="tahun_mobil" value="<?= isset($po['tahun_kendaraan']) ? esc($po['tahun_kendaraan']) : '' ?>">
                             </div>
@@ -1085,7 +1104,7 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="tgl_masuk" class="col-sm-3 col-form-label" style="font-weight: 500;">Tanggal Masuk</label>
+                            <label for="tgl_masuk" class="col-sm-3 col-form-label" style="font-weight: 500;">Tgl. Masuk</label>
                             <div class="col-sm-9">
                                 <input type="date" id="tgl_masuk" class="form-control" name="tgl_masuk" onclick="this.showPicker()" value="<?= isset($po['tgl_klaim']) ? esc($po['tgl_klaim']) : '' ?>" readonly>
                             </div>

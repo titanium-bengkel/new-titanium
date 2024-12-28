@@ -236,7 +236,7 @@
             <div class="row">
                 <div class="col-6">
                     <div class="card h-100 shadow-sm">
-                        <div class="card-header" style="background-color: #1e88e5;">
+                        <div class="card-header" style="background-color:rgb(63, 94, 121);">
                             <h5 class="font-semibold" style="color: #ffffff !important;">Daily Report Bengkel</h5>
                         </div>
                         <div class="card-body">

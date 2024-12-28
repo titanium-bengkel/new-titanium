@@ -79,7 +79,13 @@
                                 <input type="text" id="no-kendaraan" class="form-control" name="no_kendaraan" value="<?= isset($data['no_kendaraan']) ? esc($data['no_kendaraan']) : '' ?>">
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="jenis-mobil">Jenis Mobil</label>
+                                <label class="col-form-label" for="no_rangka">No. Rangka</label>
+                            </div>
+                            <div class="col-lg-10 col-7 mb-3">
+                                <input type="text" id="no_rangka" class="form-control" name="no_rangka" value="<?= isset($data['no_rangka']) ? esc($data['no_rangka']) : '' ?>">
+                            </div>
+                            <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="jenis-mobil">Car Model</label>
                             </div>
                             <div class="col-lg-10 col-7 mb-3">
                                 <input type="text" id="jenis-mobil" class="form-control" name="jenis_mobil" value="<?= isset($data['jenis_mobil']) ? esc($data['jenis_mobil']) : '' ?>">
@@ -91,19 +97,19 @@
                                 <input type="text" id="warna" class="form-control" name="warna" value="<?= isset($data['warna']) ? esc($data['warna']) : '' ?>">
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="customer-name">Customer Name</label>
+                                <label class="col-form-label" for="customer-name">Nama Pelanggan</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="text" id="customer-name" class="form-control" name="customer_name" value="<?= isset($data['customer_name']) ? esc($data['customer_name']) : '' ?>">
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="no-contact">No Contact</label>
+                                <label class="col-form-label" for="no-contact">Kontak</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="text" id="no-contact" class="form-control" name="no_contact" value="<?= isset($data['no_contact']) ? esc($data['no_contact']) : '' ?>">
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="tahun-mobil">Tahun Mobil</label>
+                                <label class="col-form-label" for="tahun-mobil">Tahun</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="text" id="tahun-mobil" class="form-control" name="tahun_mobil" value="<?= isset($data['tahun_kendaraan']) ? esc($data['tahun_kendaraan']) : '' ?>">

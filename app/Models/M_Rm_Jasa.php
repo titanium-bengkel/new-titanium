@@ -14,6 +14,7 @@ class M_Rm_Jasa extends Model
         'no_ro',
         'tanggal_masuk',
         'nopol',
+        'no_rangka',
         'jenis_mobil',
         'warna',
         'tahun',
@@ -22,6 +23,9 @@ class M_Rm_Jasa extends Model
         'total',
         'user_id',
     ];
+    protected $useTimestamps = true;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
 
     // Fungsi untuk generate ID dengan format RMJYYYYMM001
     public function generateId()
@@ -47,9 +51,5 @@ class M_Rm_Jasa extends Model
         $newId = 'RMJ' . $yearMonth . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
 
         return $newId;
-    }
-    public function getAllPO()
-    {
-        return $this->db->table('po')->get()->getResult();
     }
 }

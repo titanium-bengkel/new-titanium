@@ -46,29 +46,96 @@
                         </div>
                         <div class="col-lg-10 col-9 mb-1 d-flex align-items-center">
                             <div class="form-check me-3">
-                                <input type="radio" id="bengkel-titanium" name="bengkel" value="TITANIUM" class="form-check-input"
-                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'TITANIUM') ? 'checked' : '' ?>>
+                                <input type="radio" id="bengkel-titanium" name="bengkel" value="Titanium" class="form-check-input"
+                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'Titanium') ? 'checked' : '' ?>>
                                 <label class="form-check-label" for="bengkel-titanium">Titanium</label>
                             </div>
                             <div class="form-check me-3">
-                                <input type="radio" id="bengkel-tandem" name="bengkel" value="TANDEM" class="form-check-input"
-                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'TANDEM') ? 'checked' : '' ?>>
+                                <input type="radio" id="bengkel-tandem" name="bengkel" value="Tandem" class="form-check-input"
+                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'Tandem') ? 'checked' : '' ?>>
                                 <label class="form-check-label" for="bengkel-tandem">Tandem</label>
                             </div>
                             <div class="form-check me-3">
-                                <input type="radio" id="bengkel-k3karoseri" name="bengkel" value="K3 KAROSERI" class="form-check-input"
-                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'K3 KAROSERI') ? 'checked' : '' ?>>
+                                <input type="radio" id="bengkel-k3karoseri" name="bengkel" value="K3 Karoseri" class="form-check-input"
+                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'K3 Karoseri') ? 'checked' : '' ?>>
                                 <label class="form-check-label" for="bengkel-k3karoseri">K3 Karoseri</label>
                             </div>
                             <div class="form-check">
-                                <input type="radio" id="bengkel-vortex" name="bengkel" value="VORTEX" class="form-check-input"
-                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'VORTEX') ? 'checked' : '' ?>>
+                                <input type="radio" id="bengkel-vortex" name="bengkel" value="Vortex" class="form-check-input"
+                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'Vortex') ? 'checked' : '' ?>>
                                 <label class="form-check-label" for="bengkel-vortex">Vortex</label>
                             </div>
                             <div class="d-flex ms-auto">
-                                <input type="date" id="tanggal-estimasi" class="form-control me-2" name="tanggal-estimasi" style=" max-width: 180px;" value="<?= isset($ro['tgl_keluar']) ? esc($ro['tgl_keluar']) : '' ?>">
+                                <input type="date" id="tanggal-estimasi" class="form-control me-2" name="tgl_keluar" style=" max-width: 180px;" value="<?= isset($ro['tgl_keluar']) ? esc($ro['tgl_keluar']) : '' ?>">
                                 <input type="time" id="jam" name="jam_keluar" class="form-control me-2" style="max-width: 120px;" value="<?= isset($ro['jam_keluar']) ? esc($ro['jam_keluar']) : '' ?>">
-                                <button type="button" class="btn btn-primary btn-sm" id="mobilKeluarBtn" data-id_terima_po="<?= isset($ro['id_terima_po']) ? esc($ro['id_terima_po']) : '' ?>"><i class="fas fa-sign-out-alt"></i></button>
+                                <div class="ms-auto">
+                                    <button type="button" class="btn btn-primary" id="mobilKeluarBtn"
+                                        data-id_terima_po="<?= isset($ro['id_terima_po']) ? esc($ro['id_terima_po']) : '' ?>"><i class="fas fa-sign-out"></i></button>
+                                </div>
+
+
+                                <script>
+                                    // Ambil elemen tombol berdasarkan ID
+                                    document.getElementById('mobilKeluarBtn').addEventListener('click', function() {
+                                        // Ambil nilai id_terima_po dari atribut data-id_terima_po
+                                        const id_terima_po = this.getAttribute('data-id_terima_po');
+
+                                        // Menampilkan SweetAlert2 dengan pilihan Iya dan Batal
+                                        Swal.fire({
+                                            title: 'Apakah Anda yakin?',
+                                            text: "Tindakan ini tidak bisa dibatalkan. Mobil akan keluar dan data tidak dapat kembali setelah dikonfirmasi.",
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonText: 'Iya, Lanjutkan',
+                                            cancelButtonText: 'Batal',
+                                            reverseButtons: true // Agar tombol Batal di kiri dan Iya di kanan
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                // Jika klik Iya, kirim request POST ke route dengan id_terima_po
+                                                const url = '/buttonExit/' + encodeURIComponent(id_terima_po); // Ganti 'yourData' dengan id_terima_po
+
+                                                fetch(url, {
+                                                        method: 'POST', // Menggunakan POST
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'X-Requested-With': 'XMLHttpRequest' // Biasanya digunakan untuk AJAX request
+                                                        },
+                                                        body: JSON.stringify({
+                                                            // Kirim data tambahan jika diperlukan
+                                                            mobilId: 123 // Ganti dengan data lain jika diperlukan
+                                                        })
+                                                    })
+                                                    .then(response => response.json()) // Mengambil response JSON
+                                                    .then(data => {
+                                                        if (data.success) {
+                                                            Swal.fire(
+                                                                'Mobil Keluar!',
+                                                                data.message,
+                                                                'success'
+                                                            );
+                                                        } else {
+                                                            Swal.fire(
+                                                                'Gagal!',
+                                                                data.message,
+                                                                'error'
+                                                            );
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Error:', error);
+                                                        Swal.fire('Terjadi Kesalahan', 'Gagal mengirim data ke server', 'error');
+                                                    });
+                                            } else if (result.isDismissed) {
+                                                // Jika klik Batal
+                                                Swal.fire(
+                                                    'Aksi Dibatalkan!',
+                                                    'Tidak ada perubahan yang dilakukan.',
+                                                    'error'
+                                                );
+                                            }
+                                        });
+                                    });
+                                </script>
                             </div>
 
                             <!-- Countdown Timer Card -->
@@ -107,7 +174,7 @@
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="no-rangka">No Rangka</label>
+                            <label class="col-form-label" for="no-rangka">No. Rangka</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="no-rangka" class="form-control" name="no-rangka" value="<?= isset($ro['no_rangka']) ? esc($ro['no_rangka']) : '' ?>">
@@ -121,7 +188,7 @@
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="jenis-mobil">Jenis Mobil</label>
+                            <label class="col-form-label" for="jenis-mobil">Car Model</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="jenis-mobil" class="form-control" name="jenis-mobil" value="<?= isset($ro['jenis_mobil']) ? esc($ro['jenis_mobil']) : '' ?>">
@@ -145,6 +212,17 @@
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="panel" class="form-control" name="panel" value="<?= isset($ro['panel']) ? esc($ro['panel']) : '' ?>">
+                        </div>
+                        <div class="col-lg-2 col-3 mb-3">
+                            <label class="col-form-label" for="tingkat">Tingkat Kerusakan</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-3">
+                            <select id="tingkat" class="form-select" name="tingkat">
+                                <option value="" disabled <?= empty($ro['tingkat']) ? 'selected' : '' ?>>Pilih Tingkat Kerusakan</option>
+                                <option value="Heavy" <?= isset($ro['tingkat']) && $ro['tingkat'] === 'HEAVY' ? 'selected' : '' ?>>HEAVY</option>
+                                <option value="Medium" <?= isset($ro['tingkat']) && $ro['tingkat'] === 'MEDIUM' ? 'selected' : '' ?>>MEDIUM</option>
+                                <option value="Light" <?= isset($ro['tingkat']) && $ro['tingkat'] === 'LIGHT' ? 'selected' : '' ?>>LIGHT</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -349,8 +427,8 @@
                         </div>
                     </div>
                     <div class="mt-3" style="position: relative;">
-                        <button type="submit" class="btn btn-sm btn-primary">Simpan</button>
-                        <button type="button" class="btn btn-sm btn-danger">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="button" class="btn btn-danger">Batal</button>
                         <a href="<?= base_url('cetakPKB/' . $ro['id_terima_po']) ?>" target="_blank" class="btn btn-secondary btn-sm">Cetak PKB</a>
 
                         <?php if (isset($ro['progres_pengerjaan'])): ?>
@@ -1482,70 +1560,6 @@
                     }
                 });
             });
-        });
-    });
-</script>
-
-<!-- Mobil Keluar -->
-<script>
-    // Ambil elemen tombol berdasarkan ID
-    document.getElementById('mobilKeluarBtn').addEventListener('click', function() {
-        // Ambil nilai id_terima_po dari atribut data-id_terima_po
-        const id_terima_po = this.getAttribute('data-id_terima_po');
-
-        // Menampilkan SweetAlert2 dengan pilihan Iya dan Batal
-        Swal.fire({
-            title: 'Apakah Anda yakin?',
-            text: "Tindakan ini tidak bisa dibatalkan. Mobil akan keluar dan data tidak dapat kembali setelah dikonfirmasi.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Iya, Lanjutkan',
-            cancelButtonText: 'Batal',
-            reverseButtons: true // Agar tombol Batal di kiri dan Iya di kanan
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Jika klik Iya, kirim request POST ke route dengan id_terima_po
-                const url = '/buttonExit/' + encodeURIComponent(id_terima_po); // Ganti 'yourData' dengan id_terima_po
-
-                fetch(url, {
-                        method: 'POST', // Menggunakan POST
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest' // Biasanya digunakan untuk AJAX request
-                        },
-                        body: JSON.stringify({
-                            // Kirim data tambahan jika diperlukan
-                            mobilId: 123 // Ganti dengan data lain jika diperlukan
-                        })
-                    })
-                    .then(response => response.json()) // Mengambil response JSON
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire(
-                                'Mobil Keluar!',
-                                data.message,
-                                'success'
-                            );
-                        } else {
-                            Swal.fire(
-                                'Gagal!',
-                                data.message,
-                                'error'
-                            );
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire('Terjadi Kesalahan', 'Gagal mengirim data ke server', 'error');
-                    });
-            } else if (result.isDismissed) {
-                // Jika klik Batal
-                Swal.fire(
-                    'Aksi Dibatalkan!',
-                    'Tidak ada perubahan yang dilakukan.',
-                    'error'
-                );
-            }
         });
     });
 </script>
