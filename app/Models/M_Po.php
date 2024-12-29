@@ -303,4 +303,19 @@ class M_Po extends Model
             ->where('is_sent', 0)
             ->countAllResults();
     }
+
+
+    public function asuransistatus()
+    {
+        return $this->where('asuransi !=', 'UMUM/PRIBADI')
+            ->where('status !=', 'Repair Order')
+            ->countAllResults();
+    }
+
+    public function umumstatus()
+    {
+        return $this->where('asuransi', 'UMUM/PRIBADI')
+            ->where('status !=', 'Repair Order')
+            ->countAllResults();
+    }
 }

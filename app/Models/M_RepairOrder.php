@@ -123,4 +123,37 @@ class M_RepairOrder extends Model
         $today = date('Y-m-d');
         return $this->where('tgl_masuk', $today)->countAllResults();
     }
+
+    public function countExceptLunas()
+    {
+        return $this->where('progres_pengerjaan !=', 'lunas')->countAllResults();
+    }
+
+    public function repairasuransi()
+    {
+        return $this->where('asuransi !=', 'UMUM/PRIBADI')
+            ->where('status', 'Repair Order') 
+            ->countAllResults();
+    }
+
+    public function repairumum()
+    {
+        return $this->where('asuransi', 'UMUM/PRIBADI')
+            ->where('status', 'Repair Order') 
+            ->countAllResults();
+    }
+
+    public function mobilkeluarasuransi()
+    {
+        return $this->where('asuransi !=', 'UMUM/PRIBADI')
+            ->where('status', 'Mobil Keluar') 
+            ->countAllResults();
+    }
+
+    public function mobilkeluarumum()
+    {
+        return $this->where('asuransi', 'UMUM/PRIBADI')
+            ->where('status', 'Mobil Keluar') 
+            ->countAllResults();
+    }
 }

@@ -5,22 +5,30 @@ namespace App\Controllers;
 use App\Models\M_Po;
 use App\Models\M_RepairOrder;
 use App\Models\M_ReportJurnal;
+use App\Models\M_Kwitansi;
+
 
 class Home extends BaseController
 {
     public function index()
     {
-        // Instansiasi model
+
         $poModel = new M_Po();
         $repairModel = new M_RepairOrder();
         $jurnalModel = new M_ReportJurnal();
-
+        $kwitansiModel = new M_Kwitansi();
         // Mengambil bulan dan tahun saat ini
         $bulanIni = date('m');
         $tahunIni = date('Y');
 
-        // Menghitung jumlah hari dalam bulan ini menggunakan DateTime
-        $jumlahHari = (new \DateTime("$tahunIni-$bulanIni-01"))->format('t');
+        $today = date('Y-m-d');
+
+        // Menghitung jumlah hari dalam bulan ini
+        $jumlahHari = cal_days_in_month(CAL_GREGORIAN, $bulanIni, $tahunIni);
+
+        // Menghitung jumlah invoice berdasarkan tanggal hari ini
+        $dailyInvoiceCount = $kwitansiModel->where('tanggal', $today)->countAllResults();
+
 
         // Menyusun laporan pendapatan berdasarkan tanggal
         $reportPendapatan = [];
@@ -44,16 +52,30 @@ class Home extends BaseController
         }
 
         // Data lain untuk dashboard
-        $prosesKlaimCount = $poModel->where('progres', 'Proses Klaim')->countAllResults();
-        $accAsuransiCount = $poModel->where('status', 'Acc Asuransi')->countAllResults();
+        $prosesKlaimCount = $poModel->where('status', 'Pre-Order')->countAllResults();
+        $asuransi = $poModel->where('asuransi !=', 'UMUM/PRIBADI')->countAllResults();
+
+        $InvoiceCount = $kwitansiModel->countAllResults();
+        $InvoiceasuransiCount = $kwitansiModel->where('asuransi !=', 'UMUM/PRIBADI')->countAllResults();
+        $InvoiceumumCount = $kwitansiModel->where('asuransi', 'UMUM/PRIBADI')->countAllResults();
+
         $menungguSparepartCount = $poModel->where('progres', 'Menunggu Sparepart')->countAllResults();
         $menungguSupplyCount = $poModel->where('progres', 'Menunggu Supply')->countAllResults();
         $siapMasukCount = $poModel->where('progres', 'Siap Masuk')->countAllResults();
         $bengkelTitaniumCount = $poModel->countBengkelTitanium();
         $bengkelTandameCount = $poModel->where('bengkel', 'TANDEM')->countAllResults();
-        $repairOrderCount = $repairModel->countAllResults();
+        $repairOrderCount = $repairModel->where('status', 'Repair Order')->countAllResults();
+        $repairasuransiCount = $repairModel->repairasuransi();
+        $repairumumCount = $repairModel->repairumum ();
+        $unitkeluarCount = $repairModel->where('status', 'Mobil Keluar')->countAllResults();
+        $mobilKeluarasuransi = $repairModel->mobilkeluarasuransi();
+        $mobilkeluarumum = $repairModel->mobilkeluarumum();
         $mobilMasuk = $repairModel->getDailyReport();
+        $unitrepair = $repairModel->countExceptLunas();
+        $asuransistatus = $poModel->Asuransistatus();
+        $umumststus = $poModel->umumstatus();
         $roleLabel = session()->get('role_label');
+        $title = ($roleLabel === 'keuangan') ? 'Dashboard Keuangan' : 'Home';
 
         if (!$roleLabel) {
             $roleLabel = 'Role tidak tersedia';
@@ -61,23 +83,37 @@ class Home extends BaseController
 
         // Menyusun data untuk dikirim ke view
         $data = [
-            'title' => 'Home',
+            'title' => $title,
             'poData' => $poModel->findAll(),
-            'preOrderCount' => $poModel->where('status', 'Pre-order')->countAllResults(),
+            'preOrderCount' => $poModel->where('status !=', 'Repair Order')->countAllResults(),
             'prosesKlaimCount' => $prosesKlaimCount,
             'menungguSparepartCount' => $menungguSparepartCount,
             'menungguSupplyCount' => $menungguSupplyCount,
+            'kwitasniCount' => $InvoiceCount,
+            'kwitansiasuransi' => $InvoiceasuransiCount,
+            'kwitansiumum' => $InvoiceumumCount,
             'siapMasukCount' => $siapMasukCount,
-            'accAsuransiCount' => $accAsuransiCount,
+            'asuransistatus' => $asuransistatus,
+            'umumststus' => $umumststus,
             'bengkelTitaniumCount' => $bengkelTitaniumCount,
             'bengkelTandameCount' => $bengkelTandameCount,
             'repairOrder' => $repairOrderCount,
+            'repairasuransi' => $repairasuransiCount, // Jumlah repair order asuransi
+            'repairumum' => $repairumumCount, // Jumlah repair order umum
+            'unitkeluarCount' => $unitkeluarCount, // Jumlah unit yang sudah keluar (Mobil Keluar)
+            'mobilKeluarasuransi' => $mobilKeluarasuransi,
+            'mobilkeluarumum' => $mobilkeluarumum,
             'mobilMasuk' => $mobilMasuk,
-            'reportPendapatan' => $reportPendapatan,
+            'reportPendapatan' => $reportPendapatan, // Laporan pendapatan harian
+            'dailyInvoiceCount' => $dailyInvoiceCount,
+            'unitrepair' => $unitrepair, // Jumlah unit yang belum lunas
             'role' => $roleLabel
         ];
+
         return view('dashboard/index', $data);
     }
+
+
 
     public function dsb_keuangan()
     {
