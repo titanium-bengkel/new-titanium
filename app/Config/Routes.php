@@ -60,7 +60,8 @@ $routes->get('user_view', 'UserController::viewuser');
 // $routes->get('produksi', 'ProduksiController::produksi');
 $routes->get('/produksi/headproduksi', 'ProduksiController::headproduksi');
 $routes->get('/produksi/kelolaproduksi', 'ProduksiController::kelolaproduksi');
-$routes->post('/produksi/updateProgres', 'ProduksiController::updateProgres');
+$routes->post('/produksi/update-kelola', 'ProduksiController::updateProgressKelola');
+$routes->post('/produksi/update-head', 'ProduksiController::updateProgressHead');
 
 
 

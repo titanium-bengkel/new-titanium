@@ -45,7 +45,18 @@ class M_RepairOrder extends Model
 
     protected $useTimestamps = false;
 
+    protected $validationRules = [
+        'progres_pengerjaan' => 'in_list[Ketok,Dempul,Epoxy,Cat,Poles,Beres Pengerjaan]'
+    ];
+    // protected $validationRules = [
+    //     'progres_pengerjaan' => 'in_list[Ketok,Dempul,Epoxy,Cat,Poles,Beres Pengerjaan,Menunggu Sparepart Tambahan,Menunggu Comment User,Data Completed]'
+    // ];
+    
 
+    public function getAllRepairOrders()
+    {
+        return $this->orderBy('tgl_masuk', 'DESC')->findAll(); 
+    }
     public function getDataByAsuransi($id_terima_po, $asuransi)
     {
         if (strtoupper($asuransi) === 'UMUM/PRIBADI') {
@@ -81,7 +92,7 @@ class M_RepairOrder extends Model
             ->join('part_repair sparepart', 'sparepart.no_repair = repair_order.id_terima_po', 'left')
             ->join('bahan_repair bahan', 'bahan.no_repair = repair_order.id_terima_po', 'left')
             ->join('kwitansi kwitansi', 'kwitansi.no_order = repair_order.id_terima_po', 'left')
-            // Tidak ada GROUP BY
+            ->orderBy('repair_order.tgl_masuk', 'DESC')
             ->get()
             ->getResultArray();
     }
