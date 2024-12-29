@@ -253,6 +253,7 @@ class SparepartController extends BaseController
 
         $sparepart = $partbahanModel->orderBy('id_pesan', 'DESC')->findAll();
         $partmerge = [];
+        $grandTotalJumlah = 0; // Variabel untuk menyimpan total keseluruhan jumlah
 
         foreach ($sparepart as $item) {
             if (strpos($item['id_pesan'], 'POS') === 0) {
@@ -263,6 +264,9 @@ class SparepartController extends BaseController
                 foreach ($detail as $d) {
                     $totalJumlah += $d['jumlah'];
                 }
+
+                // Update grand total jumlah
+                $grandTotalJumlah += $totalJumlah;
 
                 $allSent = true;
                 if (count($terimaDetail) === 0) {
@@ -295,10 +299,12 @@ class SparepartController extends BaseController
         $data = [
             'title' => 'Pemesanan Sparepart PO',
             'sparepart' => $partmerge,
+            'grandTotalJumlah' => $grandTotalJumlah, // Total keseluruhan jumlah
         ];
 
         return view('sparepart/pesan_part', $data);
     }
+
 
 
 
@@ -388,18 +394,36 @@ class SparepartController extends BaseController
             ->orderBy('created_at', 'DESC')
             ->findAll();
 
+        // Variabel untuk menghitung total keseluruhan
+        $grandTotalQty = 0;
+        $grandTotalJumlah = 0;
+        $grandTotalPpn = 0;
+        $grandTotalNetto = 0;
+
         foreach ($sparepartsData as &$item) {
+            // Tambahkan username berdasarkan user_id
             $user = $userModel->find($item['user_id']);
             $item['username'] = $user ? $user['username'] : 'Unknown';
+
+            // Tambahkan nilai ke total keseluruhan
+            $grandTotalQty += $item['total_qty'];
+            $grandTotalJumlah += $item['total_jumlah'];
+            $grandTotalPpn += $item['nilai_ppn'];
+            $grandTotalNetto += $item['netto'];
         }
 
         $data = [
             'title' => 'Penerimaan Sparepart',
             'sparepart' => $sparepartsData,
+            'grandTotalQty' => $grandTotalQty,
+            'grandTotalJumlah' => $grandTotalJumlah,
+            'grandTotalPpn' => $grandTotalPpn,
+            'grandTotalNetto' => $grandTotalNetto,
         ];
 
         return view('sparepart/terima_part', $data);
     }
+
 
 
 
@@ -1410,8 +1434,10 @@ class SparepartController extends BaseController
         $qty_B = $this->request->getPost('qty_B');
         $sat_B = $this->request->getPost('sat_B');
         $hpp = $this->request->getPost('hpp');
+        $nilai = $this->request->getPost('nilai');
         $total_qty_B = array_sum($qty_B);
         $total_hpp = array_sum($hpp);
+        $total_nilai = array_sum($nilai);
 
         // Data untuk tabel bahan_repair
         $data = [
@@ -1431,6 +1457,7 @@ class SparepartController extends BaseController
             'keterangan' => strtoupper($this->request->getPost('keterangan')),
             'total_qty_B' => $total_qty_B,
             'total_hpp' => $total_hpp,
+            'total_nilai' => $total_nilai,
             'user_id' => $user_id
         ];
 
@@ -1450,7 +1477,6 @@ class SparepartController extends BaseController
         // Lanjutkan penyimpanan data bahan_repair
         $partRepairModel->insert($data);
 
-        // Proses penyimpanan detail dan update stok seperti semula
         foreach ($id_kode_barang as $index => $kode) {
             $detail = [
                 'id_material' => $generateId,
@@ -1459,6 +1485,7 @@ class SparepartController extends BaseController
                 'sat_B' => strtoupper($sat_B[$index]),
                 'qty_B' => $qty_B[$index],
                 'hpp' => $hpp[$index],
+                'nilai' => $qty_B[$index] * $hpp[$index], // Perhitungan nilai
                 'no_repair_order' => strtoupper($this->request->getPost('no_ro')),
                 'nopol' => strtoupper($this->request->getPost('nopol')),
                 'asuransi' => strtoupper($this->request->getPost('asuransi')),

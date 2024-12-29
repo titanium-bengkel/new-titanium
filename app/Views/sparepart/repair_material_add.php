@@ -33,7 +33,7 @@
             <div class="card">
                 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                        <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">List RM Sparepart</a>
+                        <a href="<?= base_url('repair_material_part') ?>" class="breadcrumb-link text-primary fw-bold">List RM Sparepart</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
                         <span class="breadcrumb-current text-muted">Repair Material Sparepart</span>
                     </div>
@@ -56,30 +56,6 @@
                                 <input type="date" id="tanggal" class="form-control form-control-sm" name="tanggal" onkeydown="return false" onclick="this.showPicker()">
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="gudang_keluar">Gudang Keluar</label>
-                            </div>
-                            <div class="col-lg-10 col-7 mb-3">
-                                <fieldset class="form-group">
-                                    <select class="form-select form-select-sm" id="gudang_keluar" name="gudang_keluar">
-                                        <option>--Pilih--</option>
-                                        <option>GUDANG STOK SPAREPART </option>
-                                        <option>GUDANG REPAIR</option>
-                                        <option>GUDANG SUPPLY ASURANSI</option>
-                                        <option>GUDANG WAITING</option>
-                                        <option>GUDANG SALVAGE</option>
-                                    </select>
-                                </fieldset>
-                            </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="gudang_masuk">Gudang Masuk</label>
-                            </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="text" id="gudang_masuk" name="gudang_masuk" class="form-control form-control-sm">
-                            </div>
-                        </div>
-                        <h5>Data</h5>
-                        <div class="form-group row align-items-center">
-                            <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="no_ro">No. Work Order</label>
                             </div>
                             <div class="col-lg-9 col-7 mb-3">
@@ -90,6 +66,27 @@
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
+                            <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="gudang_keluar">Gudang Keluar</label>
+                            </div>
+                            <div class="col-lg-10 col-7 mb-3">
+                                <fieldset class="form-group">
+                                    <select class="form-select form-select-sm" id="gudang_keluar" name="gudang_keluar">
+                                        <option>--Pilih--</option>
+                                        <option>GUDANG STOK SPAREPART </option>
+                                        <option>GUDANG SUPPLY ASURANSI</option>
+                                    </select>
+                                </fieldset>
+                            </div>
+                            <!-- <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="gudang_masuk">Gudang Masuk</label>
+                            </div>
+                            <div class="col-lg-10 col-9 mb-3">
+                                <input type="text" id="gudang_masuk" name="gudang_masuk" class="form-control form-control-sm">
+                            </div> -->
+                        </div>
+                        <h5>Data</h5>
+                        <div class="form-group row align-items-center">
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="no_rangka">No. Rangka</label>
                             </div>
@@ -138,11 +135,9 @@
                                         <th class="text-center">HPP</th>
                                         <th class="text-center">Nilai</th>
                                         <th class="text-center">Pilih All <input type="checkbox" id="pilih-all" class="form-check-input"></th>
-
                                     </tr>
                                 </thead>
                                 <tbody>
-
                                 </tbody>
                                 <tfoot>
                                     <tr>
@@ -154,7 +149,6 @@
                                     </tr>
                                 </tfoot>
                             </table>
-
                         </div>
                         <div class="form-group row align-items-center mt-3">
                             <div class="col-lg-10 col-9">
@@ -263,6 +257,7 @@
                                         <tr data-idkode="<?= $data['id_kode_barang'] ?>"
                                             data-namabarang="<?= $data['nama_barang'] ?>"
                                             data-qty="<?= $data['qty'] ?>"
+                                            data-gudang="<?= $data['gudang'] ?>"
                                             data-satuan="<?= $data['satuan'] ?>"
                                             data-hpp="<?= $data['netto'] ?>"
                                             data-repair="<?= $data['no_repair_order'] ?>"
@@ -306,6 +301,7 @@
                 const idKode = row.getAttribute('data-idkode');
                 const namaBarang = row.getAttribute('data-namabarang');
                 const qty = row.getAttribute('data-qty');
+                const gudang = row.getAttribute('data-gudang');
                 const satuan = row.getAttribute('data-satuan');
                 const hpp = row.getAttribute('data-hpp');
                 const repairOrder = row.getAttribute('data-repair');
@@ -317,6 +313,7 @@
 
                 // Masukkan data ke dalam input form di luar modal
                 document.getElementById('no_ro').value = repairOrder || '';
+                document.getElementById('gudang_keluar').value = gudang || '';
                 document.getElementById('no_rangka').value = rangka || '';
                 document.getElementById('nopol').value = nopol || '';
                 document.getElementById('jenis_mobil').value = jenisMobil || '';

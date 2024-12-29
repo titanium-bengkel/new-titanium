@@ -23,7 +23,8 @@ class M_Bahan_Repair extends Model
         'nama_pemilik',
         'keterangan',
         'total_qty',
-        'total_hpp'
+        'total_hpp',
+        'total_nilai'
     ];
 
     public function generateId()

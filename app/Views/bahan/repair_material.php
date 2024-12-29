@@ -5,18 +5,16 @@
 
 <!-- Table Pre-order -->
 <section class="section">
-    <div style="margin-top: 15px; margin-bottom: 10px; font-size: 12px; padding: 10px 20px; border-radius: 8px; display: inline-block;">
-        <div style="font-size: 14px; font-weight: bold;">
-            <a href="<?= base_url('/index') ?>" style="text-decoration: none; color: #007bff;">Dashboard</a>
-            <span style="color: #6c757d; margin: 0 8px;">/</span>
-            <span style="color: #6c757d; font-weight: 500;">Repair Material Bahan</span>
-        </div>
-    </div>
     <div class="row" id="table-head">
         <div class="col-12">
             <div class="card">
-                <header class="ms-3 mb-3 mt-4" style="border-bottom: 2px solid #6c757d; padding-bottom: 10px;">
-                    <h5>Repair Material Bahan</h5>
+                <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
+                    <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                        <a href="<?= base_url('dashboard/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                        <span class="breadcrumb-divider text-muted mx-3">/</span>
+                        <span class="breadcrumb-current text-muted">Repair Material Bahan</span>
+                    </div>
+                    <h5 class="page-title mb-0 fw-bold">Repair Material Bahan</h5>
                 </header>
                 <div class="card-content">
                     <div class="card-header d-flex align-items-center justify-content-start flex-wrap" style="padding: 20px;">
@@ -50,8 +48,8 @@
                     </div>
                     <!-- table head dark -->
                     <div class="table-responsive" style="font-size: 12px; margin:20px">
-                        <table class="table table-bordered mb-0">
-                            <thead class="thead-dark">
+                        <table class="table table-bordered table-striped -table-hover mb-0">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th style="text-align: center;">#</th>
                                     <th style="text-align: center;">Nomor</th>

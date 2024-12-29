@@ -12,6 +12,7 @@ class M_Part_Repair extends Model
         'id_material',
         'tanggal',
         'no_repair',
+        'no_rangka',
         'gudang_masuk',
         'gudang_keluar',
         'tanggal_masuk',
@@ -26,6 +27,7 @@ class M_Part_Repair extends Model
         'total_qty_T',
         'total_qty_K',
         'total_hpp',
+        'total_nilai',
         'user_id',
     ];
 

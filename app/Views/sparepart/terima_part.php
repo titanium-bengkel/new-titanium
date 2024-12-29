@@ -58,7 +58,6 @@
                                     <th>Nama Supplier</th>
                                     <th>Kode Gudang</th>
                                     <th>Jumlah</th>
-                                    <th>Total</th>
                                     <th>PPN</th>
                                     <th>PPN Nilai</th>
                                     <th>Netto</th>
@@ -68,28 +67,27 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-center">
+                            <tbody>
                                 <?php if (!empty($sparepart)) : ?>
                                     <?php foreach ($sparepart as $index => $data) : ?>
                                         <tr>
-                                            <td><?= $index + 1 ?></td>
-                                            <td><a href="<?= base_url('order_pos_terimapartprev/' . $data['id_penerimaan']); ?>">
+                                            <td class="text-center"><?= $index + 1 ?></td>
+                                            <td class="text-start"><a href="<?= base_url('order_pos_terimapartprev/' . $data['id_penerimaan']); ?>">
                                                     <?= $data['id_penerimaan']; ?>
                                                 </a>
-                                            <td><?= $data['tanggal'] ?></td>
-                                            <td><?= $data['no_preor'] ?></td>
-                                            <td><?= $data['nopol'] ?></td>
-                                            <td><?= $data['supplier'] ?></td>
-                                            <td><?= $data['gudang'] ?></td>
-                                            <td><?= number_format($data['total_jumlah'], 0, ',', '.'); ?></td>
-                                            <td><?= number_format($data['total_jumlah'], 0, ',', '.'); ?></td>
-                                            <td><?= $data['ppn'] ?></td>
-                                            <td><?= number_format($data['nilai_ppn'], 0, ',', '.'); ?></td>
-                                            <td><?= number_format($data['netto'], 0, ',', '.'); ?></td>
-                                            <td><?= $data['total_qty'] ?></td>
-                                            <td><?= $data['keterangan'] ?></td>
-                                            <td><?= $data['username'] ?></td>
-                                            <td>
+                                            <td class="text-start"><?= $data['tanggal'] ?></td>
+                                            <td class="text-start"><?= $data['no_preor'] ?></td>
+                                            <td class="text-start"><?= $data['nopol'] ?></td>
+                                            <td class="text-start"><?= $data['supplier'] ?></td>
+                                            <td class="text-start"><?= $data['gudang'] ?></td>
+                                            <td class="text-end"><?= number_format($data['total_jumlah'], 0, ',', '.'); ?></td>
+                                            <td class="text-end"><?= $data['ppn'] ?></td>
+                                            <td class="text-end"><?= number_format($data['nilai_ppn'], 0, ',', '.'); ?></td>
+                                            <td class="text-end"><?= number_format($data['netto'], 0, ',', '.'); ?></td>
+                                            <td class="text-end"><?= $data['total_qty'] ?></td>
+                                            <td class="text-start"><?= $data['keterangan'] ?></td>
+                                            <td class="text-start"><?= $data['username'] ?></td>
+                                            <td class="text-center">
                                                 <button type="button" class="btn btn-sm delete-user-btn" style="padding: 1px 3px; font-size: 10px;" data-url="<?= base_url('sparepart/deleteterima/' . $data['id_penerimaan']); ?>">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
@@ -104,12 +102,22 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="9">Total Perpage</th>
+                                    <th colspan="7" style="text-align: end;">Total Perpage</th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
+                                    <th></th>
+                                    <th colspan="3"></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="7" style="text-align: end;">GrandTotal</th>
+                                    <th class="text-end"><?= number_format($grandTotalJumlah, 0, ',', '.'); ?></th>
+                                    <th></th>
+                                    <th class="text-end"><?= number_format($grandTotalPpn, 0, ',', '.'); ?></th>
+                                    <th class="text-end"><?= number_format($grandTotalNetto, 0, ',', '.'); ?></th>
+                                    <th class="text-end"><?= number_format($grandTotalQty, 0, ',', '.'); ?></th>
                                     <th></th>
                                     <th colspan="3"></th>
                                 </tr>

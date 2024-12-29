@@ -43,12 +43,12 @@
                                 <th style="text-align: center;">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="text-center">
+                        <tbody >
                             <?php if (!empty($sparepart)) : ?>
                                 <?php foreach ($sparepart as $key => $item) : ?>
                                     <tr>
-                                        <td><?= $key + 1; ?></td>
-                                        <td>
+                                        <td class="text-center"><?= $key + 1; ?></td>
+                                        <td class="text-center">
                                             <?php if ($item['all_sent']): ?>
                                                 <span class="badge bg-success" style="font-size: 14px; padding: 5px 10px;">
                                                     <i class="fa fa-check" aria-hidden="true"></i>
@@ -57,22 +57,22 @@
                                         </td>
 
 
-                                        <td>
+                                        <td class="text-left">
                                             <a href="<?= base_url('beli_partprev/' . $item['id_pesan']); ?>">
                                                 <?= $item['id_pesan']; ?>
                                             </a>
                                         </td>
-                                        <td><?= $item['wo']; ?></td>
-                                        <td><?= $item['tanggal']; ?></td>
-                                        <td><?= $item['supplier']; ?></td>
-                                        <td><?= $item['nopol']; ?></td>
-                                        <td><?= $item['asuransi']; ?></td>
-                                        <td><?= $item['jenis_mobil']; ?> <?= $item['warna']; ?> <?= $item['nopol']; ?> <?= $item['customer']; ?></td>
-                                        <td><?= number_format($item['total_jumlah'], 0, ',', '.'); ?></td>
-                                        <td><?= $item['no_faktur']; ?></td>
-                                        <td><?= $item['keterangan']; ?></td>
-                                        <td><?= $item['user_id']; ?></td>
-                                        <td>
+                                        <td class="text-left"><?= $item['wo']; ?></td>
+                                        <td class="text-left"><?= $item['tanggal']; ?></td>
+                                        <td class="text-left"><?= $item['supplier']; ?></td>
+                                        <td class="text-left"><?= $item['nopol']; ?></td>
+                                        <td class="text-left"><?= $item['asuransi']; ?></td>
+                                        <td class="text-left"><?= $item['jenis_mobil']; ?> <?= $item['warna']; ?> <?= $item['nopol']; ?> <?= $item['customer']; ?></td>
+                                        <td class="text-end"><?= number_format($item['total_jumlah'], 0, ',', '.'); ?></td>
+                                        <td class="text-left"><?= $item['no_faktur']; ?></td>
+                                        <td class="text-left"><?= $item['keterangan']; ?></td>
+                                        <td class="text-left"><?= $item['user_id']; ?></td>
+                                        <td class="text-center">
                                             <button type="button" class="btn btn-sm delete-user-btn" style="padding: 1px 3px; font-size: 10px;" data-url="<?= base_url('sparepart/delete/' . $item['id_pesan']); ?>">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
@@ -94,7 +94,7 @@
                             </tr>
                             <tr style="text-align: center;">
                                 <th colspan="9" style="text-align: end;">Total All</th>
-                                <th style="text-align: center;"></th>
+                                <th style="text-align: end;"><?= number_format($grandTotalJumlah, 0, ',', '.'); ?></th>
                                 <th colspan="4"></th>
                             </tr>
                         </tfoot>

@@ -8,7 +8,7 @@
             <div class="card">
                 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                        <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                        <a href="<?= base_url('dashboard/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
                         <span class="breadcrumb-current text-muted">Pemesanan Bahan (PO)</span>
                     </div>
@@ -22,15 +22,15 @@
 
                     <!-- table head dark -->
                     <div class="table-responsive" style="font-size: 12px; margin: 20px;">
-                        <table class="table table-bordered mb-0" id="po_bahan_table">
-                            <thead class="thead-dark" style="text-align: center;">
+                        <table class="table table-bordered table-striped -table-hover mb-0" id="po_bahan_table">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th class="text-center">#</th>
                                     <th class="text-center">Status</th>
                                     <th class="text-center">Nomor</th>
                                     <th class="text-center">Tanggal</th>
-                                    <th class="text-center">Kode Supplier</th>
-                                    <th class="text-center">Nama Supplier</th>
+                                    <th class="text-center">Kode</th>
+                                    <th class="text-center">Supplier</th>
                                     <th class="text-center">Jumlah</th>
                                     <th class="text-center">No. Faktur</th>
                                     <th class="text-center">Ket</th>
@@ -38,12 +38,12 @@
                                     <th class="text-center">Act</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-center">
+                            <tbody >
                                 <?php if (!empty($bahan)) : ?>
                                     <?php foreach ($bahan as $key => $item) : ?>
                                         <tr>
-                                            <td><?= $key + 1; ?></td>
-                                            <td>
+                                            <td class="text-center"><?= $key + 1; ?></td>
+                                            <td class="text-center">
                                                 <?php if ($item['status'] === 'Oke'): ?>
                                                     <span class="badge bg-success">Oke</span>
                                                 <?php else: ?>
@@ -56,13 +56,13 @@
                                                     <?= $item['id_po_bahan']; ?>
                                                 </a>
                                             </td>
-                                            <td><?= $item['tanggal']; ?></td>
-                                            <td><?= $item['kode_supplier']; ?></td>
-                                            <td><?= $item['supplier']; ?></td>
-                                            <td><?= number_format($item['total_jumlah'], 2, ',', '.'); ?></td>
-                                            <td><?= $item['no_faktur']; ?></td>
-                                            <td><?= $item['keterangan']; ?></td>
-                                            <td><?= $item['user_id']; ?></td>
+                                            <td class="text-left"><?= $item['tanggal']; ?></td>
+                                            <td class="text-center"><?= $item['kode_supplier']; ?></td>
+                                            <td class="text-left"><?= $item['supplier']; ?></td>
+                                            <td class="text-end"><?= number_format($item['total_jumlah'], 2, ',', '.'); ?></td>
+                                            <td class="text-left"><?= $item['no_faktur']; ?></td>
+                                            <td class="text-left"><?= $item['keterangan']; ?></td>
+                                            <td class="text-left"><?= $item['user_id']; ?></td>
                                             <td>
                                                 <button type="button" class="btn btn-danger btn-sm delete-user-btn" style="padding: 1px 3px; font-size: 10px;" data-url="<?= base_url('bahan/delete/' . $item['id_po_bahan']); ?>">
                                                     <i class="fas fa-trash-alt"></i>
@@ -84,7 +84,7 @@
                                 </tr>
                                 <tr style="text-align: center;">
                                     <th colspan="6" style="text-align: end;">Total All</th>
-                                    <th></th>
+                                    <th class="text-end"><?= number_format($totalJumlahKeseluruhan, 2, ',', '.'); ?></th>
                                     <th colspan="4"></th>
                                 </tr>
                             </tfoot>

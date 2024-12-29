@@ -4,18 +4,17 @@
 
 <!-- Horizontal Input start -->
 <section id="horizontal-input">
-<div style="margin-top: 15px; margin-bottom: 10px; font-size: 12px; padding: 10px 20px; border-radius: 8px; display: inline-block;">
-    <div style="font-size: 14px; font-weight: bold;">
-        <a href="<?= base_url('repair_material') ?>" style="text-decoration: none; color: #007bff;">Repair Material Bahan</a>
-        <span style="color: #6c757d; margin: 0 8px;">/</span>
-        <span style="color: #6c757d; font-weight: 500;">Preview Repair Material Bahan</span>
-    </div>
-</div>
+
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <header class="ms-3 mb-3 mt-4" style="border-bottom: 2px solid #6c757d; padding-bottom: 10px;">
-                    <h5>Preview Repair Material Bahan</h5>
+                <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
+                    <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                        <a href="<?= base_url('repair_material') ?>" class="breadcrumb-link text-primary fw-bold">List RM Bahan</a>
+                        <span class="breadcrumb-divider text-muted mx-3">/</span>
+                        <span class="breadcrumb-current text-muted">Repair Material Bahan</span>
+                    </div>
+                    <h5 class="page-title mb-0 fw-bold">Repair Material Bahan</h5>
                 </header>
                 <div class="card-body">
                     <!-- Tambahkan form action -->
@@ -104,9 +103,8 @@
                             </div>
                         </div>
                     </form>
-                    <div class="table-responsive">
-                        <table class="table table-bordered mt-2 my-table-class">
-                            <thead>
+                    <table class="table table-bordered table-striped table-hover mt-2 my-table-class">
+                        <thead class="table-secondary"> 
                                 <tr>
                                     <th>Kode barang</th>
                                     <th>Nama barang</th>
@@ -117,41 +115,41 @@
                                     <th>Act</th>
                                 </tr>
                             </thead>
-                            <tbody id="repair_material_detail">
-                                <?php if (!empty($detail_repair)) : ?>
-                                    <?php foreach ($detail_repair as $item): ?>
-                                        <tr>
-                                            <td><?= $item['id_kode_barang'] ?></td>
-                                            <td><?= $item['nama_barang'] ?></td>
-                                            <td><?= $item['qty'] ?></td>
-                                            <td><?= $item['satuan'] ?></td>
-                                            <td><?= number_format($item['hpp'], 2, ',', '.'); ?></td>
-                                            <td><?= $item['nilai'] ?></td>
-                                            <td>-</td>
-                                        </tr>
-                                    <?php endforeach; ?>
-
-                                <?php else: ?>
+                        <tbody id="repair_material_detail">
+                            <?php if (!empty($detail_repair)) : ?>
+                                <?php foreach ($detail_repair as $item): ?>
                                     <tr>
-                                        <td colspan="7" class="text-center">Data Tidak Ditemukan</td>
+                                        <td><?= $item['id_kode_barang'] ?></td>
+                                        <td><?= $item['nama_barang'] ?></td>
+                                        <td><?= $item['qty'] ?></td>
+                                        <td><?= $item['satuan'] ?></td>
+                                        <td><?= number_format($item['hpp'], 2, ',', '.'); ?></td>
+                                        <td><?= number_format($item['nilai'], 2, ',', '.'); ?></td>
+                                        <td>-</td>
                                     </tr>
-                                <?php endif; ?>
-                            </tbody>
-                            <tfoot>
+                                <?php endforeach; ?>
+
+                            <?php else: ?>
                                 <tr>
-                                    <td colspan="2"></td>
-                                    <td><?= $total_qty ?></td>
-                                    <td></td>
-                                    <td><?= number_format($total_hpp, 2, ',', '.'); ?></td>
-                                    <td colspan="3"></td>
+                                    <td colspan="7" class="text-center">Data Tidak Ditemukan</td>
                                 </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    <!-- Akhir dari form action -->
+                            <?php endif; ?>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td><?= $total_qty ?></td>
+                                <td></td>
+                                <td><?= number_format($total_hpp, 2, ',', '.'); ?></td>
+                                <td colspan="3"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
+                <!-- Akhir dari form action -->
             </div>
         </div>
+    </div>
     </div>
 </section>
 

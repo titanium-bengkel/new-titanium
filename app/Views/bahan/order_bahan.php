@@ -8,7 +8,7 @@
             <div class="card">
                 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                        <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">List Pemesanan Bahan (PO)</a>
+                        <a href="<?= base_url('po_bahan') ?>" class="breadcrumb-link text-primary fw-bold">List Pemesanan Bahan (PO)</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
                         <span class="breadcrumb-current text-muted">Pemesanan Bahan</span>
                     </div>
@@ -64,8 +64,8 @@
                         <!-- tabel detail barang  -->
                         <button type="button" class="btn btn-success btn-sm" id="add-row-btn"><i class="fas fa-plus"></i> Tambah Baris</button>
                         <div class="table-responsive mt-2">
-                            <table class="table table-bordered my-table-class text-center" style="font-size: 14px;">
-                                <thead>
+                            <table class="table table-bordered table-striped -table-hover mb-0" style="font-size: 14px;">
+                                <thead class="thead-dark table-secondary">
                                     <tr>
                                         <th>Kode Barang</th>
                                         <th>Nama Barang</th>
@@ -451,7 +451,7 @@
             });
         });
     });
-</script> 
+</script>
 
 
 

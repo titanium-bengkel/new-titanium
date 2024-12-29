@@ -1,14 +1,20 @@
 <!-- File: app/Views/sparepart/permintaan_part.php -->
 <?= $this->extend('layout/template'); ?>
-
 <?= $this->section('content') ?>
-<h3>Repair Material Sparepart</h3>
 
 <!-- Table Pre-order -->
 <section class="section">
     <div class="row" id="table-head">
         <div class="col-12">
             <div class="card">
+                <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
+                    <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                        <a href="<?= base_url('dashboard/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                        <span class="breadcrumb-divider text-muted mx-3">/</span>
+                        <span class="breadcrumb-current text-muted">Repair Material Sparepart</span>
+                    </div>
+                    <h5 class="page-title mb-0 fw-bold">Repair Material Sparepart</h5>
+                </header>
                 <div class="card-content">
                     <div class="card-header d-flex align-items-center justify-content-start flex-wrap" style="padding: 20px;">
                         <div class="d-flex align-items-center ms-md-auto w-100 w-md-auto">
@@ -41,26 +47,24 @@
                     </div>
                     <!-- table head dark -->
                     <div class="table-responsive" style="font-size: 12px; margin:20px" ;>
-                        <table class="table table-bordered mb-0">
-                            <thead class="thead-dark">
+                        <table class="table table-bordered table-striped -table-hover mb-0">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th style="text-align: center;">#</th>
                                     <th style="text-align: center;">Nomor</th>
                                     <th style="text-align: center;">Tanggal</th>
                                     <th style="text-align: center;">Kode Gudang</th>
                                     <th style="text-align: center;">No. Order</th>
-                                    <th style="text-align: center;">Tanggal Order</th>
+                                    <!-- <th style="text-align: center;">Tanggal Order</th> -->
                                     <th style="text-align: center;">Jenis Mobil</th>
-                                    <th style="text-align: center;">No. polisi</th>
-                                    <th style="text-align: center;">Tahun</th>
-                                    <th style="text-align: center;">Warna</th>
+                                    <th style="text-align: center;">Nopol</th>
                                     <th style="text-align: center;">Nama Pemilik</th>
                                     <th style="text-align: center;">Keterangan</th>
                                     <th style="text-align: center;">User</th>
                                     <th style="text-align: center;">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-center">
+                            <tbody class="text-left">
                                 <?php if (!empty($repair)): ?>
                                     <?php foreach ($repair as $index => $data): ?>
                                         <tr>
@@ -72,11 +76,9 @@
                                             <td><?= $data['tanggal'] ?></td>
                                             <td><?= $data['gudang_keluar'] ?></td>
                                             <td><?= $data['no_repair'] ?></td>
-                                            <td><?= $data['tanggal_masuk'] ?></td>
+                                            <!-- <td><?= $data['tanggal_masuk'] ?></td> -->
                                             <td><?= $data['jenis_mobil'] ?></td>
                                             <td><?= $data['nopol'] ?></td>
-                                            <td><?= $data['tahun'] ?></td>
-                                            <td><?= $data['warna'] ?></td>
                                             <td><?= $data['nama_pemilik'] ?></td>
                                             <td><?= $data['keterangan'] ?></td>
                                             <td><?= $data['username'] ?></td>

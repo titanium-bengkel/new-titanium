@@ -1,12 +1,19 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content') ?>
-<h3>Repair Material Supply</h3>
 
 <!-- Horizontal Input start -->
 <section id="horizontal-input">
     <div class="row">
         <div class="col-md-12">
             <div class="card">
+                <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
+                    <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                        <a href="<?= base_url('repair_material_part') ?>" class="breadcrumb-link text-primary fw-bold">List RM Sparepart</a>
+                        <span class="breadcrumb-divider text-muted mx-3">/</span>
+                        <span class="breadcrumb-current text-muted">Repair Material Sparepart</span>
+                    </div>
+                    <h5 class="page-title mb-0 fw-bold">Repair Material Sparepart</h5>
+                </header>
                 <div class="card-body">
                     <!-- Tambahkan form action -->
                     <form action="<?= base_url('sparepart/updaterepair') ?>" method="post">
@@ -25,31 +32,6 @@
                                 <input type="date" id="tanggal" class="form-control form-control-sm" name="tanggal" value="<?= $repair['tanggal'] ?>" onkeydown="return false" onclick="this.showPicker()">
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="gudang_keluar">Gudang Keluar</label>
-                            </div>
-                            <div class="col-lg-10 col-7 mb-3">
-                                <fieldset class="form-group">
-                                    <select class="form-select form-select-sm" id="gudang_keluar" name="gudang_keluar">
-                                        <option selected><?= $repair['gudang_keluar'] ?></option>
-                                        <option>GUDANG STOK SPAREPART </option>
-                                        <option>GUDANG REPAIR(MOBIL SUDAH ADA)</option>
-                                        <option>GUDANG SUPPLY DARI ASURANSI</option>
-                                        <option>GUDANG WAITING(MOBIL BELUM DATANG)</option>
-                                        <option>GUDANG SALVAGE</option>
-                                    </select>
-                                </fieldset>
-                            </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="gudang_masuk">Gudang Masuk</label>
-                            </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="text" id="gudang_masuk" name="gudang_masuk" class="form-control form-control-sm" value="<?= $repair['gudang_masuk'] ?>">
-                            </div>
-                        </div>
-
-                        <h5>Data</h5>
-                        <div class="form-group row align-items-center">
-                            <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="no_repair">No. Repair Order</label>
                             </div>
                             <div class="col-lg-9 col-7 mb-3">
@@ -59,6 +41,34 @@
                                 <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#repair">
                                     <i class="fas fa-search"></i>
                                 </button>
+                            </div>
+                            <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="gudang_keluar">Gudang Keluar</label>
+                            </div>
+                            <div class="col-lg-10 col-7 mb-3">
+                                <fieldset class="form-group">
+                                    <select class="form-select form-select-sm" id="gudang_keluar" name="gudang_keluar">
+                                        <option selected><?= $repair['gudang_keluar'] ?></option>
+                                        <option>GUDANG STOK SPAREPART </option>
+                                        <option>GUDANG SUPPLY DARI ASURANSI</option>n>
+                                    </select>
+                                </fieldset>
+                            </div>
+                            <!-- <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="gudang_masuk">Gudang Masuk</label>
+                            </div>
+                            <div class="col-lg-10 col-9 mb-3">
+                                <input type="text" id="gudang_masuk" name="gudang_masuk" class="form-control form-control-sm" value="<?= $repair['gudang_masuk'] ?>">
+                            </div> -->
+                        </div>
+
+                        <h5>Data</h5>
+                        <div class="form-group row align-items-center">
+                            <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="no_rangka">No. Rangka</label>
+                            </div>
+                            <div class="col-lg-10 col-9 mb-3">
+                                <input type="text" id="no_rangka" class="form-control form-control-sm" name="no_rangka" value="<?= $repair['no_rangka'] ?>">
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="tanggal_masuk">Tanggal Masuk</label>
@@ -73,28 +83,22 @@
                                 <input type="text" id="nopol" class="form-control form-control-sm" name="nopol" value="<?= $repair['nopol'] ?>">
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="jenis_mobil">Jenis mobil</label>
+                                <label class="col-form-label" for="jenis_mobil">Car Model</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="text" id="jenis_mobil" class="form-control form-control-sm" name="jenis_mobil" value="<?= $repair['jenis_mobil'] ?>">
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="warna">Warna</label>
-                            </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="text" id="warna" class="form-control form-control-sm" name="warna" value="<?= $repair['warna'] ?>">
-                            </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="tahun">Tahun</label>
-                            </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="text" id="tahun" class="form-control form-control-sm" name="tahun" value="<?= $repair['tahun'] ?>">
-                            </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="nama_pemilik">Pemilik</label>
+                                <label class="col-form-label" for="nama_pemilik">Customer</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="text" id="nama_pemilik" class="form-control form-control-sm" name="nama_pemilik" value="<?= $repair['nama_pemilik'] ?>">
+                            </div>
+                            <div class="col-lg-2 col-3 mb-3">
+                                <label class="col-form-label" for="asuransi">Asuransi</label>
+                            </div>
+                            <div class="col-lg-10 col-9 mb-3">
+                                <input type="text" id="asuransi" class="form-control form-control-sm" name="asuransi" value="<?= $repair['asuransi'] ?>">
                             </div>
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="keterangan">Keterangan</label>
@@ -111,8 +115,8 @@
                         </div>
                     </form>
                     <div class="table-responsive">
-                        <table class="table table-bordered mt-2 my-table-class">
-                            <thead>
+                        <table class="table table-bordered table-striped table-hover mt-2 my-table-class">
+                            <thead class="table-secondary">
                                 <tr>
                                     <th>Kode barang</th>
                                     <th>Nama barang</th>
@@ -132,7 +136,7 @@
                                             <td><?= $item['qty_B'] ?></td>
                                             <td><?= $item['sat_B'] ?></td>
                                             <td><?= number_format($item['hpp'], 0, ',', '.'); ?></td>
-                                            <td></td>
+                                            <td><?= number_format($item['nilai'], 0, ',', '.'); ?></td>
                                             <td></td>
                                         </tr>
                                     <?php endforeach; ?>

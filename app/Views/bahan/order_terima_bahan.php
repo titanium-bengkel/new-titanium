@@ -32,11 +32,11 @@
             <div class="card">
                 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                        <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                        <a href="<?= base_url('terima_bahan') ?>" class="breadcrumb-link text-primary fw-bold">List Penerimaan Bahan</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
                         <span class="breadcrumb-current text-muted">Penerimaan Bahan</span>
                     </div>
-                    <h5 class="page-title mb-0 fw-bold">Add Penerimaan Bahan</h5>
+                    <h5 class="page-title mb-0 fw-bold">Penerimaan Bahan</h5>
                 </header>
                 <div class="card-body">
                     <form action="<?= base_url('/bahan/create_terima') ?>" method="post">
@@ -180,10 +180,10 @@
                                 }
                             </script>
                         </div>
-                        <button type="button" class="btn btn-success btn-sm" id="add-row-btn"><i class="fas fa-plus"></i> Tambah Baris</button>
+                        <button type="button" class="btn btn-success btn-sm mb-1" id="add-row-btn"><i class="fas fa-plus"></i> Tambah Baris</button>
                         <div class="table-responsive">
-                            <table class="table table-bordered mt-2 my-table-class text-center" id="detailTable" style="font-size: 14px;">
-                                <thead>
+                            <table class="table table-bordered table-striped -table-hover mb-0" id="detailTable" style="font-size: 14px;">
+                                <thead class="thead-dark table-secondary">
                                     <tr>
                                         <th>Kode Barang</th>
                                         <th>Nama Barang</th>
@@ -194,7 +194,7 @@
                                         <th>Jumlah</th>
                                         <th>No PO</th>
                                         <th>PO id</th>
-                                        <th>Pilih All <input type="checkbox" id="pilih-all"></th>
+                                        <th>Pilih<input type="checkbox" id="pilih-all"></th>
                                         <th>Act</th>
                                     </tr>
                                 </thead>
@@ -660,7 +660,7 @@
             });
         });
     });
-</script> 
+</script>
 
 
 

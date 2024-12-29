@@ -3,18 +3,16 @@
 
 <!-- Horizontal Input start -->
 <section id="horizontal-input">
-    <div style="margin-top: 15px; margin-bottom: 10px; font-size: 12px; padding: 10px 20px; border-radius: 8px; display: inline-block;">
-        <div style="font-size: 14px; font-weight: bold;">
-            <a href="<?= base_url('/po_bahan') ?>" style="text-decoration: none; color: #007bff;">Penerimaan Bahan</a>
-            <span style="color: #6c757d; margin: 0 8px;">/</span>
-            <span style="color: #6c757d; font-weight: 500;">Preview Penerimaan Bahan</span>
-        </div>
-    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <header class="ms-3 mb-3 mt-4" style="border-bottom: 2px solid #6c757d; padding-bottom: 10px;">
-                    <h5>Preview Terima Bahan</h5>
+                <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
+                    <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                        <a href="<?= base_url('terima_bahan') ?>" class="breadcrumb-link text-primary fw-bold">List Penerimaan Bahan</a>
+                        <span class="breadcrumb-divider text-muted mx-3">/</span>
+                        <span class="breadcrumb-current text-muted">Penerimaan Bahan</span>
+                    </div>
+                    <h5 class="page-title mb-0 fw-bold">Penerimaan Bahan</h5>
                 </header>
                 <div class="card-body">
                     <!-- <h5>ID</h5> -->
@@ -129,16 +127,15 @@
                                 <!-- Tombol Batal -->
                                 <a href="<?= base_url('terima_bahan'); ?>" class="btn btn-danger btn-sm">Batal</a>
                                 <a href="<?= base_url('order_terima_bahan'); ?>" class="btn btn-success btn-sm">Input Baru</a>
-                                <button type="button" class="btn btn-success btn-sm">Cetak Permintaan</button>
                             </div>
                         </div>
                     </form>
-                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="collapse" data-bs-target="#collapseDetailTerima" id="toggledetailterimaButton">
+                    <!-- <button type="button" class="btn btn-success btn-sm" data-bs-toggle="collapse" data-bs-target="#collapseDetailTerima" id="toggledetailterimaButton">
                         <i class="fas fa-plus"></i> Tambah
-                    </button>
-                    <form action="<?= base_url('bahan/createDetailTambah') ?>" method="post">
+                    </button> -->
+                    <!-- <form action="<?= base_url('bahan/createDetailTambah') ?>" method="post">
                         <?= csrf_field() ?>
-                        <!-- Form input fields as provided before -->
+                        
                         <div class="collapse mt-3" id="collapseDetailTerima">
                             <div class="card card-body">
                                 <input type="hidden" name="id_penerimaan" value="<?= $terima['id_penerimaan'] ?>">
@@ -176,10 +173,10 @@
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </form> -->
                     <div class="table-responsive">
-                        <table class="table table-bordered mt-2 my-table-class text-center" style="font-size: 14px;">
-                            <thead style="text-align: center;">
+                        <table class="table table-bordered table-striped -table-hover mb-0" style="font-size: 14px;">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th>Kode Barang</th>
                                     <th>Nama Barang</th>

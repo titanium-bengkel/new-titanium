@@ -29,14 +29,21 @@ class BahanController extends BaseController
 
         $bahan = $bahanModel->orderBy('id_po_bahan', 'DESC')->findAll();
 
+        // Variabel untuk menghitung total jumlah
+        $totalJumlahKeseluruhan = 0;
+
         foreach ($bahan as &$item) {
             $user = $userModel->find($item['user_id']);
             $item['username'] = $user ? $user['username'] : 'Unknown';
+
+            $totalJumlahKeseluruhan += $item['total_jumlah'];
         }
+
 
         $data = [
             'title' => 'Pemesanan Bahan',
-            'bahan' => $bahan
+            'bahan' => $bahan,
+            'totalJumlahKeseluruhan' => $totalJumlahKeseluruhan // Kirim total jumlah ke view
         ];
 
         return view('bahan/po_bahan', $data);
@@ -212,14 +219,30 @@ class BahanController extends BaseController
 
         $bahan = $TerimaBahanModel->orderBy('id_penerimaan', 'DESC')->findAll();
 
+        // Inisialisasi total untuk setiap kolom
+        $totalQty = 0;
+        $totalJumlah = 0;
+        $totalNilaiPpn = 0;
+        $totalNetto = 0;
+
         foreach ($bahan as &$item) {
             $user = $userModel->find($item['user_id']);
             $item['username'] = $user ? $user['username'] : 'Unknown';
+
+            // Tambahkan nilai masing-masing kolom ke total
+            $totalQty += $item['total_qty'];
+            $totalJumlah += $item['total_jumlah'];
+            $totalNilaiPpn += $item['nilai_ppn'];
+            $totalNetto += $item['netto'];
         }
 
         $data = [
             'title' => 'Penerimaan Bahan',
-            'bahan' => $bahan
+            'bahan' => $bahan,
+            'totalQty' => $totalQty,
+            'totalJumlah' => $totalJumlah,
+            'totalNilaiPpn' => $totalNilaiPpn,
+            'totalNetto' => $totalNetto,
         ];
 
         return view('bahan/terima_bahan', $data);
@@ -731,10 +754,13 @@ class BahanController extends BaseController
         // Menghitung total qty dan total hpp
         $qty = $this->request->getPost('qty');
         $hpp = $this->request->getPost('hpp');
+        $nilai = $this->request->getPost('nilai');
 
         // Menghitung total qty dan hpp
         $total_qty = array_sum($qty);
         $total_hpp = array_sum($hpp);
+        $total_nilai = array_sum($nilai);
+
 
         // Data untuk tabel bahan_repair
         $data = [
@@ -753,6 +779,7 @@ class BahanController extends BaseController
             'keterangan' => strtoupper($this->request->getPost('keterangan')),
             'total_qty' => $total_qty,
             'total_hpp' => $total_hpp,
+            'total_nilai' => $total_nilai,
         ];
 
         // Simpan data Bahan Repair

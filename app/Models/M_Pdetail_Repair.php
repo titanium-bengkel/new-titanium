@@ -19,6 +19,7 @@ class M_Pdetail_Repair extends Model
         'qty_K',
         'sat_K',
         'hpp',
+        'nilai',
         'id_material',
         'no_repair_order',
         'no_rangka',

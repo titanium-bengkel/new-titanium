@@ -44,17 +44,16 @@
                         <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
                     </div>
                     <!-- table head dark -->
-                    <div class="table-responsive" style="font-size: 12px; margin:20px" ;>
-                        <table class="table table-bordered mb-0" id="po_bahan_table">
-                            <thead class="thead-dark">
+                    <div class="table-responsive" style="font-size: 12px; margin:20px">
+                        <table class="table table-bordered table-striped -table-hover mb-0" id="po_bahan_table">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th style="text-align: center;">#</th>
                                     <th style="text-align: center;">No Faktur</th>
                                     <th style="text-align: center;">Tanggal</th>
                                     <th style="text-align: center;">Jatuh Tempo</th>
                                     <th style="text-align: center;">No RO</th>
-                                    <th style="text-align: center;">Kode Supplier</th>
-                                    <th style="text-align: center;">Nama Supplier</th>
+                                    <th style="text-align: center;">Supplier</th>
                                     <th style="text-align: center;">Gudang</th>
                                     <th style="text-align: center;">Jumlah</th>
                                     <th style="text-align: center;">PPN %</th>
@@ -66,29 +65,28 @@
                                     <th style="text-align: center;">Act</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-center">
+                            <tbody >
                                 <?php if (!empty($bahan)) : ?>
                                     <?php foreach ($bahan as $index => $data) : ?>
                                         <tr>
-                                            <td><?= $index + 1 ?></td>
-                                            <td><a href="<?= base_url('order_terima_bahanprev/' . $data['id_penerimaan']); ?>">
+                                            <td class="text-center"><?= $index + 1 ?></td>
+                                            <td class="text-left"><a href="<?= base_url('order_terima_bahanprev/' . $data['id_penerimaan']); ?>">
                                                     <?= $data['id_penerimaan']; ?>
                                                 </a>
                                             </td> <!-- Memperbaiki kesalahan penutupan tag -->
-                                            <td><?= $data['tanggal'] ?></td>
-                                            <td><?= $data['jatuh_tempo'] ?></td>
-                                            <td><?= $data['nomor'] ?></td>
-                                            <td><?= $data['kode_supplier'] ?></td>
-                                            <td><?= $data['supplier'] ?></td>
-                                            <td><?= $data['gudang'] ?></td>
-                                            <td><?= number_format($data['total_jumlah'], 2, ',', '.'); ?></td>
-                                            <td><?= $data['ppn'] ?></td>
-                                            <td><?= number_format($data['nilai_ppn'], 2, ',', '.'); ?></td>
-                                            <td><?= number_format($data['netto'], 2, ',', '.'); ?></td>
-                                            <td><?= $data['total_qty'] ?></td>
-                                            <td><?= $data['keterangan'] ?></td>
-                                            <td><?= $data['user_id'] ?></td>
-                                            <td>
+                                            <td class="text-left"><?= $data['tanggal'] ?></td>
+                                            <td class="text-left"><?= $data['jatuh_tempo'] ?></td>
+                                            <td class="text-left"><?= $data['nomor'] ?></td>
+                                            <td class="text-left"><?= $data['supplier'] ?></td>
+                                            <td class="text-left"><?= $data['gudang'] ?></td>
+                                            <td class="text-end"><?= number_format($data['total_jumlah'], 2, ',', '.'); ?></td>
+                                            <td class="text-end"><?= $data['ppn'] ?></td>
+                                            <td class="text-end"><?= number_format($data['nilai_ppn'], 2, ',', '.'); ?></td>
+                                            <td class="text-end"><?= number_format($data['netto'], 2, ',', '.'); ?></td>
+                                            <td class="text-end"><?= $data['total_qty'] ?></td>
+                                            <td class="text-left"><?= $data['keterangan'] ?></td>
+                                            <td class="text-center"><?= $data['user_id'] ?></td>
+                                            <td class="text-center">
                                                 <button type="button" class="btn btn-danger btn-sm delete-user-btn" style="padding: 1px 3px; font-size: 10px;" data-url="<?= base_url('bahan/deleteterima/' . $data['id_penerimaan']); ?>">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
@@ -101,6 +99,19 @@
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    
+                                    <td colspan="7" style="text-align: right;">Grand Total</td>
+                                    <td class="text-end" style="font-weight: bold;"><?= number_format($totalJumlah, 2, ',', '.'); ?></td>
+                                    <td class="text-end" style="font-weight: bold;"></td>
+                                    <td class="text-end" style="font-weight: bold;"><?= number_format($totalNilaiPpn, 2, ',', '.'); ?></td>
+                                    <td class="text-end" style="font-weight: bold;"><?= number_format($totalNetto, 2, ',', '.'); ?></td>
+                                    <td class="text-end" style="font-weight: bold;"><?= $totalQty ?></td>
+                                    <td colspan="2"></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>

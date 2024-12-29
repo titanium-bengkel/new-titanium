@@ -3,18 +3,16 @@
 
 <!-- Horizontal Input start -->
 <section id="horizontal-input">
-    <div style="margin-top: 15px; margin-bottom: 10px; font-size: 12px; padding: 10px 20px; border-radius: 8px; display: inline-block;">
-        <div style="font-size: 14px; font-weight: bold;">
-            <a href="<?= base_url('repair_material') ?>" style="text-decoration: none; color: #007bff;">Repair Material Bahan</a>
-            <span style="color: #6c757d; margin: 0 8px;">/</span>
-            <span style="color: #6c757d; font-weight: 500;">Repair Material Bahan</span>
-        </div>
-    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <header class="ms-3 mb-3 mt-4" style="border-bottom: 2px solid #6c757d; padding-bottom: 10px;">
-                    <h5> Add Repair Material Bahan</h5>
+                <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
+                    <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                        <a href="<?= base_url('repair_material') ?>" class="breadcrumb-link text-primary fw-bold">List RM Bahan</a>
+                        <span class="breadcrumb-divider text-muted mx-3">/</span>
+                        <span class="breadcrumb-current text-muted">Repair Material Bahan</span>
+                    </div>
+                    <h5 class="page-title mb-0 fw-bold">Repair Material Bahan</h5>
                 </header>
                 <div class="card-body">
                     <!-- Tambahkan form action -->
@@ -105,8 +103,8 @@
                         </div>
                         <button type="button" class="btn btn-success btn-sm mb-3" id="add-row-btn"><i class="fas fa-plus"></i> Tambah Baris</button>
                         <div class="table-responsive">
-                            <table class="table table-bordered mt-2 my-table-class">
-                                <thead>
+                            <table class="table table-bordered table-striped table-hover mt-2 my-table-class">
+                                <thead class="table-secondary">
                                     <tr>
                                         <th>Kode barang</th>
                                         <th>Nama barang</th>
@@ -114,7 +112,7 @@
                                         <th>Satuan</th>
                                         <th>HPP</th>
                                         <th>Nilai</th>
-                                        <th>Pilih All <input type="checkbox" id="pilih-all" class="form-check-input"></th>
+                                        <th>Pilih<input type="checkbox" id="pilih-all" class="form-check-input"></th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -181,8 +179,8 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover" style="font-size: 12px;">
-                        <thead>
+                    <table class="table table-bordered table-striped table-hover mt-2 my-table-class">
+                        <thead class="table-secondary">
                             <tr>
                                 <th>No.Order</th>
                                 <th>tanggal</th>
