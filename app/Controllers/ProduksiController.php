@@ -19,9 +19,12 @@ class ProduksiController extends Controller
     public function headproduksi()
     {
         $repairOrders = $this->repairOrderModel->getAllRepairOrders();
+        $filteredRepairOrders = array_filter($repairOrders, function ($order) {
+            return $order['bengkel'] === 'TITANIUM';
+        });
         $data = [
             'title' => 'Head Produksi',
-            'repairOrders' => $repairOrders,
+            'repairOrders' => $filteredRepairOrders,
         ];
         return view('produksi/headproduksi', $data);
     }
@@ -63,9 +66,12 @@ class ProduksiController extends Controller
     public function kelolaproduksi()
     {
         $repairOrders = $this->repairOrderModel->getAllRepairOrders();
+        $filteredRepairOrders = array_filter($repairOrders, function ($order) {
+            return $order['bengkel'] === 'TITANIUM';
+        });
         $data = [
             'title' => 'Kelola Produksi',
-            'repairOrders' => $repairOrders,
+            'repairOrders' => $filteredRepairOrders,
         ];
         return view('produksi/kelolaproduksi', $data);
     }
@@ -98,5 +104,17 @@ class ProduksiController extends Controller
 
         return redirect()->to('/produksi/kelolaproduksi')->with('success', 'Progress berhasil diupdate.');
     }
+
+    public function getRepairOrderDetail($id)
+{
+    // Ambil detail repair order berdasarkan ID
+    $repairOrder = $this->repairOrderModel->find($id);
+    
+    if ($repairOrder) {
+        return $this->response->setJSON($repairOrder);
+    } else {
+        return $this->response->setJSON(['error' => 'Data tidak ditemukan']);
+    }
+}
 
 }

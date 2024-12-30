@@ -239,13 +239,13 @@ class SuperController extends Controller
             return redirect()->back()->with('error', 'Gagal mengubah role');
         }
     }
-
-
     public function deleteRole($id)
     {
         $this->roleModel->delete($id);
         return redirect()->to('superadmin/kel_role')->with('success', 'Role berhasil dihapus');
     }
+
+    
     public function pengaturan_role()
     {
         $role = $this->roleModel->findAll();
@@ -288,6 +288,7 @@ class SuperController extends Controller
         $superadmin = $this->request->getVar('superadmin');
         $kelolauser = $this->request->getVar('kelolauser');
         $kelolamenu = $this->request->getVar('kelolamenu');
+        $kelolarole = $this->request->getVar('kelolarole');
         $registeradminonly = $this->request->getVar('registeradminonly');
 
         // produk
@@ -408,7 +409,7 @@ class SuperController extends Controller
         if ($superadmin) {
             array_push($features, [
                 "nama" => "Super Admin",
-                "icon" => "bi bi-stack",
+                "icon" => "bi bi-person-lock",
                 "children" => []
             ]);
             $index_cur = count($features) - 1;
@@ -418,12 +419,26 @@ class SuperController extends Controller
                     "url" => "/kel_user"
                 ]);
             }
-            if ($kelolamenu) {
+            if ($kelolarole) {
                 array_push($features[$index_cur]['children'], [
-                    "nama" => 'Kelola Menu',
-                    "url" => "/menu_akses"
+                    "nama" => 'Kelola Role',
+                    "url" => "/superadmin/kel_role"
                 ]);
             }
+            // if ($kelolamenu) {
+            //     array_push($features[$index_cur]['children'], [
+            //         "nama" => 'Kelola Menu',
+            //         "url" => "/menu_akses"
+            //     ]);
+            // }
+            // PENGATURAN ROLE
+            if ($mpengaturan_role) {
+                array_push($features[$index_cur]['children'], [
+                    "nama" => "Pengaturan Role",
+                    "url" => "/pengaturan_role",
+                ]);
+            }
+            // END PENGATURAN ROLE
             // if($registeradminonly) {
             //     array_push($features[$index_cur]['children'], [
             //         "nama" => 'Tambah User',
@@ -994,15 +1009,7 @@ class SuperController extends Controller
 
 
 
-        // PENGATURAN ROLE
-        if ($mpengaturan_role) {
-            array_push($features, [
-                "nama" => "Role",
-                "icon" => "bi bi-person-lock",
-                "url" => "/pengaturan_role",
-            ]);
-        }
-        // END PENGATURAN ROLE
+        
 
         $this->roleModel->update($roleId, ['fitur' => json_encode($features)]);
         return redirect()->to('/pengaturan_role')->with('message', 'Perubahan Telah di Simpan. Silahkan Logout dan Login kembali');

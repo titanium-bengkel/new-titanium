@@ -122,7 +122,8 @@ Swal.fire({
             <?php foreach ($repairOrders as $index => $order) : ?>
             <tr class="text-center">
                 <td><?= $index + 1 ?></td>
-                <td><?= esc($order['id_terima_po']) ?></td>
+                <td><a href="#" class="detail-link"
+                        data-id="<?= $order['id_repair_order'] ?>"><?= $order['id_terima_po'] ?></a></td>
                 <td>
                     <?= $order['tgl_masuk'] ? date('d M Y', strtotime($order['tgl_masuk'])) : '-' ?>
                 </td>
@@ -140,6 +141,32 @@ Swal.fire({
             <?php endforeach; ?>
         </tbody>
     </table>
+</div>
+
+<!-- Modal untuk menampilkan detail -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailModalLabel">Detail Repair Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body rounded-1">
+                <div id="repair-order-details">
+                    <p><strong>Bengkel: </strong> <span id="bengkel"></span></p>
+                    <p><strong>No. Klaim: </strong> <span id="no-klaim"></span></p>
+                    <p><strong>Tgl. Masuk: </strong> <span id="tgl-masuk"></span></p>
+                    <p><strong>Est. Keluar: </strong> <span id="tgl-keluar"></span></p>
+                    <p><strong>Nama Costomer: </strong> <span id="customer-name"></span></p>
+                    <p><strong>No. Polisi: </strong> <span id="no-polisi"></span></p>
+                    <p><strong>No. Rangka: </strong> <span id="no-rangka"></span></p>
+                    <p><strong>Asuransi: </strong> <span id="asuransi"></span></p>
+                    <p><strong>Jenis Mobil: </strong> <span id="jenis-mobil"></span></p>
+                    <p><strong>Total Biaya: </strong> <span id="total-biaya"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -232,6 +259,64 @@ Swal.fire({
         </form>
     </div>
 </div>
+
+<script>
+function formatDate(dateString) {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+    return new Intl.DateTimeFormat('id-ID', options).format(date);
+}
+
+function formatCurrency(amount) {
+    if (!amount) return '-';
+    return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
+}
+
+$(document).ready(function() {
+    $(document).on('click', '.detail-link', function(e) {
+        e.preventDefault();
+        const idRepairOrder = $(this).data('id');
+        $.ajax({
+            url: '/produksi/getRepairOrderDetail/' + idRepairOrder,
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    $('#bengkel').text(data.bengkel);
+                    $('#no-klaim').text(data.id_terima_po);
+                    $('#tgl-masuk').text(formatDate(data.tgl_masuk));
+                    $('#tgl-keluar').text(formatDate(data.tgl_keluar));
+                    $('#customer-name').text(data.customer_name);
+                    $('#no-polisi').text(data.no_kendaraan);
+                    $('#no-rangka').text(data.no_rangka);
+                    $('#asuransi').text(data.asuransi);
+                    $('#jenis-mobil').text(data.jenis_mobil);
+                    $('#total-biaya').text(formatCurrency(data.total_biaya));
+                    $('#detailModal').modal('show');
+                    $('#copy-no-klaim').click(function() {
+                        const noKlaim = $('#no-klaim').text();
+                        navigator.clipboard.writeText(noKlaim).then(function() {
+                            alert('No Klaim berhasil disalin!');
+                        }).catch(function(error) {
+                            console.error('Gagal menyalin: ', error);
+                        });
+                    });
+                }
+            },
+            error: function() {
+                alert('Terjadi kesalahan saat memuat detail repair order.');
+            }
+        });
+    });
+});
+</script>
 
 
 

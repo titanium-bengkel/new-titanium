@@ -53,7 +53,7 @@ $routes->post('role/update_permissions/(:num)', 'SuperController::update_permiss
 $routes->group('superadmin', function($routes) {
     $routes->get('kel_role', 'SuperController::kelolaRole');
     $routes->post('createRole', 'SuperController::createRole');
-    $routes->post('updateRole', 'SuperController::updateRole'); // Tidak lagi menggunakan (:num)
+    $routes->post('updateRole', 'SuperController::updateRole');
     $routes->get('deleteRole/(:num)', 'SuperController::deleteRole/$1');
 });
 
@@ -70,6 +70,7 @@ $routes->get('/produksi/headproduksi', 'ProduksiController::headproduksi');
 $routes->get('/produksi/kelolaproduksi', 'ProduksiController::kelolaproduksi');
 $routes->post('/produksi/update-kelola', 'ProduksiController::updateProgressKelola');
 $routes->post('/produksi/update-head', 'ProduksiController::updateProgressHead');
+$routes->get('/produksi/getRepairOrderDetail/(:num)', 'ProduksiController::getRepairOrderDetail/$1');
 
 
 
