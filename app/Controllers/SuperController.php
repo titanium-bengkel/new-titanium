@@ -158,7 +158,94 @@ class SuperController extends Controller
         return view('superadmin/menu_akses', $data);
     }
 
+    public function kelolaRole()
+    {
+        $role = $this->roleModel->findAll();
+        $data = [
+            'title' => 'Kelola Role',
+            'label' => $role,
+        ];
+        return view('superadmin/kel_role', $data);
+    }
 
+    // Menambahkan role
+    public function createRole()
+    {
+        $validation = \Config\Services::validation();
+
+        if (!$this->validate([
+            'label' => 'required',
+        ])) {
+            return redirect()->back()->withInput()->with('error', 'Semua kolom harus diisi');
+        }
+
+        // Cek apakah fitur ada, jika tidak set default
+        $fitur = $this->request->getPost('fitur');
+        if (empty($fitur)) {
+            $fitur = json_encode([
+                [
+                    "nama" => "Dashboard",
+                    "icon" => "bi bi-grid-fill",
+                    "url" => "/dashboard/index"
+                ],
+                [
+                    "nama" => "Website",
+                    "icon" => "bi bi-globe",
+                    "url" => "#",
+                    "children" => [
+                        ["nama" => "Video Home", "url" => "/website/video_home"],
+                        ["nama" => "Tentang Kami (About Us)", "url" => "/website/tentang_kami"]
+                    ]
+                ]
+            ]);
+        } else {
+            $fitur = json_encode(json_decode($fitur)); // Pastikan fitur dalam format JSON yang valid
+        }
+
+        $this->roleModel->save([
+            'label' => $this->request->getPost('label'),
+            'fitur' => $fitur
+        ]);
+
+        return redirect()->to('superadmin/kel_role')->with('success', 'Role berhasil ditambahkan');
+    }
+
+    public function updateRole()
+    {
+        $id = $this->request->getPost('id'); 
+        if (!$this->validate([
+            'label' => 'required',
+        ])) {
+            return redirect()->back()->withInput()->with('error', 'Label harus diisi');
+        }
+        $existingRole = $this->roleModel->find($id);
+        if (!$existingRole) {
+            return redirect()->back()->with('error', 'Role tidak ditemukan');
+        }
+        $label = $this->request->getPost('label');
+        $fitur = $this->request->getPost('fitur');
+        if (empty($fitur)) {
+            $fitur = $existingRole['fitur'];
+        } else {
+            $fitur = json_encode(json_decode($fitur));
+        }
+        $dataToUpdate = ['label' => $label];
+        if ($fitur !== $existingRole['fitur']) {
+            $dataToUpdate['fitur'] = $fitur;
+        }
+        if ($this->roleModel->update($id, $dataToUpdate)) {
+            return redirect()->to('superadmin/kel_role')->with('success', 'Role berhasil diubah');
+        } else {
+            return redirect()->back()->with('error', 'Gagal mengubah role');
+        }
+    }
+
+
+    public function deleteRole($id)
+    {
+        $this->roleModel->delete($id);
+        return redirect()->to('superadmin/kel_role')->with('success', 'Role berhasil dihapus');
+    }
     public function pengaturan_role()
     {
         $role = $this->roleModel->findAll();
@@ -167,25 +254,26 @@ class SuperController extends Controller
         foreach ($role as $ind_r => $r) {
             $arraykosong = [];
             $feature = json_decode($r["fitur"], true);
-            foreach ($feature as $ind_rf => $rf) {
-                array_push($arraykosong, $rf["nama"]);
 
-                if (isset($rf["children"])) {
-                    foreach ($rf["children"] as $ind_rfc => $rfc) {
-                        array_push($arraykosong, $rfc["nama"]);
+            if (is_array($feature)) {
+                foreach ($feature as $ind_rf => $rf) {
+                    array_push($arraykosong, $rf["nama"]);
 
-                        if (isset($rfc["children"])) {
-                            foreach ($rfc["children"] as $ind_rfcc => $rfcc) {
-                                array_push($arraykosong, $rfcc["nama"]);
+                    if (isset($rf["children"])) {
+                        foreach ($rf["children"] as $ind_rfc => $rfc) {
+                            array_push($arraykosong, $rfc["nama"]);
+
+                            if (isset($rfc["children"])) {
+                                foreach ($rfc["children"] as $ind_rfcc => $rfcc) {
+                                    array_push($arraykosong, $rfcc["nama"]);
+                                }
                             }
                         }
                     }
                 }
             }
-
             $role[$ind_r]['fiturnya'] = $arraykosong;
         }
-
         $data = [
             'title' => 'Pengaturan Role',
             'label' => $role,
