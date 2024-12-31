@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class M_Bahan_Repair extends Model
 {
     protected $table = 'bahan_repair';
-    protected $primaryKey = 'id_material'; // Jika id_material bukan auto-increment
+    protected $primaryKey = 'id_material';
     protected $allowedFields = [
         'id_material',
         'tanggal',
@@ -73,4 +73,3 @@ class M_Bahan_Repair extends Model
     //     ];
     // }
 }
-

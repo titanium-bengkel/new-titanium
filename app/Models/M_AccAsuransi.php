@@ -6,32 +6,35 @@ use CodeIgniter\Model;
 
 class M_AccAsuransi extends Model
 {
-    protected $table = 'acc_asuransi';
-    protected $primaryKey = 'id_acc_asuransi';
+    public function getRepairOrderDetails()
+    {
+        return $this->db->table('repair_order')
+            ->select(
+                'repair_order.*, 
+                      jasa.total AS jasa_total, 
+                      sparepart.total_hpp AS sparepart_total, 
+                      bahan.total_hpp AS bahan_total, 
+                      kwitansi.nomor AS no_faktur, 
+                      kwitansi.tanggal AS tgl_faktur,
+                      detail_jasa.nama_jasa, 
+                      detail_jasa.harga, 
+                      detail_jasa.keterangan,
+                      asuransi.no_kendaraan, 
+                      asuransi.customer_name, 
+                      asuransi.asuransi, 
+                      asuransi.biaya_total'  // You can add more columns from acc_asuransi if needed
+            )
+            ->join('rm_jasa jasa', 'jasa.no_ro = repair_order.id_terima_po', 'left')
+            ->join('part_repair sparepart', 'sparepart.no_repair = repair_order.id_terima_po', 'left')
+            ->join('bahan_repair bahan', 'bahan.no_repair = repair_order.id_terima_po', 'left')
+            ->join('kwitansi kwitansi', 'kwitansi.no_order = repair_order.id_terima_po', 'left')
+            ->join('rm_detail_jasa detail_jasa', 'detail_jasa.id_jasa = jasa.id_jasa', 'left')
+            ->join('acc_asuransi asuransi', 'asuransi.id_terima_po = repair_order.id_terima_po', 'left') // Added join on acc_asuransi
+            ->orderBy('repair_order.id_terima_po', 'DESC')
+            ->get()
+            ->getResultArray();
+    }
 
-    protected $allowedFields = [
-        'id_acc_asuransi',
-        'id_terima_po',
-        'tgl_acc',
-        'no_kendaraan',
-        'no_rangka',
-        'jenis_mobil',
-        'warna',
-        'customer_name',
-        'no_contact',
-        'tahun_kendaraan',
-        'asuransi',
-        'tgl_masuk',
-        'tgl_estimasi',
-        'biaya_jasa',
-        'biaya_sparepart',
-        'biaya_total',
-        'nilai_or',
-        'qty_or',
-        'keterangan',
-        'file_lampiran',
-        'user_id'
-    ];
 
     public function updateAccAsuransi($id_acc_asuransi, $data)
     {

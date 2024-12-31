@@ -83,11 +83,14 @@ class M_AuditLog extends Model
         string $tableName,
         string $recordId,
         string $columnName,
-        string $oldValue,
+        ?string $oldValue,
         string $newValue,
         string $username,
         string $description = ''
     ): bool {
+
+        $oldValue = $oldValue ?? '';
+
         return $this->insert([
             'action' => 'EDIT',
             'table_name' => $tableName,
@@ -96,7 +99,7 @@ class M_AuditLog extends Model
             'old_value' => $oldValue,
             'new_value' => $newValue,
             'username' => $username,
-            'description' => $description, // Menambahkan deskripsi
+            'description' => $description,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
     }

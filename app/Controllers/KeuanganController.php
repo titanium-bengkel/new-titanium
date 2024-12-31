@@ -126,13 +126,14 @@ class KeuanganController extends BaseController
 
     public function createPembelian()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
 
         $pembelianModel = new M_K_Pembelian();
         $detailPembelianModel = new M_K_DPembelian();
+        $auditLogModel = new M_AuditLog();
 
         // Mengambil data dari request
         $qty = $this->request->getPost('qty');
@@ -165,7 +166,12 @@ class KeuanganController extends BaseController
             'user_id' => $user_id
         ];
 
+        // Simpan data ke tabel pembelian
         $pembelianModel->insert($dataBeli);
+        $pembelianId = $pembelianModel->getInsertID(); // Mendapatkan ID terakhir yang dimasukkan
+
+        // Tambahkan log CREATE untuk data pembelian
+        $auditLogModel->logCreate('Pembelian', $user_id, 'Menambahkan data pembelian baru dengan No Faktur: ' . $dataBeli['no_faktur']);
 
         // Menyiapkan data untuk disimpan di tabel detail_terima
         $kode_barang = $this->request->getPost('kode_barang');
@@ -190,10 +196,19 @@ class KeuanganController extends BaseController
 
                 // Simpan data ke tabel detail_terima
                 $detailPembelianModel->insert($detailData);
+
+                // Tambahkan log CREATE untuk setiap data detail pembelian
+                $auditLogModel->logCreate(
+                    'detail_pembelian',
+                    $user_id,
+                    'Menambahkan data detail pembelian untuk No Faktur: ' . $no_faktur[$index] . ' dengan Kode Barang: ' . $kode
+                );
             }
         }
+
         return redirect()->to(base_url('/pembelian_prev/' . $no_faktur))->with('success', 'Data berhasil disimpan.');
     }
+
 
     public function prev_pembelian($no_faktur)
     {
@@ -235,9 +250,20 @@ class KeuanganController extends BaseController
     public function updatePembelian()
     {
         $pembelianModel = new M_K_Pembelian();
+        $auditLogModel = new M_AuditLog();
 
         // Mengambil data dari request
         $id_pembelian = $this->request->getPost('id_pembelian');
+        $user_id = session()->get('username');
+
+        // Ambil data lama sebelum diupdate
+        $oldData = $pembelianModel->find($id_pembelian);
+
+        if (!$oldData) {
+            return redirect()->back()->with('error', 'Data pembelian tidak ditemukan.');
+        }
+
+        // Data yang akan diupdate
         $dataUpdate = [
             'tanggal' => $this->request->getPost('tanggal'),
             'supplier' => $this->request->getPost('supplier'),
@@ -256,17 +282,37 @@ class KeuanganController extends BaseController
         // Melakukan update pada tabel terima_bahan
         $pembelianModel->update($id_pembelian, $dataUpdate);
 
+        // Log perubahan data
+        foreach ($dataUpdate as $key => $newValue) {
+            $oldValue = $oldData[$key] ?? null;
+
+            // Hanya catat jika ada perubahan
+            if ($oldValue != $newValue) {
+                $auditLogModel->logEdit(
+                    'Pembelian',
+                    $id_pembelian,
+                    $key,
+                    $oldValue,
+                    $newValue,
+                    $user_id,
+                    'Mengubah data pembelian untuk ID: ' . $id_pembelian
+                );
+            }
+        }
+
         return redirect()->to(base_url('/pembelian_prev/' . $id_pembelian))->with('message', 'Data berhasil diperbarui.');
     }
+
 
     public function createDetailTambah()
     {
         $detailPembelianModel = new M_K_DPembelian();
+        $auditLogModel = new M_AuditLog();
 
-        // Mendapatkan id_penerimaan dari form
+        // Mendapatkan ID pembelian dari form
         $id_pembelian = $this->request->getPost('id_pembelian');
         if (!$id_pembelian) {
-            return redirect()->back()->with('error', 'ID Terima PO tidak ditemukan.');
+            return redirect()->back()->with('error', 'ID Pembelian tidak ditemukan.');
         }
 
         // Data yang akan disimpan
@@ -278,20 +324,31 @@ class KeuanganController extends BaseController
 
         $data = [
             'id_kode_barang'  => $this->request->getPost('id_kode_barang'),
-            'nama_barang'  => $this->request->getPost('nama_barang'),
-            'qty'          => $qty,
-            'satuan'       => $this->request->getPost('satuan'),
-            'harga'        => $harga,
-            'disc'         => $disc,
-            'jumlah'       => $jumlah,
-            'id_pembelian' => $id_pembelian // Simpan ID Terima PO
+            'nama_barang'     => $this->request->getPost('nama_barang'),
+            'qty'             => $qty,
+            'satuan'          => $this->request->getPost('satuan'),
+            'harga'           => $harga,
+            'disc'            => $disc,
+            'jumlah'          => $jumlah,
+            'id_pembelian'    => $id_pembelian // Simpan ID Pembelian
         ];
 
         // Insert data ke dalam database
         $detailPembelianModel->insert($data);
 
+        // Mendapatkan ID detail pembelian terakhir
+        $id_detail_pembelian = $detailPembelianModel->getInsertID();
+
+        // Tambahkan log CREATE untuk detail pembelian
+        $user_id = session()->get('username');
+        $auditLogModel->logCreate(
+            'detail_pembelian',
+            $user_id,
+            'Menambahkan detail pembelian baru dengan ID Pembelian: ' . $id_pembelian . ' dan Nama Barang: ' . $data['nama_barang']
+        );
+
         // Redirect dengan pesan sukses
-        return redirect()->to('/pembelian_prev/' . $id_pembelian)->with('message', 'Barang berhasil ditambahkan');
+        return redirect()->to('/pembelian_prev/' . $id_pembelian)->with('message', 'Barang berhasil ditambahkan.');
     }
 
     public function delete_pembelian($id)
@@ -299,13 +356,44 @@ class KeuanganController extends BaseController
         $db = \Config\Database::connect();
         $db->transStart(); // Memulai transaksi
 
-        // Menghapus data terkait di tabel detail_barang
         $detailPembelianModel = new M_K_DPembelian();
+        $pembelianModel = new M_K_Pembelian();
+        $auditLogModel = new M_AuditLog();
+        $user_id = session()->get('username'); // Mendapatkan user ID dari sesi
+
+        // Mengambil data lama sebelum dihapus untuk log
+        $detailPembelianData = $detailPembelianModel->where('no_faktur', $id)->findAll();
+        $pembelianData = $pembelianModel->where('no_faktur', $id)->first();
+
+        // Menghapus data terkait di tabel detail_pembelian
         $detailPembelianModel->where('no_faktur', $id)->delete();
 
-        // Menghapus data di tabel no_faktur
-        $pembelianModel = new M_K_Pembelian();
+        // Log penghapusan data di tabel detail_pembelian
+        if (!empty($detailPembelianData)) {
+            foreach ($detailPembelianData as $detail) {
+                $auditLogModel->logDelete(
+                    'detail_pembelian',
+                    $detail['id'], // ID record dari detail_pembelian
+                    $user_id,
+                    $detail, // Data detail yang dihapus
+                    'Menghapus detail pembelian dengan No Faktur: ' . $id
+                );
+            }
+        }
+
+        // Menghapus data di tabel pembelian
         $pembelianModel->where('no_faktur', $id)->delete();
+
+        // Log penghapusan data di tabel pembelian
+        if (!empty($pembelianData)) {
+            $auditLogModel->logDelete(
+                'pembelian',
+                $pembelianData['id'], // ID record dari pembelian
+                $user_id,
+                $pembelianData, // Data pembelian yang dihapus
+                'Menghapus data pembelian dengan No Faktur: ' . $id
+            );
+        }
 
         $db->transComplete(); // Menyelesaikan transaksi
 
@@ -315,6 +403,7 @@ class KeuanganController extends BaseController
             return redirect()->to('pembelian')->with('success', 'Data berhasil dihapus');
         }
     }
+
 
     public function delete_detailpembelian($id)
     {
@@ -367,8 +456,7 @@ class KeuanganController extends BaseController
 
     public function createKasBank()
     {
-
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -376,50 +464,33 @@ class KeuanganController extends BaseController
         $modelKas = new M_KasBank();
         $modelform = new M_KasBank_Form();
         $modelJurnal = new M_ReportJurnal();
+        $auditLogModel = new M_AuditLog();
         $doc_no = $modelform->generateDoc();
 
-        // Ambil data dari form
         $tanggal = $this->request->getPost('tgl');
-
-        // Pastikan akun_debet berupa array
         $akun_debet = $this->request->getPost('akun_debet');
         if (!is_array($akun_debet)) {
             return redirect()->back()->with('error', 'Akun debet harus berupa array.');
         }
-
-        // Bersihkan data akun_debet untuk menyimpan hanya nama akun
         $nama_akun_debet = array_map(function ($item) {
             return strtoupper(trim(explode('-', $item)[1])); // Ambil hanya nama akun setelah tanda '-'
         }, $akun_debet);
-
-        // Ambil kode akun debet
         $kode_akun_debet = array_map(function ($item) {
             return strtoupper(trim(explode('-', $item)[0])); // Ambil kode akun sebelum tanda '-'
         }, $akun_debet);
-
-        // Bersihkan data nilai
         $nilai = $this->request->getPost('nilai');
         if (!is_array($nilai)) {
             return redirect()->back()->with('error', 'Nilai harus berupa array.');
         }
-
-        // Bersihkan data keterangan
         $keterangan = $this->request->getPost('keterangan');
         if (!is_array($keterangan)) {
             return redirect()->back()->with('error', 'Keterangan harus berupa array.');
         }
-
-        // Proses setiap keterangan menjadi uppercase
         $keterangan = array_map('strtoupper', $keterangan);
-
-        // Bersihkan data akun_credit untuk menyimpan hanya nama akun
         $akun_credit = strtoupper(trim(explode('-', $this->request->getPost('akun_credit'))[1])); // Ambil hanya nama akun
-        $kode_akun_credit = strtoupper(trim(explode('-', $this->request->getPost('akun_credit'))[0])); // Ambil kode akun
-
-        // Bersihkan total_debit
+        $kode_akun_credit = strtoupper(trim(explode('-', $this->request->getPost('akun_credit'))[0]));
         $total_debit = intval($this->request->getPost('total_debit'));
 
-        // Simpan data untuk akun debet ke model M_KasBank_Form
         foreach ($nama_akun_debet as $index => $akun) {
             $dataForm = [
                 'doc_no' => $doc_no,
@@ -427,102 +498,124 @@ class KeuanganController extends BaseController
                 'account_debit' => $akun,
                 'keterangan' => $keterangan[$index],
                 'debit' => intval($nilai[$index]),
-                'kredit' => 0,  // Untuk debit, kredit harus 0
+                'kredit' => 0,
                 'user_id' => $user_id,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ];
-
-            // Simpan ke database k_kasbank_form
             $modelform->insert($dataForm);
+
+            // Tambahkan log CREATE untuk data debit
+            $auditLogModel->logCreate(
+                'k_kasbank_form',
+                $user_id,
+                'Menambahkan data debit dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun
+            );
         }
 
-        // Simpan data untuk akun kredit (hanya satu entri) ke model M_KasBank_Form
         $dataFormKredit = [
             'doc_no' => $doc_no,
             'tanggal' => $tanggal,
-            'account_credit' => $akun_credit,  // Simpan hanya nama akun kredit
-            'keterangan' => implode(" ", $keterangan),  // Gabungkan keterangan jika diperlukan
-            'debit' => 0,  // Untuk kredit, debit harus 0
-            'kredit' => $total_debit,  // Simpan total kredit
+            'account_credit' => $akun_credit,
+            'keterangan' => implode(" ", $keterangan),
+            'debit' => 0,
+            'kredit' => $total_debit,
             'user_id' => session()->get('user_id'),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];
-
-        // Simpan ke database k_kasbank_form
         $modelform->insert($dataFormKredit);
 
-        // Simpan data untuk model M_KasBank
+        // Tambahkan log CREATE untuk data kredit
+        $auditLogModel->logCreate(
+            'k_kasbank_form',
+            $user_id,
+            'Menambahkan data kredit dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun_credit
+        );
+
         foreach ($nama_akun_debet as $index => $akun) {
             $dataKasBankDebit = [
                 'tanggal' => $tanggal,
                 'doc_no' => $doc_no,
-                'kode_account' => $kode_akun_debet[$index], // Simpan kode akun debet
-                'nama_account' => $akun, // Simpan hanya nama akun debet
-                'deskripsi' => $keterangan[$index],  // Ambil keterangan berdasarkan index
-                'debit' => intval($nilai[$index]),  // Simpan nilai sebagai integer
-                'kredit' => 0,  // Untuk debit, kredit harus 0
+                'kode_account' => $kode_akun_debet[$index],
+                'nama_account' => $akun,
+                'deskripsi' => $keterangan[$index],
+                'debit' => intval($nilai[$index]),
+                'kredit' => 0,
                 'user_id' => $user_id,
                 'tgl_input' => date('Y-m-d H:i:s'),
             ];
-
-            // Simpan ke database k_kasbank
             $modelKas->insert($dataKasBankDebit);
+
+            // Tambahkan log CREATE untuk debit di kasbank
+            $auditLogModel->logCreate(
+                'k_kasbank',
+                $user_id,
+                'Menambahkan data debit di kas bank dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun
+            );
         }
 
-        // Simpan data untuk akun kredit (hanya satu entri) ke model M_KasBank
         $dataKasBankKredit = [
             'tanggal' => $tanggal,
             'doc_no' => $doc_no,
-            'kode_account' => $kode_akun_credit,  // Simpan kode akun kredit
-            'nama_account' => $akun_credit,  // Simpan hanya nama akun kredit
-            'deskripsi' => implode(" ", $keterangan),  // Gabungkan keterangan jika diperlukan
-            'debit' => 0,  // Untuk kredit, debit harus 0
-            'kredit' => $total_debit,  // Simpan total kredit
+            'kode_account' => $kode_akun_credit,
+            'nama_account' => $akun_credit,
+            'deskripsi' => implode(" ", $keterangan),
+            'debit' => 0,
+            'kredit' => $total_debit,
             'user_id' => $user_id,
             'tgl_input' => date('Y-m-d H:i:s'),
         ];
-
-        // Simpan ke database k_kasbank
         $modelKas->insert($dataKasBankKredit);
 
-        // Simpan data untuk model M_ReportJurnal
+        // Tambahkan log CREATE untuk kredit di kasbank
+        $auditLogModel->logCreate(
+            'k_kasbank',
+            $user_id,
+            'Menambahkan data kredit di kas bank dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun_credit
+        );
+
         foreach ($nama_akun_debet as $index => $akun) {
             $dataReport = [
                 'date' => $tanggal,
                 'doc_no' => $doc_no,
-                'account' => $kode_akun_debet[$index], // Simpan kode akun debet
-                'name' => $akun, // Simpan hanya nama akun debet
-                'description' => $keterangan[$index],  // Ambil keterangan berdasarkan index
-                'debit' => intval($nilai[$index]),  // Simpan nilai sebagai integer
-                'kredit' => 0,  // Untuk debit, kredit harus 0
+                'account' => $kode_akun_debet[$index],
+                'name' => $akun,
+                'description' => $keterangan[$index],
+                'debit' => intval($nilai[$index]),
+                'kredit' => 0,
                 'aksi' => 'Posted',
                 'user_id' => $user_id,
             ];
-
-            // Simpan ke database k_kasbank
             $modelJurnal->insert($dataReport);
+
+            // Tambahkan log CREATE untuk jurnal debit
+            $auditLogModel->logCreate(
+                'k_report_jurnal',
+                $user_id,
+                'Menambahkan data jurnal debit dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun
+            );
         }
 
-        // Simpan data untuk akun kredit (hanya satu entri) ke model M_KasBank
         $dataJurnal = [
             'date' => $tanggal,
             'doc_no' => $doc_no,
-            'account' => $kode_akun_credit,  // Simpan kode akun kredit
-            'name' => $akun_credit,  // Simpan hanya nama akun kredit
-            'description' => implode(" ", $keterangan),  // Gabungkan keterangan jika diperlukan
-            'debit' => 0,  // Untuk kredit, debit harus 0
-            'kredit' => $total_debit,  // Simpan total kredit
+            'account' => $kode_akun_credit,
+            'name' => $akun_credit,
+            'description' => implode(" ", $keterangan),
+            'debit' => 0,
+            'kredit' => $total_debit,
             'user_id' => $user_id,
         ];
-
-        // Simpan ke database k_kasbank
         $modelJurnal->insert($dataJurnal);
 
+        // Tambahkan log CREATE untuk jurnal kredit
+        $auditLogModel->logCreate(
+            'k_report_jurnal',
+            $user_id,
+            'Menambahkan data jurnal kredit dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun_credit
+        );
 
-
-        // Redirect atau tampilkan pesan sukses
         return redirect()->to(base_url('kas_bank'))->with('success', 'Data berhasil disimpan!');
     }
 
@@ -560,7 +653,9 @@ class KeuanganController extends BaseController
         $model = new M_KasKecil();
         $modelJurnal = new M_ReportJurnal();
         $modelKasKeluar = new M_KasKeluar();
-        $user_id = session()->get('user_id');
+        $auditLogModel = new M_AuditLog(); // Tambahkan model audit log
+
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -576,7 +671,6 @@ class KeuanganController extends BaseController
 
         // Simpan setiap baris data yang diinput
         foreach ($kodeAccount as $key => $kode) {
-            // Memisahkan kode dan nama akun
             $parts = explode(' - ', $kode); // Pisahkan berdasarkan ' - '
 
             $dataBatch[] = [
@@ -585,18 +679,26 @@ class KeuanganController extends BaseController
                 'kode_account' => isset($parts[0]) ? strtoupper($parts[0]) : '',
                 'nama_account' => isset($parts[1]) ? strtoupper($parts[1]) : '',
                 'keterangan'   => strtoupper($keterangan[$key]),
-                'debit' => 0,
-                'kredit'        => str_replace('.', '', $nilai[$key]), // Menghapus titik pada nilai
+                'debit'        => 0,
+                'kredit'       => str_replace('.', '', $nilai[$key]), // Menghapus titik pada nilai
                 'user_id'      => $user_id,
                 'tgl_input'    => date('Y-m-d H:i:s'),
             ];
 
-            // Menambahkan nilai ke total nilai
             $totalNilai += str_replace('.', '', $nilai[$key]); // Menghapus titik pada nilai
         }
 
         // Simpan data ke database dengan batch insert
         if ($model->insertBatch($dataBatch)) {
+            // Tambahkan log CREATE untuk setiap baris data
+            foreach ($dataBatch as $data) {
+                $auditLogModel->logCreate(
+                    'k_kas_kecil',
+                    $user_id,
+                    'Menambahkan data kas kecil dengan Doc No: ' . $docNo . ' dan Nama Akun: ' . $data['nama_account']
+                );
+            }
+
             session()->setFlashdata('success', 'Data berhasil disimpan.');
         } else {
             session()->setFlashdata('error', 'Gagal menyimpan data.');
@@ -620,6 +722,13 @@ class KeuanganController extends BaseController
 
             // Simpan ke database M_ReportJurnal (Debit)
             $modelJurnal->insert($dataReportDebit);
+
+            // Tambahkan log CREATE untuk jurnal debit
+            $auditLogModel->logCreate(
+                'k_report_jurnal',
+                $user_id,
+                'Menambahkan jurnal debit dengan Doc No: ' . $docNo . ' dan Nama Akun: ' . $dataReportDebit['name']
+            );
         }
 
         // Simpan data untuk model M_ReportJurnal (Kredit sebagai total nilai)
@@ -637,6 +746,13 @@ class KeuanganController extends BaseController
         // Simpan ke database M_ReportJurnal (Kredit Total)
         $modelJurnal->insert($dataReportKredit);
 
+        // Tambahkan log CREATE untuk jurnal kredit
+        $auditLogModel->logCreate(
+            'k_report_jurnal',
+            $user_id,
+            'Menambahkan jurnal kredit untuk pengeluaran kas kecil dengan Doc No: ' . $docNo
+        );
+
         // Simpan Pengeluaran ke M_KasKeluar
         $dataKeluar = [
             'tanggal'      => strtoupper($tanggal),
@@ -648,13 +764,20 @@ class KeuanganController extends BaseController
             'user_id'      => session()->get('user_id'),
         ];
 
-        // Simpan ke database M_ReportJurnal (Kredit Total)
+        // Simpan ke database M_KasKeluar
         $modelKasKeluar->insert($dataKeluar);
 
+        // Tambahkan log CREATE untuk pengeluaran kas kecil
+        $auditLogModel->logCreate(
+            'k_kas_keluar',
+            $user_id,
+            'Menambahkan pengeluaran kas kecil dengan Doc No: ' . $docNo
+        );
 
         // Redirect ke halaman lain setelah simpan data
         return redirect()->to('/kas_kecil');
     }
+
 
 
     public function keluarkasbesar()
@@ -721,8 +844,9 @@ class KeuanganController extends BaseController
     {
         $model = new M_P_KasBesar();
         $modelJurnal = new M_ReportJurnal();
+        $auditLogModel = new M_AuditLog(); // Tambahkan model untuk log audit
 
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -738,8 +862,7 @@ class KeuanganController extends BaseController
 
         // Simpan setiap baris data yang diinput
         foreach ($kodeAccount as $key => $kode) {
-            // Memisahkan kode dan nama akun
-            $parts = explode(' - ', $kode); // Pisahkan berdasarkan ' - '
+            $parts = explode(' - ', $kode); // Pisahkan kode dan nama akun
 
             $dataBatch[] = [
                 'tanggal'      => strtoupper($tanggal),
@@ -752,12 +875,20 @@ class KeuanganController extends BaseController
                 'tgl_input'    => date('Y-m-d H:i:s'),
             ];
 
-            // Menambahkan nilai ke total nilai
             $totalNilai += str_replace('.', '', $nilai[$key]); // Menghapus titik pada nilai
         }
 
         // Simpan data ke database dengan batch insert
         if ($model->insertBatch($dataBatch)) {
+            // Tambahkan log CREATE untuk setiap baris data yang disimpan
+            foreach ($dataBatch as $data) {
+                $auditLogModel->logCreate(
+                    'p_kas_besar',
+                    $user_id,
+                    'Menambahkan data pengeluaran kas besar dengan Doc No: ' . $docNo . ' dan Nama Akun: ' . $data['nama_account']
+                );
+            }
+
             session()->setFlashdata('success', 'Data berhasil disimpan.');
         } else {
             session()->setFlashdata('error', 'Gagal menyimpan data.');
@@ -781,6 +912,13 @@ class KeuanganController extends BaseController
 
             // Simpan ke database M_ReportJurnal (Debit)
             $modelJurnal->insert($dataReportDebit);
+
+            // Tambahkan log CREATE untuk jurnal debit
+            $auditLogModel->logCreate(
+                'report_jurnal',
+                $user_id,
+                'Menambahkan jurnal debit dengan Doc No: ' . $docNo . ' dan Nama Akun: ' . $dataReportDebit['name']
+            );
         }
 
         // Simpan data untuk model M_ReportJurnal (Kredit sebagai total nilai)
@@ -798,10 +936,16 @@ class KeuanganController extends BaseController
         // Simpan ke database M_ReportJurnal (Kredit Total)
         $modelJurnal->insert($dataReportKredit);
 
+        // Tambahkan log CREATE untuk jurnal kredit
+        $auditLogModel->logCreate(
+            'report_jurnal',
+            $user_id,
+            'Menambahkan jurnal kredit untuk pengeluaran kas besar dengan Doc No: ' . $docNo
+        );
+
         // Redirect ke halaman lain setelah simpan data
         return redirect()->to('/keluar_kasbesar');
     }
-
 
 
 
@@ -862,38 +1006,31 @@ class KeuanganController extends BaseController
         return view('keuangan/ro_list', $data);
     }
 
-
-
     public function repairorder_listprev($id_terima_po)
     {
         $modelro = new M_RepairOrder();
-        $modeljasa = new M_Rm_Detail_Jasa();
 
-        // Ambil data Repair Order berdasarkan id_terima_po
+        // Mengambil data dari model
         $rodata = $modelro->getRepairOrderDetails($id_terima_po);
 
-        if (!empty($rodata) && array_key_exists('id_jasa', $rodata)) {
-            $id_jasa = $rodata['id_jasa'];
-        } else {
-            $id_jasa = null;
+        // Jika data tidak ditemukan
+        if (!$rodata) {
+            return redirect()->back()->with('error', 'Repair Order tidak ditemukan.');
         }
 
 
-        // Lakukan query jasa hanya jika id_jasa tidak null
-        if ($id_jasa) {
-            $roJasa = $modeljasa->where('id_jasa', $id_jasa)->findAll();
-        } else {
-            $roJasa = []; // Jika tidak ada id_jasa, kosongkan hasil
-        }
-
+        // Mempersiapkan data untuk view
         $data = [
             'title' => 'RO List',
             'rodata' => $rodata,
-            'roJasa' => $roJasa
         ];
 
+        // Mengembalikan data ke view
         return view('keuangan/ro_listprev', $data);
     }
+
+
+
 
 
     public function repair_materialjasa()
@@ -1232,7 +1369,7 @@ class KeuanganController extends BaseController
         $pembayaranModel = new M_K_Pembayaran();
         $hutangModel = new M_HutangSupplier();
 
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi.');
         }
@@ -1289,7 +1426,7 @@ class KeuanganController extends BaseController
         $debitHutang = new M_HutangSupplier();
 
         // Mendapatkan user_id dari session
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi.');
         }
