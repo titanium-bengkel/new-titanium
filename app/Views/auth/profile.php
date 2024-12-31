@@ -7,7 +7,8 @@
             <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3"
                 style="border-color: #6c757d; padding: 15px 20px;">
                 <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                    <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                    <a href="<?= base_url('dashboard/index') ?>"
+                        class="breadcrumb-link text-primary fw-bold">Dashboard</a>
                     <span class="breadcrumb-divider text-muted mx-3">/</span>
                     <span class="breadcrumb-current text-muted">Profile</span>
                 </div>
@@ -63,6 +64,21 @@
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" name="email" id="email" class="form-control"
                                     placeholder="Email Anda" value="<?= esc($user['email']) ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="current_password" class="form-label">Kata Sandi Lama</label>
+                                <input type="password" name="current_password" id="current_password"
+                                    class="form-control" placeholder="Masukkan Kata Sandi Lama" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="password" class="form-label">Kata Sandi Baru</label>
+                                <input type="password" name="password" id="password" class="form-control"
+                                    placeholder="Kata Sandi Baru" />
+                            </div>
+                            <div class="form-group">
+                                <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi Baru</label>
+                                <input type="password" name="password_confirmation" id="password_confirmation"
+                                    class="form-control" placeholder="Konfirmasi Kata Sandi Baru" />
                             </div>
                             <button type="submit" class="btn btn-primary btn-sm mt-3">Update Profil</button>
                         </form>

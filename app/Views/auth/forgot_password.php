@@ -57,7 +57,7 @@
                     </form>
 
                     <div class="text-center my-3">
-                        <p>Ingat password Anda? <a href="<?= site_url('login') ?>">Kembali ke login</a>.</p>
+                        <p>Ingat password Anda? <a href="<?= site_url('/') ?>">Kembali ke login</a>.</p>
                     </div>
                 </div>
             </div>

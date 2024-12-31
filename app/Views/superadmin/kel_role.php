@@ -41,7 +41,7 @@ Swal.fire({
                     <h5 class="page-title mb-0 fw-bold">Kelola Role</h5>
                 </header>
                 <div class="card-content">
-                    <div class="table-responsive" style="margin:20px; font-size: 14px;">
+                    <div class="table-responsive px-4">
                         <div class="d-flex justify-content-between mb-2">
                             <h5 class="m-0">Daftar Role</h5>
                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"

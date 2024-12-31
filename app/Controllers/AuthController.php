@@ -70,13 +70,11 @@ class AuthController extends Controller
         return view('auth/profile', $data);
     }
 
-    public function updateProfile()
-    {
+    public function updateProfile() {
         $session = session();
         $userId = $session->get('user_id');
         $data = [];
         $user = $this->userModel->find($userId);
-
         if ($this->request->getPost('nama') && $this->request->getPost('nama') != $user['nama_user']) {
             $data['nama_user'] = $this->request->getPost('nama');
         }
@@ -97,7 +95,7 @@ class AuthController extends Controller
                 if ($user['foto'] && $user['foto'] != 'default.jpg') {
                     $oldFotoPath = $uploadPath . $user['foto'];
                     if (is_file($oldFotoPath)) {
-                        unlink($oldFotoPath); 
+                        unlink($oldFotoPath);
                     }
                 }
                 $data['foto'] = $newName;
@@ -108,17 +106,49 @@ class AuthController extends Controller
             }
         }
         $validationRules = [
-            'nama' => 'permit_empty|string|max_length[100]', 
-            'alamat' => 'permit_empty|string|max_length[255]', 
+            'nama' => 'permit_empty|string|max_length[100]',
+            'alamat' => 'permit_empty|string|max_length[255]',
             'telp' => 'permit_empty|string|max_length[15]',
             'email' => 'permit_empty|valid_email',
         ];
+        $validationMessages = [
+            'nama' => [
+                'max_length' => 'Nama tidak boleh lebih dari {param} karakter.'
+            ],
+            'alamat' => [
+                'max_length' => 'Alamat tidak boleh lebih dari {param} karakter.'
+            ],
+            'telp' => [
+                'max_length' => 'Nomor telepon tidak boleh lebih dari {param} karakter.'
+            ],
+            'email' => [
+                'valid_email' => 'Alamat email yang Anda masukkan tidak valid.',
+            ],
+        ];
         if (isset($data['email']) && $data['email'] != $user['email']) {
-            $validationRules['email'] .= '|is_unique[users.email]'; 
+            $validationRules['email'] .= '|is_unique[users.email]';
+            $validationMessages['email']['is_unique'] = 'Email ini sudah digunakan, silakan pilih yang lain.';
         }
-        if (!$this->validate($validationRules)) {
+        if ($password = $this->request->getPost('password')) {
+            $validationRules['password'] = 'min_length[6]'; // Minimal 6 karakter
+            $validationRules['password_confirmation'] = 'matches[password]'; // Memastikan konfirmasi cocok
+            $validationMessages['password'] = [
+                'min_length' => 'Kata sandi harus terdiri dari minimal {param} karakter.',
+            ];
+            $validationMessages['password_confirmation'] = [
+                'matches' => 'Konfirmasi kata sandi tidak cocok dengan kata sandi baru.',
+            ];
+        }
+        if (!$this->validate($validationRules, $validationMessages)) {
             log_message('error', 'Validasi gagal: ' . json_encode($this->validator->getErrors()));
             return redirect()->back()->with('error', 'Validasi gagal: ' . implode(', ', $this->validator->getErrors()));
+        }
+        if ($password) {
+            $currentPassword = $this->request->getPost('current_password');
+            if (!password_verify($currentPassword, $user['password'])) {
+                return redirect()->back()->with('error', 'Kata sandi lama tidak valid.');
+            }
+            $data['password'] = password_hash($password, PASSWORD_DEFAULT);
         }
         if (!empty($data)) {
             if ($this->userModel->update($userId, $data)) {
@@ -130,8 +160,10 @@ class AuthController extends Controller
                 return redirect()->back()->with('error', 'Gagal memperbarui profil.');
             }
         }
+    
         return redirect()->to('/profile')->with('info', 'Tidak ada perubahan yang dilakukan.');
     }
+    
 
     public function register()
     {
