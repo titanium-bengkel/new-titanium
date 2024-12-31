@@ -97,7 +97,7 @@
                                                         <th>Keterangan</th>
                                                         <th>Debit</th>
                                                         <th>Kredit</th>
-                                                        <th>User</th>
+                                                        <th>User ID</th>
                                                         <th>Tgl. Input</th>
                                                         <th>Action</th>
                                                     </tr>
@@ -118,7 +118,7 @@
                                                             <td><?= esc($item['keterangan']) ?></td>
                                                             <td><?= number_format($item['debit'], 0, ',', '.') ?></td>
                                                             <td><?= number_format($item['kredit'], 0, ',', '.') ?></td>
-                                                            <td><?= esc($item['username']) ?></td>
+                                                            <td><?= esc($item['user_id']) ?></td>
                                                             <td><?= esc($item['tgl_input']) ?></td>
                                                             <td>
                                                                 <div class="d-flex">

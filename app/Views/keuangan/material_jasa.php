@@ -40,10 +40,8 @@
                     <h5 class="page-title mb-0 fw-bold">Repair Jasa</h5>
                 </header>
                 <div class="card-content">
-                    <div class="card-content">
-                        <div class="card-header d-flex align-items-center" style="width: fit-content;">
-                            <a href="<?= base_url('material_jasaadd') ?>" class="btn btn-primary mr-2">Add Repair Jasa</a>
-                        </div>
+                    <div class="card-header d-flex align-items-center" style="width: fit-content;">
+                        <a href="<?= base_url('material_jasaadd') ?>" class="btn btn-primary mr-2">Add Repair Jasa</a>
                     </div>
                     <div class="table-responsive" style="margin:20px; font-size: 14px;">
                         <table class="table table-bordered table-hover table-striped mb-0">
@@ -53,7 +51,7 @@
                                     <th style="text-align: center;">Nomor</th>
                                     <th style="text-align: center;">Tanggal</th>
                                     <th style="text-align: center;">No. Order</th>
-                                    <th style="text-align: center;">Tanggal Order</th>
+                                    <th style="text-align: center;">Tgl. Order</th>
                                     <th style="text-align: center;">Jenis Mobil</th>
                                     <th style="text-align: center;">Nopol</th>
                                     <th style="text-align: center;">Tahun</th>
@@ -65,7 +63,6 @@
                                     <th style="text-align: center;">Action</th>
                                 </tr>
                             </thead>
-
                             <tbody class="text-center">
                                 <?php if (!empty($jasa)): ?>
                                     <?php foreach ($jasa as $index => $data): ?>
@@ -83,7 +80,8 @@
                                             <td><?= $data['warna'] ?></td>
                                             <td><?= $data['nama_pemilik'] ?></td>
                                             <td><?= $data['keterangan'] ?></td>
-                                            <td class="subtotal"><?= $data['total'] ?></td>
+                                            <!-- Display subtotal without decimal -->
+                                            <td class="subtotal"><?= number_format($data['total'], 0, '.', '.') ?></td>
                                             <td><?= $data['user_id'] ?></td>
                                             <td>
                                                 <!-- Tombol Hapus -->
@@ -98,7 +96,7 @@
                                 <?php endif; ?>
                             </tbody>
 
-
+                            <!-- Footer with Total Subtotal -->
                             <thead>
                                 <tr>
                                     <th colspan="11" style="text-align: end;">Total</th>
@@ -113,6 +111,23 @@
         </div>
     </div>
 </section>
+
+<!-- JavaScript to calculate the total of subtotals -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let subtotals = document.querySelectorAll('.subtotal');
+        let total = 0;
+
+        // Loop through all subtotals and add them
+        subtotals.forEach(function(subtotal) {
+            total += parseInt(subtotal.textContent.replace(/\./g, ''), 10); // Remove dots and convert to integer
+        });
+
+        // Display the total in the footer
+        document.getElementById('total-subtotal').textContent = total.toLocaleString('id-ID'); // Format the total with commas
+    });
+</script>
+
 <!-- Include SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -142,16 +157,4 @@
     });
 </script>
 
-
-<script>
-    // Menghitung total subtotal dari tabel
-    document.addEventListener('DOMContentLoaded', function() {
-        let total = 0;
-        document.querySelectorAll('.subtotal').forEach(function(element) {
-            total += parseFloat(element.innerText) || 0;
-        });
-        document.getElementById('total-subtotal').innerText = total;
-    });
-</script>
-<!-- Table head options end -->
 <?= $this->endSection() ?>

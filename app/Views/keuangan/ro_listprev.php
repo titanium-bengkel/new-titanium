@@ -9,31 +9,42 @@
             <div class="card">
                 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                        <a href="<?= base_url('/ro_list') ?>" class="breadcrumb-link text-primary fw-bold">Repair Order List</a>
+                        <a href="<?= base_url('/ro_list') ?>" class="breadcrumb-link text-primary fw-bold">Order List</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
-                        <span class="breadcrumb-current text-muted">Data Repair Order</span>
+                        <span class="breadcrumb-current text-muted">Detail Order List</span>
                     </div>
-                    <h5 class="page-title mb-0 fw-bold">Data Repair Order</h5>
+                    <h5 class="page-title mb-0 fw-bold">Detail Order List</h5>
                 </header>
                 <div class="card-body">
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label">Bengkel</label>
+                            <label class="col-form-label">Cabang</label>
                         </div>
-                        <div class="col-lg-10 col-9 mb-3 d-flex align-items-center" style="font-weight: 500; color: #333;">
+                        <div class="col-lg-10 col-9 mb-3 d-flex align-items-center">
                             <div class="form-check me-3">
-                                <input type="radio" id="bengkel-titanium" name="bengkel" value="Titanium" class="form-check-input"
-                                    <?= (isset($rodata['bengkel']) && $rodata['bengkel'] === 'Titanium') ? 'checked' : ''; ?>>
-                                <label class="form-check-label" for="bengkel-titanium" style="color: inherit;">Titanium</label>
+                                <input type="radio" id="bengkel-titanium" name="bengkel" value="Titanium" class="form-check-input" <?= isset($rodata['bengkel']) && $rodata['bengkel'] == 'Titanium' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="bengkel-titanium">Titanium</label>
                             </div>
-                            <div class="form-check">
-                                <input type="radio" id="bengkel-tandem" name="bengkel" value="Tandem" class="form-check-input"
-                                    <?= (isset($rodata['bengkel']) && $rodata['bengkel'] === 'Tandem') ? 'checked' : ''; ?>>
-                                <label class="form-check-label" for="bengkel-tandem" style="color: inherit;">Tandem</label>
+                            <div class="form-check me-3">
+                                <input type="radio" id="bengkel-tandem" name="bengkel" value="Tandem" class="form-check-input" <?= isset($rodata['bengkel']) && $rodata['bengkel'] == 'Tandem' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="bengkel-tandem">Tandem</label>
+                            </div>
+                            <div class="form-check me-3">
+                                <input type="radio" id="bengkel-k3karoseri" name="bengkel" value="K3 Karoseri" class="form-check-input" <?= isset($rodata['bengkel']) && $rodata['bengkel'] == 'K3 Karoseri' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="bengkel-k3karoseri">K3 Karoseri</label>
+                            </div>
+                            <div class="form-check me-3">
+                                <input type="radio" id="bengkel-vortex" name="bengkel" value="Vortex" class="form-check-input" <?= isset($rodata['bengkel']) && $rodata['bengkel'] == 'Vortex' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="bengkel-vortex">Vortex</label>
+                            </div>
+                            <!-- Inputan Tanggal dan Jam -->
+                            <div class="d-flex ms-auto">
+                                <input type="date" id="tanggal" class="form-control me-2" name="tanggal_klaim" style="max-width: 180px;" value="<?= isset($rodata['tgl_keluar']) ? $rodata['tgl_keluar'] : ''; ?>">
+                                <input type="time" id="jam" name="jam_klaim" class="form-control" style="max-width: 120px;" value="<?= isset($rodata['jam_keluar']) ? $rodata['jam_keluar'] : ''; ?>">
                             </div>
                         </div>
-
-                        <h5>Kendaraan</h5>
+                        <hr>
+                        <h5>Data Kendaraan</h5>
 
                         <div class="col-lg-2 col-3 mb-2">
                             <label class="col-form-label col-form-label-sm" for="tanggal-masuk">Tanggal Masuk</label>
@@ -45,11 +56,11 @@
 
                         <!-- Pre-Order ID -->
                         <div class="col-lg-2 col-3 mb-2">
-                            <label class="col-form-label col-form-label-sm" for="pre-order-id">Pre-Order ID</label>
+                            <label class="col-form-label col-form-label-sm" for="pre-order-id">No. Order</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-2">
                             <input type="text" id="pre-order-id" class="form-control form-control-sm"
-                                name="pre-order-id" value="<?= isset($rodata['id_terima_po']) ? $rodata['id_terima_po'] : ''; ?>" disabled>
+                                name="pre-order-id" value="<?= isset($rodata['id_terima_po']) ? $rodata['id_terima_po'] : ''; ?>">
                         </div>
 
                         <!-- No. Kendaraan -->
@@ -61,9 +72,18 @@
                                 name="no-kendaraan" value="<?= isset($rodata['no_kendaraan']) ? $rodata['no_kendaraan'] : ''; ?>">
                         </div>
 
+                        <!-- No. Rangka -->
+                        <div class="col-lg-2 col-3 mb-2">
+                            <label class="col-form-label col-form-label-sm" for=no_rangka">No. Rangka</label>
+                        </div>
+                        <div class="col-lg-10 col-7 mb-2">
+                            <input type="text" id=no_rangka" class="form-control form-control-sm"
+                                name=no_rangka" value="<?= isset($rodata['no_rangka']) ? $rodata['no_rangka'] : ''; ?>">
+                        </div>
+
                         <!-- Jenis Mobil -->
                         <div class="col-lg-2 col-3 mb-2">
-                            <label class="col-form-label col-form-label-sm" for="jenis-mobil">Jenis Mobil</label>
+                            <label class="col-form-label col-form-label-sm" for="jenis-mobil">Car Model</label>
                         </div>
                         <div class="col-lg-10 col-7 mb-2">
                             <input type="text" id="jenis-mobil" class="form-control form-control-sm" name="jenis-mobil"
@@ -81,7 +101,7 @@
 
                         <!-- Tahun Kendaraan -->
                         <div class="col-lg-2 col-3 mb-2">
-                            <label class="col-form-label col-form-label-sm" for="tahun-kendaraan">Tahun Kendaraan</label>
+                            <label class="col-form-label col-form-label-sm" for="tahun-kendaraan">Tahun</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-2">
                             <input type="text" id="tahun-kendaraan" class="form-control form-control-sm"
@@ -90,26 +110,40 @@
                     </div>
 
                     <hr>
-                    <h5>Data Customer</h5>
+                    <h5>Data Pelanggan</h5>
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-2">
-                            <label class="col-form-label col-form-label-sm" for="customer-name">Customer Name</label>
+                            <label class="col-form-label col-form-label-sm" for="customer-name">Nama Pelanggan</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-2">
                             <input type="text" id="customer-name" class="form-control form-control-sm"
-                                name="customer-name" value="<?= isset($rodata['customer_name']) ? $rodata['customer_name'] : ''; ?>" required>
+                                name="customer-name" value="<?= isset($rodata['customer_name']) ? $rodata['customer_name'] : ''; ?>">
                         </div>
                         <div class="col-lg-2 col-3 mb-2">
-                            <label class="col-form-label col-form-label-sm" for="no-contact">No. Contact</label>
+                            <label class="col-form-label col-form-label-sm" for="no-contact">Kontak</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-2">
                             <input type="text" id="no-contact" class="form-control form-control-sm"
                                 name="no-contact" value="<?= isset($rodata['no_contact']) ? $rodata['no_contact'] : ''; ?>">
                         </div>
+                        <div class="col-lg-2 col-3 mb-2">
+                            <label class="col-form-label col-form-label-sm" for="alamat">Alamat</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-2">
+                            <input type="text" id="alamat" class="form-control form-control-sm"
+                                name="alamat" value="<?= isset($rodata['alamat']) ? $rodata['alamat'] : ''; ?>">
+                        </div>
+                        <div class="col-lg-2 col-3 mb-2">
+                            <label class="col-form-label col-form-label-sm" for="kota">Kotak</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-2">
+                            <input type="text" id="kota" class="form-control form-control-sm"
+                                name="kota" value="<?= isset($rodata['kota']) ? $rodata['kota'] : ''; ?>">
+                        </div>
                     </div>
 
                     <hr>
-                    <h5>Asuransi</h5>
+                    <h5>Data Asuransi</h5>
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-2">
                             <label class="col-form-label col-form-label-sm" for="asuransi">Asuransi</label>
@@ -160,9 +194,14 @@
                     }
 
                     // Tentukan harga estimasi atau harga acc
-                    $harga_estimasi = (isset($rodata['asuransi']) && $rodata['asuransi'] === 'UMUM/PRIBADI')
-                        ? $rodata['total_biaya']
-                        : $rodata['harga_acc'];
+                    $harga_estimasi = 0;
+                    if (isset($rodata['asuransi']) && $rodata['asuransi'] === 'UMUM/PRIBADI') {
+                        // Pastikan kunci 'total_biaya' ada sebelum diakses
+                        $harga_estimasi = isset($rodata['total_biaya']) ? $rodata['total_biaya'] : 0;
+                    } else {
+                        // Pastikan kunci 'biaya_total' ada sebelum diakses
+                        $harga_estimasi = isset($rodata['biaya_total']) ? $rodata['biaya_total'] : 0;
+                    }
 
                     // Hitung profit berdasarkan jenis asuransi
                     $profit = 0;
@@ -170,10 +209,17 @@
                         if ($rodata['asuransi'] === 'UMUM/PRIBADI') {
                             $profit = $harga_estimasi - $pemakaian;
                         } else {
-                            $profit = $rodata['harga_acc'] - $pemakaian;
+                            // Pastikan kunci 'harga_acc' ada sebelum diakses
+                            $profit = isset($rodata['harga_acc']) ? $rodata['harga_acc'] - $pemakaian : 0;
                         }
                     }
+                    echo '<pre>';
+                    print_r($rodata);
+                    echo '</pre>';
+
                     ?>
+
+
 
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-2">

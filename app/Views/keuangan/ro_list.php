@@ -15,18 +15,18 @@
                     <h5 class="page-title mb-0 fw-bold">Repair Order List</h5>
                 </header>
                 <div class="card-content">
-                    <div class="table-responsive" style="margin:20px; font-size: 14px;">
-                        <table class="table table-bordered mb-0">
-                            <thead class="thead-dark">
+                    <div class="table-responsive" style="margin:20px; font-size: 12px;">
+                        <table class="table table-bordered table-striped table-hover mb-0">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th style="text-align: center;">#</th>
                                     <th style="text-align: center;">No. Order</th>
                                     <th style="text-align: center;">Tgl. Masuk</th>
+                                    <th style="text-align: center;">Tgl. Acc</th>
                                     <th style="text-align: center;">Status</th>
                                     <th style="text-align: center;">Nopol</th>
                                     <th style="text-align: center;">Jenis Mobil</th>
-                                    <th style="text-align: center;">Customer</th>
-                                    <th style="text-align: center;">Tgl. Acc</th>
+                                    <th style="text-align: center;">Nama Pelanggan</th>
                                     <th style="text-align: center;">Harga Acc</th>
                                     <th style="text-align: center;">Jasa</th>
                                     <th style="text-align: center;">Sparepart</th>
@@ -34,8 +34,8 @@
                                     <th style="text-align: center;">Pemakaian</th>
                                     <th style="text-align: center;">Profit</th>
                                     <th style="text-align: center;">No. Faktur</th>
-                                    <th style="text-align: center;">Tgl. Faktur</th>
-                                    <th style="text-align: center;">Keterangan</th>
+                                    <!-- <th style="text-align: center;">Tgl. Faktur</th> -->
+                                    <!-- <th style="text-align: center;">Keterangan</th> -->
                                 </tr>
                             </thead>
 
@@ -61,11 +61,11 @@
                                         <td><?= $no++; ?></td>
                                         <td><a href="<?= base_url('ro_listprev/' . $row['id_terima_po']); ?>"><?= $row['id_terima_po']; ?></a></td>
                                         <td><?= $row['tgl_masuk']; ?></td>
+                                        <td><?= $tanggal; ?></td>
                                         <td><?= $row['progres_pengerjaan']; ?></td>
                                         <td><?= $row['no_kendaraan']; ?></td>
                                         <td><?= $row['jenis_mobil']; ?></td>
                                         <td><?= $row['customer_name']; ?></td>
-                                        <td><?= $tanggal; ?></td> <!-- Tanggal acc atau tgl klaim -->
                                         <td><?= number_format($harga, 0, ',', '.'); ?></td> <!-- Harga acc atau harga estimasi -->
                                         <td><?= number_format($row['jasa_total'], 0, ',', '.'); ?></td>
                                         <td><?= number_format($row['sparepart_total'], 0, ',', '.'); ?></td>
@@ -73,8 +73,8 @@
                                         <td><?= number_format($pemakaian, 0, ',', '.'); ?></td>
                                         <td><?= number_format($profit, 0, ',', '.'); ?></td>
                                         <td><?= $row['no_faktur']; ?></td>
-                                        <td><?= $row['tgl_faktur']; ?></td>
-                                        <td style="text-align: left;"><?= $row['keterangan']; ?></td>
+                                        <!-- <td><?= $row['tgl_faktur']; ?></td> -->
+                                        <!-- <td style="text-align: left;"><?= $row['keterangan']; ?></td> -->
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>

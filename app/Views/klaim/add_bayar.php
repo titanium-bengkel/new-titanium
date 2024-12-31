@@ -5,8 +5,6 @@
 <script>
     <?php
 
-    use App\Models\M_Pembayaran;
-
     if (session()->getFlashdata('success')) : ?>
         Swal.fire({
             toast: true,
@@ -181,14 +179,14 @@
 <div class="modal fade" id="modalinvo" tabindex="-1" aria-labelledby="myModalLabel1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable" style="max-width: 70%;">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel1">Buat Invoice</h5>
+            <div class="modal-header bg-gradient-ltr">
+                <h5 class="modal-title text-white" id="myModalLabel1">Buat Invoice</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div class="col-md-12 col-12">
-                    <div class="card">
-                        <form class="form form-horizontal" action="<?= base_url('createInvoice') ?>" method="POST">
+            <form class="form form-horizontal" action="<?= base_url('createInvoice') ?>" method="POST">
+                <div class="modal-body">
+                    <div class="col-md-12 col-12">
+                        <div class="card">
                             <div class="card-content">
                                 <div class="card-body">
                                     <div class="form-body">
@@ -299,18 +297,18 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                <button type="submit" class="btn btn-sm btn-primary ms-1">Submit</button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary ms-1">Submit</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
 
 
 

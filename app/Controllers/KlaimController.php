@@ -1671,6 +1671,7 @@ class KlaimController extends BaseController
         if ($existingData) {
             // Log perubahan data
             foreach ($data as $key => $newValue) {
+                // Dapatkan oldValue, jika tidak ada, biarkan null
                 $oldValue = isset($existingData[$key]) ? $existingData[$key] : null;
 
                 if (trim(strtolower($oldValue)) != trim(strtolower($newValue))) {
@@ -1679,13 +1680,14 @@ class KlaimController extends BaseController
                         'Repair Order',
                         $existingData['id_repair_order'],
                         $key,
-                        $oldValue,
+                        $oldValue,  // Bisa null, karena logEdit sudah mendukung
                         $newValue,
                         $user_id,
                         $description
                     );
                 }
             }
+
 
             // Lakukan update data
             if ($repairOrderModel->update($existingData['id_repair_order'], $data)) {
@@ -1758,37 +1760,36 @@ class KlaimController extends BaseController
     public function cetakKwitansi($id_terima_po)
     {
         $dataPO = new M_RepairOrder();
-
-        // Cari data repair order berdasarkan id_terima_po
+        $auditLogModel = new M_AuditLog();
+        $user_id = session()->get('user_id');
         $repairOrder = $dataPO->where('id_terima_po', $id_terima_po)->first();
 
-        // Cek apakah data dengan id_terima_po tersebut ada
         if (!$repairOrder) {
-            // Jika tidak ada data, kembalikan dengan pesan error
             return redirect()->back()->with('error', 'Data tidak ditemukan untuk id terima po: ' . $id_terima_po);
         }
 
-        // Dapatkan id_repair_order dari hasil pencarian
         $id_repair_order = $repairOrder['id_repair_order'];
 
-        // Persiapkan data untuk update
         $updateData = [
             'status_bayar' => 'Belum Bayar',
-            'is_sent' => 1 // Set is_sent menjadi 1
+            'is_sent' => 1
         ];
 
-        // Update data Repair Order berdasarkan id_repair_order
         if ($dataPO->update($id_repair_order, $updateData)) {
-            // Jika berhasil update
+            $description = "$user_id berhasil mencetak kwitansi untuk No. Order: " . $repairOrder['id_terima_po'];
+
+            $auditLogModel->logCreate(
+                'Repair Order',
+                $user_id,
+                $description
+            );
+
             return redirect()->to('/repair_order')->with('success', 'Kwitansi telah berhasil dicetak dan status diperbarui.');
         } else {
-            // Jika gagal update
             return redirect()->back()->with('error', 'Gagal memperbarui data Kwitansi.');
         }
     }
 
-
-    // add di kwitansi
     public function add_invoice()
     {
         $model = new M_Kwitansi();
@@ -1933,6 +1934,7 @@ class KlaimController extends BaseController
 
         $model = new M_Kwitansi();
         $repairModel = new M_RepairOrder();
+        $auditLogModel = new M_AuditLog(); // Tambahkan model AuditLog
         $nomorData = $model->generateNomor();
 
         $data = [
@@ -1947,22 +1949,24 @@ class KlaimController extends BaseController
             'no_contact' => strtoupper($this->request->getPost('no-contact')),
             'tahun_mobil' => $this->request->getPost('tahun-mobil'),
             'asuransi' => strtoupper($this->request->getPost('asuransi')),
-            'jasa' => str_replace([',', '.'], '', $this->request->getPost('jasa')), // Fixed missing parenthesis
-            'sparepart' => str_replace([',', '.'], '', $this->request->getPost('sparepart')), // Fixed missing parenthesis
-            'nilai_total' => str_replace([',', '.'], '', $this->request->getPost('nilai-total')), // Fixed missing parenthesis
-            'nilai_bayar' => str_replace([',', '.'], '', $this->request->getPost('nilai-bayar')), // Fixed missing parenthesis
-            'nilai_or' => str_replace([',', '.'], '', $this->request->getPost('nilai_or')), // Fixed missing parenthesis
+            'jasa' => str_replace([',', '.'], '', $this->request->getPost('jasa')),
+            'sparepart' => str_replace([',', '.'], '', $this->request->getPost('sparepart')),
+            'nilai_total' => str_replace([',', '.'], '', $this->request->getPost('nilai-total')),
+            'nilai_bayar' => str_replace([',', '.'], '', $this->request->getPost('nilai-bayar')),
+            'nilai_or' => str_replace([',', '.'], '', $this->request->getPost('nilai_or')),
             'qty_or' => $this->request->getPost('qty_or'),
             'keterangan' => strtoupper($this->request->getPost('keterangan')),
             'user_id' => $user_id
         ];
-
 
         try {
             // Insert kwitansi
             if ($model->insert($data) === false) {
                 return redirect()->back()->with('error', 'Gagal menyimpan kwitansi: ' . implode(", ", $model->errors()));
             }
+
+            // Tambahkan log ke audit log
+            $auditLogModel->logCreate('Kwitansi', $user_id, "$user_id Membuat kwitansi baru dengan ID: $nomorData");
 
             $no_order = $this->request->getPost('no_order');
             $repairOrder = $repairModel->where('id_terima_po', $no_order)->first();
@@ -1971,13 +1975,12 @@ class KlaimController extends BaseController
                 return redirect()->back()->with('error', 'Data tidak ditemukan untuk id terima po: ' . $no_order);
             }
 
-
-
             return redirect()->to('kwitansi')->with('success', 'Kwitansi berhasil disimpan.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Exception: ' . $e->getMessage());
         }
     }
+
 
     // public function createKwitansi()
     // {
@@ -2137,6 +2140,7 @@ class KlaimController extends BaseController
         }
 
         $model = new M_Kwitansi();
+        $auditLogModel = new M_AuditLog(); // Tambahkan model AuditLog
 
         try {
             // Mencari kwitansi berdasarkan ID
@@ -2150,6 +2154,15 @@ class KlaimController extends BaseController
             if ($model->delete($nomor) === false) {
                 return redirect()->back()->with('error', 'Gagal menghapus kwitansi: ' . implode(", ", $model->errors()));
             }
+
+            // Tambahkan log ke audit log
+            $auditLogModel->logDelete(
+                'Kwitansi',
+                $nomor,
+                $user_id,
+                $kwitansi,
+                "$user_id Menghapus kwitansi dengan nomor: $nomor"
+            );
 
             // Menampilkan pesan sukses
             return redirect()->to('kwitansi')->with('success', 'Kwitansi berhasil dihapus.');
@@ -2549,6 +2562,7 @@ class KlaimController extends BaseController
 
     public function createInvoice()
     {
+        $user_id = session()->get('username');
         // Mendapatkan data dari input
         $no_invoice = $this->request->getPost('no_invoice');
         $tgl_invoice = $this->request->getPost('tgl_invoice');
@@ -2562,17 +2576,15 @@ class KlaimController extends BaseController
         // Memanggil model
         $pembayaranModel = new M_Pembayaran();
         $invoiceModel = new M_Invoice();
-
+        $auditLogModel = new M_AuditLog(); // Tambahkan model AuditLog
 
         $id_pembayaran = $pembayaranModel->generatePembayaran();
-
 
         $dataPembayaran = [
             'id_pembayaran' => $id_pembayaran,
             'total_kredit' => $total,
             'tanggal' => $tgl_invoice
         ];
-
 
         $dataInvoice = [
             'no_invoice' => $no_invoice,
@@ -2591,9 +2603,14 @@ class KlaimController extends BaseController
 
             $pembayaranModel->insert($dataPembayaran);
 
-
             $invoiceModel->insert($dataInvoice);
 
+            // Tambahkan log ke audit log
+            $auditLogModel->logCreate(
+                'Invoice',
+                $user_id,
+                "$user_id Membuat invoice baru dengan nomor: $no_invoice"
+            );
 
             session()->setFlashdata('success', 'Invoice berhasil dibuat.');
         } catch (\Exception $e) {
@@ -2609,6 +2626,8 @@ class KlaimController extends BaseController
         // Load model
         $invoiceModel = new M_Invoice();
         $pembayaranModel = new M_Pembayaran();
+        $auditLogModel = new M_AuditLog(); // Tambahkan model AuditLog
+        $user_id = session()->get('username');
 
         // Dapatkan data input dari form
         $data = [
@@ -2645,6 +2664,13 @@ class KlaimController extends BaseController
 
         // Simpan data invoice
         if ($invoiceModel->insert($data)) {
+            // Tambahkan log ke audit log
+            $auditLogModel->logCreate(
+                'Invoice',
+                $user_id,
+                "$user_id Menambahkan invoice dengan nomor: " . $data['no_invoice'] . " dan memperbarui total kredit."
+            );
+
             // Redirect ke add_bayarprev dengan id_pembayaran yang valid
             return redirect()->to('/add_bayarprev/' . $data['id_pembayaran'])->with('success', 'Invoice berhasil ditambahkan dan total kredit diperbarui!');
         } else {
@@ -3159,6 +3185,252 @@ class KlaimController extends BaseController
 
         return redirect()->to('/add_bayarprev/' . $data['id_pembayaran'])->with('success', 'Pembayaran berhasil!');
     }
+
+
+    public function addPembayaranv2()
+    {
+        $user_id = session()->get('username');
+        if (!$user_id) {
+            return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
+        }
+
+        // Mengambil data dari form
+        $data = [
+            'kode_bayar' => $this->request->getPost('kode_bayar'),
+            'metode_pembayaran' => $this->request->getPost('metode_pembayaran'),
+            'no_bukti' => $this->request->getPost('no_bukti'),
+            'kode_bank' => $this->request->getPost('bank'),
+            'debet' => str_replace('.', '', $this->request->getPost('debet')),
+            'jatuh_tempo' => $this->request->getPost('tanggal'),
+            'id_pembayaran' => $this->request->getPost('id_pembayaran'),
+        ];
+
+        // Cek apakah ID Pembayaran valid
+        if (empty($data['id_pembayaran'])) {
+            return redirect()->back()->withInput()->with('error', 'ID Pembayaran tidak ditemukan.');
+        }
+
+        // Model yang digunakan
+        $pembayaranModel = new M_PembayaranInvoice();
+        $pembayaran = new M_Pembayaran();
+        $kwitansi = new M_Kwitansi();
+        $invoiceModel = new M_Invoice();
+        $modelJurnal = new M_ReportJurnal();
+        $repair = new M_RepairOrder();
+        $auditLog = new M_AuditLog();
+
+        // Cek apakah ID Pembayaran ada di tabel pembayaran
+        $existingPembayaran = $pembayaran->find($data['id_pembayaran']);
+        if (!$existingPembayaran) {
+            return redirect()->back()->withInput()->with('error', 'ID Pembayaran tidak ditemukan.');
+        }
+
+        // Log data sebelum simpan
+        log_message('debug', 'Data pembayaran: ' . print_r($data, true));
+
+        // Simpan data pembayaran ke tabel M_PembayaranInvoice
+        if ($pembayaranModel->insert($data) === false) {
+            log_message('error', 'Error saat menyimpan pembayaran: ' . print_r($pembayaranModel->errors(), true));
+            return redirect()->to('/add_bayarprev/' . $data['id_pembayaran'])->with('errors', $pembayaranModel->errors());
+        }
+
+        // Tambahkan log CREATE
+        $auditLog->logCreate(
+            'M_PembayaranInvoice',
+            $user_id,
+            'Penyimpanan data pembayaran dengan ID: ' . $data['id_pembayaran']
+        );
+
+        // Update total_debet di M_Pembayaran
+        $totalDebetBaru = $existingPembayaran['total_debet'] + $data['debet'];
+        $pembayaran->update($data['id_pembayaran'], ['total_debet' => $totalDebetBaru]);
+
+        $auditLog->logEdit(
+            'M_Pembayaran',
+            $data['id_pembayaran'],
+            'total_debet',
+            $existingPembayaran['total_debet'],
+            $totalDebetBaru,
+            $user_id,
+            'Update total_debet menjadi ' . $totalDebetBaru
+        );
+
+        // Ambil data invoice berdasarkan ID Pembayaran
+        $invoice = $invoiceModel->where('id_pembayaran', $data['id_pembayaran'])->first();
+        if ($invoice) {
+            $nilai_total = $invoice['total']; // Nilai total dari M_Invoice
+        } else {
+            return redirect()->back()->withInput()->with('error', 'Invoice tidak ditemukan.');
+        }
+
+        // Perhitungan baru
+        $nilai_sparepart = 0.12 * $invoice['total'];
+        $nilai_setelah_sparepart = $invoice['total'] - $nilai_sparepart;
+        $nilai_jasa = $nilai_setelah_sparepart * 0.20;
+        $nilai_sisa = $nilai_setelah_sparepart * 0.80;
+        $nilai_cat = $nilai_sisa * 0.60;
+        $nilai_non_cat = $nilai_sisa * 0.40;
+
+        $existingKwitansi = $kwitansi->where('nomor', $invoice['no_invoice'])->first();
+        if (!$existingKwitansi) {
+            return redirect()->back()->withInput()->with('error', 'Kwitansi tidak ditemukan.');
+        }
+
+        $noKendaraan = $existingKwitansi['no_kendaraan'];
+        $jenisMobil = $existingKwitansi['jenis_mobil'];
+        $customerName = $existingKwitansi['customer_name'];
+
+        $metodePembayaran = $data['metode_pembayaran'];
+        $tanggal = $data['jatuh_tempo'] ?: date('Y-m-d');
+        $doc_no = 'JP.' . $data['id_pembayaran'];
+        $nilai_or = $data['debet'];
+        $qty_or = isset($data['qty_or']) ? $data['qty_or'] : 1;
+
+        // Kondisi untuk Pembayaran Asuransi
+        if ($metodePembayaran === 'Pembayaran Asuransi' && $data['kode_bayar'] === 'REK BCA') {
+            // Entry untuk REK BCA
+            $dataBank = [
+                'date' => $tanggal,
+                'doc_no' => $doc_no,
+                'account' => '11113',
+                'name' => 'REK BCA',
+                'description' => 'PENDAPATAN REPAIR ' . $noKendaraan . ' ' . $jenisMobil . ' ' . $customerName,
+                'debit' => $nilai_total,
+                'kredit' => 0,
+                'aksi' => 'Posted',
+                'user_id' => session()->get('user_id'),
+            ];
+
+            $modelJurnal->insert($dataBank);
+
+            $auditLog->logCreate(
+                'M_ReportJurnal',
+                $user_id,
+                'Penyimpanan data jurnal REK BCA untuk ID Pembayaran: ' . $data['id_pembayaran'] . ' Data: ' . json_encode($dataBank)
+            );
+
+            $dataJasa = [
+                'date' => $tanggal,
+                'doc_no' => $doc_no,
+                'account' => '41110',
+                'name' => 'PENDAPATAN JASA PENGECATAN',
+                'description' => 'JASA ' . $noKendaraan . ' ' . $jenisMobil . ' ' . $customerName,
+                'debit' => 0,
+                'kredit' => $nilai_jasa,
+                'user_id' => session()->get('user_id'),
+            ];
+
+            $modelJurnal->insert($dataJasa);
+
+            $auditLog->logCreate(
+                'M_ReportJurnal',
+                $user_id,
+                'Penyimpanan data jurnal JASA untuk ID Pembayaran: ' . $data['id_pembayaran'] . ' Data: ' . json_encode($dataJasa)
+            );
+
+            $dataCat = [
+                'date' => $tanggal,
+                'doc_no' => $doc_no,
+                'account' => '41140',
+                'name' => 'PENDAPATAN BAHAN CAT',
+                'description' => 'BAHAN CAT ' . $noKendaraan . ' ' . $jenisMobil . ' ' . $customerName,
+                'debit' => 0,
+                'kredit' => $nilai_cat,
+                'user_id' => session()->get('user_id'),
+            ];
+
+            $modelJurnal->insert($dataCat);
+
+            $auditLog->logCreate(
+                'M_ReportJurnal',
+                $user_id,
+                'Penyimpanan data jurnal CAT untuk ID Pembayaran: ' . $data['id_pembayaran'] . ' Data: ' . json_encode($dataCat)
+            );
+
+            $dataNonCat = [
+                'date' => $tanggal,
+                'doc_no' => $doc_no,
+                'account' => '41130',
+                'name' => 'PENDAPATAN BAHAN NON CAT',
+                'description' => 'BAHAN NON CAT ' . $noKendaraan . ' ' . $jenisMobil . ' ' . $customerName,
+                'debit' => 0,
+                'kredit' => $nilai_non_cat,
+                'user_id' => session()->get('user_id'),
+            ];
+
+            $modelJurnal->insert($dataNonCat);
+
+            $auditLog->logCreate(
+                'M_ReportJurnal',
+                $user_id,
+                'Penyimpanan data jurnal NON-CAT untuk ID Pembayaran: ' . $data['id_pembayaran'] . ' Data: ' . json_encode($dataNonCat)
+            );
+
+            $dataSparepart = [
+                'date' => $tanggal,
+                'doc_no' => $doc_no,
+                'account' => '41120',
+                'name' => 'PENDAPATAN PENJUALAN SPAREPART',
+                'description' => 'PENJUALAN SPAREPART ' . $noKendaraan . ' ' . $jenisMobil . ' ' . $customerName,
+                'debit' => 0,
+                'kredit' => $nilai_sparepart,
+                'user_id' => session()->get('user_id'),
+            ];
+
+            $modelJurnal->insert($dataSparepart);
+
+            $auditLog->logCreate(
+                'M_ReportJurnal',
+                $user_id,
+                'Penyimpanan data jurnal SPAREPART untuk ID Pembayaran: ' . $data['id_pembayaran'] . ' Data: ' . json_encode($dataSparepart)
+            );
+        }
+
+        // Kondisi untuk Pembayaran OR
+        if ($metodePembayaran === 'Pembayaran OR' && $data['kode_bayar'] === 'REK BCA') {
+            $dataBank = [
+                'date' => $tanggal,
+                'doc_no' => $doc_no,
+                'account' => '11113',
+                'name' => 'REK BCA',
+                'description' => $qty_or . 'X OR ' . $jenisMobil . ' ' . $noKendaraan . ' ' . $customerName,
+                'debit' => $nilai_or,
+                'kredit' => 0,
+                'aksi' => 'Posted',
+                'user_id' => session()->get('user_id'),
+            ];
+
+            $modelJurnal->insert($dataBank);
+
+            $auditLog->logCreate(
+                'M_ReportJurnal',
+                $user_id,
+                'Penyimpanan data jurnal REK BCA untuk Pembayaran OR dengan ID Pembayaran: ' . $data['id_pembayaran'] . ' Data: ' . json_encode($dataBank)
+            );
+
+            $dataPendapatan = [
+                'date' => $tanggal,
+                'doc_no' => $doc_no,
+                'account' => '41150',
+                'name' => 'PENERIMAAN OR',
+                'description' => $qty_or . 'X OR ' . $jenisMobil . ' ' . $noKendaraan . ' ' . $customerName,
+                'debit' => 0,
+                'kredit' => $nilai_or,
+                'user_id' => session()->get('user_id'),
+            ];
+
+            $modelJurnal->insert($dataPendapatan);
+
+            $auditLog->logCreate(
+                'M_ReportJurnal',
+                $user_id,
+                'Penyimpanan data jurnal Pendapatan OR dengan ID Pembayaran: ' . $data['id_pembayaran'] . ' Data: ' . json_encode($dataPendapatan)
+            );
+        }
+
+        return redirect()->to('/add_bayarprev/' . $data['id_pembayaran'])->with('success', 'Pembayaran berhasil!');
+    }
+
 
 
 

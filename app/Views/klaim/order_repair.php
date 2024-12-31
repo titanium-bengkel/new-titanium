@@ -429,11 +429,11 @@
                     <div class="mt-3" style="position: relative;">
                         <button type="submit" class="btn btn-primary">Simpan</button>
                         <button type="button" class="btn btn-danger">Batal</button>
-                        <a href="<?= base_url('cetakPKB/' . $ro['id_terima_po']) ?>" target="_blank" class="btn btn-secondary btn-sm">Cetak PKB</a>
+                        <a href="<?= base_url('cetakPKB/' . $ro['id_terima_po']) ?>" target="_blank" class="btn btn-secondary">Cetak PKB</a>
 
                         <?php if (isset($ro['progres_pengerjaan'])): ?>
                             <?php if (in_array($ro['progres_pengerjaan'], ['Beres Pengerjaan', 'Menunggu Sparepart Tambahan', 'Menunggu Comment User', 'Data Completed'])): ?>
-                                <button type="button" class="btn btn-sm btn-warning" style="margin-left: 20px;"
+                                <button type="button" class="btn btn-warning" style="margin-left: 20px;"
                                     onclick="handleKwitansiClick(<?= isset($ro['is_sent']) ? $ro['is_sent'] : 0; ?>)">
                                     Kwitansi
                                 </button>

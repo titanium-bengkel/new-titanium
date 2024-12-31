@@ -26,6 +26,8 @@
         });
     <?php endif; ?>
 </script>
+
+
 <!-- Horizontal Input start -->
 <section id="horizontal-input">
     <div class="row">

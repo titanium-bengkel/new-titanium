@@ -71,7 +71,7 @@ class BahanController extends BaseController
 
     public function create_bahan()
     {
-        $user_id = session()->get('user_id');
+        $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
@@ -759,7 +759,7 @@ class BahanController extends BaseController
         // Menghitung total qty dan hpp
         $total_qty = array_sum($qty);
         $total_hpp = array_sum($hpp);
-        $total_nilai = array_sum($nilai);
+        // $total_nilai = array_sum($nilai);
 
 
         // Data untuk tabel bahan_repair
@@ -779,7 +779,7 @@ class BahanController extends BaseController
             'keterangan' => strtoupper($this->request->getPost('keterangan')),
             'total_qty' => $total_qty,
             'total_hpp' => $total_hpp,
-            'total_nilai' => $total_nilai,
+            // 'total_nilai' => $total_nilai,
         ];
 
         // Simpan data Bahan Repair

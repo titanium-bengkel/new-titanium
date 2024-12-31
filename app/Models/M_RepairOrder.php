@@ -45,18 +45,7 @@ class M_RepairOrder extends Model
 
     protected $useTimestamps = false;
 
-    protected $validationRules = [
-        'progres_pengerjaan' => 'in_list[Ketok,Dempul,Epoxy,Cat,Poles,Beres Pengerjaan]'
-    ];
-    // protected $validationRules = [
-    //     'progres_pengerjaan' => 'in_list[Ketok,Dempul,Epoxy,Cat,Poles,Beres Pengerjaan,Menunggu Sparepart Tambahan,Menunggu Comment User,Data Completed]'
-    // ];
-    
 
-    public function getAllRepairOrders()
-    {
-        return $this->orderBy('tgl_masuk', 'DESC')->findAll(); 
-    }
     public function getDataByAsuransi($id_terima_po, $asuransi)
     {
         if (strtoupper($asuransi) === 'UMUM/PRIBADI') {
@@ -92,28 +81,61 @@ class M_RepairOrder extends Model
             ->join('part_repair sparepart', 'sparepart.no_repair = repair_order.id_terima_po', 'left')
             ->join('bahan_repair bahan', 'bahan.no_repair = repair_order.id_terima_po', 'left')
             ->join('kwitansi kwitansi', 'kwitansi.no_order = repair_order.id_terima_po', 'left')
-            ->orderBy('repair_order.tgl_masuk', 'DESC')
+            ->orderBy('repair_order.id_terima_po', 'DESC') // Menambahkan pengurutan descending
             ->get()
             ->getResultArray();
     }
+
     public function getRepairOrderDetails($id_terima_po)
     {
         return $this->db->table('repair_order')
-            ->select('repair_order.*, 
-        jasa.total AS jasa_total, 
-        sparepart.total_hpp AS sparepart_total, 
-        bahan.total_hpp AS bahan_total, 
-        kwitansi.nomor AS no_faktur, 
-        kwitansi.tanggal AS tgl_faktur, asuransi.id_acc_asuransi, asuransi.tgl_acc')
-            ->join('acc_asuransi asuransi', 'asuransi.id_terima_po = repair_order.id_terima_po', 'left')
+            ->select(
+                'repair_order.*, 
+                jasa.total AS jasa_total, 
+                sparepart.total_hpp AS sparepart_total, 
+                bahan.total_hpp AS bahan_total, 
+                kwitansi.nomor AS no_faktur, 
+                kwitansi.tanggal AS tgl_faktur,
+                detail_jasa.kode_jasa,
+                detail_jasa.nama_jasa, 
+                detail_jasa.harga, 
+                detail_jasa.keterangan,
+                asuransi.id_acc_asuransi, 
+                asuransi.asuransi, 
+                asuransi.tgl_acc,    
+                asuransi.biaya_total,
+                detail_repair.id AS detail_repair_id,
+                detail_repair.id_kode_barang,
+                detail_repair.nama_barang,
+                detail_repair.qty,
+                detail_repair.satuan,
+                detail_repair.hpp AS bahan_hpp,
+                detail_repair.nilai AS bahan_nilai,
+                pdetail_repair.id AS pdetail_repair_id,
+                pdetail_repair.id_kode_barang AS part_kode_barang,
+                pdetail_repair.nama_barang AS part_nama_barang,
+                pdetail_repair.qty_B,
+                pdetail_repair.sat_B,
+                pdetail_repair.hpp AS part_hpp'
+            )
             ->join('rm_jasa jasa', 'jasa.no_ro = repair_order.id_terima_po', 'left')
             ->join('part_repair sparepart', 'sparepart.no_repair = repair_order.id_terima_po', 'left')
             ->join('bahan_repair bahan', 'bahan.no_repair = repair_order.id_terima_po', 'left')
             ->join('kwitansi kwitansi', 'kwitansi.no_order = repair_order.id_terima_po', 'left')
-            ->where('repair_order.id_terima_po', $id_terima_po) // Filter berdasarkan id_terima_po
+            ->join('rm_detail_jasa detail_jasa', 'detail_jasa.id_jasa = jasa.id_jasa', 'left')
+            ->join('acc_asuransi asuransi', 'asuransi.id_terima_po = repair_order.id_terima_po', 'left')
+            ->join('detail_repair detail_repair', 'detail_repair.id_material = bahan.id_material', 'left')
+            ->join('pdetail_repair pdetail_repair', 'pdetail_repair.no_repair_order = sparepart.no_repair', 'left')
+            ->where('repair_order.id_terima_po', $id_terima_po)
+            ->orderBy('repair_order.id_terima_po', 'DESC')
             ->get()
             ->getRowArray();
     }
+
+
+
+
+
 
 
 
@@ -143,28 +165,28 @@ class M_RepairOrder extends Model
     public function repairasuransi()
     {
         return $this->where('asuransi !=', 'UMUM/PRIBADI')
-            ->where('status', 'Repair Order') 
+            ->where('status', 'Repair Order')
             ->countAllResults();
     }
 
     public function repairumum()
     {
         return $this->where('asuransi', 'UMUM/PRIBADI')
-            ->where('status', 'Repair Order') 
+            ->where('status', 'Repair Order')
             ->countAllResults();
     }
 
     public function mobilkeluarasuransi()
     {
         return $this->where('asuransi !=', 'UMUM/PRIBADI')
-            ->where('status', 'Mobil Keluar') 
+            ->where('status', 'Mobil Keluar')
             ->countAllResults();
     }
 
     public function mobilkeluarumum()
     {
         return $this->where('asuransi', 'UMUM/PRIBADI')
-            ->where('status', 'Mobil Keluar') 
+            ->where('status', 'Mobil Keluar')
             ->countAllResults();
     }
 }
