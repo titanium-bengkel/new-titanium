@@ -82,12 +82,6 @@
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="no-rangka">No. Rangka</label>
-                        </div>
-                        <div class="col-lg-10 col-9 mb-3">
-                            <input type="text" id="no-rangka" class="form-control" name="no_rangka" value="<?= isset($po['no_rangka']) ? esc($po['no_rangka']) : '' ?>">
-                        </div>
-                        <div class="col-lg-2 col-3 mb-3">
                             <label class="col-form-label" for="no-kendaraan">Nopol</label>
                         </div>
                         <div class="col-lg-9 col-7 mb-3">
@@ -100,7 +94,14 @@
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="jenis-mobil">Jenis Mobil</label>
+                            <label class="col-form-label" for="no-rangka">No. Rangka</label>
+                        </div>
+                        <div class="col-lg-10 col-9 mb-3">
+                            <input type="text" id="no-rangka" class="form-control" name="no_rangka" value="<?= isset($po['no_rangka']) ? esc($po['no_rangka']) : '' ?>">
+                        </div>
+
+                        <div class="col-lg-2 col-3 mb-3">
+                            <label class="col-form-label" for="jenis-mobil">Car Model</label>
                         </div>
                         <div class="col-lg-9 col-7 mb-3">
                             <input type="text" id="jenis-mobil" class="form-control" name="jenis_mobil" value="<?= isset($po['jenis_mobil']) ? esc($po['jenis_mobil']) : '' ?>">
@@ -611,8 +612,6 @@
                                     <th>Tgl. Po</th>
                                     <th>Q_Beli</th>
                                     <th>Tgl. Beli</th>
-                                    <th>Q_Trpsng</th>
-                                    <th>Tgl. Trpsng</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -635,9 +634,7 @@
                                             <td><?= esc($sparepart['jenis_part']) ?></td>
                                             <td><?= esc($qty) ?></td>
                                             <td><?= number_format($totalHargaPerItem, 0, ',', '.') ?></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td><?= esc($qty) ?></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -764,20 +761,18 @@
 
 <!-- modal pengerjaan -->
 <div class="modal fade" id="pengerjaanModal" tabindex="-1" aria-labelledby="pengerjaanModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-md">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="pengerjaanModalLabel">Pilih Pengerjaan</h5>
+            <div class="modal-header bg-gradient-ltr">
+                <h5 class="modal-title text-white" id="pengerjaanModalLabel">Pilih Pengerjaan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Form pencarian tanpa tombol -->
                 <div class="mb-3">
                     <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="Cari kode atau nama pengerjaan" oninput="searchPengerjaan()">
                 </div>
-                <!-- Tabel data pengerjaan -->
-                <table class="table table-bordered text-center mt-3" style="font-size: 0.85rem;">
-                    <thead>
+                <table class="table table-bordered table-striped table-border mt-3" style="font-size: 16px;">
+                    <thead class="table-secondary">
                         <tr>
                             <th>Kode Pengerjaan</th>
                             <th>Nama Pengerjaan</th>
@@ -799,6 +794,7 @@
                     </tbody>
                 </table>
             </div>
+            <div class="modal-footer bg-light"></div>
         </div>
     </div>
 </div>
@@ -806,10 +802,10 @@
 
 <!-- Modal SparePart -->
 <div class="modal fade text-left" id="kodepart" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Pilih Sparepart</h5>
+            <div class="modal-header bg-gradient-ltr">
+                <h5 class="modal-title text-white">Pilih Sparepart</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -818,13 +814,13 @@
                         <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Cari SparePart...">
                     </div>
                 </div>
-                <div class="table-responsive text-center">
-                    <table class="table table-bordered mb-0">
-                        <thead>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped mb-0">
+                        <thead class="table-secondary">
                             <tr>
                                 <th>Kode</th>
                                 <th>Nama</th>
-                                <th>Harga Beli</th>
+                                <th style="text-align: right;">Harga Beli</th>
                             </tr>
                         </thead>
                         <tbody id="sparepart-list">
@@ -833,7 +829,7 @@
                                     <tr data-id="<?= esc($sparepart['kode_part']) ?>" data-nama="<?= esc($sparepart['nama_part']) ?>" data-harga="<?= esc($sparepart['harga']) ?>">
                                         <td><?= esc($sparepart['kode_part']) ?></td>
                                         <td><?= esc($sparepart['nama_part']) ?></td>
-                                        <td><?= number_format(esc($sparepart['harga']), 0, ',', '.') ?></td>
+                                        <td style="text-align: right;"><?= number_format(esc($sparepart['harga']), 0, ',', '.') ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else : ?>

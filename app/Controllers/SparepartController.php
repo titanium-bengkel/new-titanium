@@ -1152,6 +1152,112 @@ class SparepartController extends BaseController
     }
 
 
+    // public function create_partadd()
+    // {
+    //     $user_id = session()->get('username');
+    //     if (!$user_id) {
+    //         return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
+    //     }
+
+    //     $kartuStokModel = new M_kartu_stok();
+    //     $modelPartPo = new M_Part_Terima();
+    //     $modelSparepart = new M_SparepartPo();
+    //     $modelPdetailPesan = new M_Pdetail_Terima();
+    //     $id_penerimaan =  $this->request->getPost('id_penerimaan');
+
+    //     $data = [
+    //         'id_penerimaan'     => $id_penerimaan,
+    //         'tanggal'           => $this->request->getPost('tgl'),
+    //         'kode_supplier'     => $this->request->getPost('kode_supplier'),
+    //         'supplier'          => strtoupper($this->request->getPost('supplier')),
+    //         'gudang'            => strtoupper($this->request->getPost('gudang')),
+    //         'keterangan'        => strtoupper($this->request->getPost('keterangan')),
+    //         'no_repair_order'   => strtoupper($this->request->getPost('no_ro')),
+    //         'nama_pemilik'      => strtoupper($this->request->getPost('nama_pemilik')),
+    //         'asuransi'          => strtoupper($this->request->getPost('asuransi')),
+    //         'nopol'             => strtoupper($this->request->getPost('no_kendaraan')),
+    //         'no_rangka'         => strtoupper($this->request->getPost('no_rangka')),
+    //         'jenis_mobil'       => strtoupper($this->request->getPost('jenis_mobil')),
+    //         'warna'             => strtoupper($this->request->getPost('warna')),
+    //         'user_id'           => $user_id,
+    //     ];
+
+    //     // Insert data ke M_Part_Po
+    //     if ($modelPartPo->insert($data) === false) {
+    //         return redirect()->back()->withInput()->with('error', $modelPartPo->errors());
+    //     }
+
+    //     $selectedIds = $this->request->getPost('selected_ids');
+
+    //     // Proses hanya sparepart yang dicentang
+    //     if (!empty($selectedIds)) {
+    //         foreach ($selectedIds as $id) {
+    //             // Ambil sparepart yang dipilih berdasarkan ID
+    //             $selectedSparepart = $modelSparepart->find($id);
+
+    //             if ($selectedSparepart) {
+    //                 // Cek apakah data detail pesan sudah ada
+    //                 $existingDetail = $modelPdetailPesan->where('id_kode_barang', $selectedSparepart['id_sparepart_po'])
+    //                     ->where('id_penerimaan', $data['id_penerimaan'])
+    //                     ->first();
+
+    //                 if (!$existingDetail) {
+    //                     // Simpan data di tabel M_Pdetail_Pesan
+    //                     $dataDetailPesan = [
+    //                         'id_penerimaan'  => $data['id_penerimaan'],
+    //                         'qty'            => $selectedSparepart['qty'],
+    //                         'satuan'         => 'PCS',
+    //                         'id_kode_barang' => $selectedSparepart['kode_sparepart'],
+    //                         'nama_barang'    => $selectedSparepart['nama_sparepart'],
+    //                     ];
+    //                     $modelPdetailPesan->insert($dataDetailPesan);
+    //                 }
+
+    //                 // Update is_sent menjadi 1 untuk sparepart yang dipilih
+    //                 $modelSparepart->update($id, ['is_sent' => '1']);
+
+    //                 // Siapkan data untuk kartu stok
+    //                 // $kartuStokData = [
+    //                 //     'nomor' => $id_penerimaan,
+    //                 //     'id_kode_barang' => $selectedSparepart['kode_sparepart'],
+    //                 //     'nama_barang' => $selectedSparepart['nama_sparepart'],
+    //                 //     'nopol' => $this->request->getPost('nopol'),
+    //                 //     'tanggal' => $this->request->getPost('tgl'),
+    //                 //     'transaksi' => 'SUPPLY DARI ' . strtoupper($this->request->getPost('asuransi')),
+    //                 //     'debit' => $this->request->getPost('qty'),
+    //                 //     'saldo' => $this->request->getPost('qty'),
+    //                 //     'gudang' => strtoupper($this->request->getPost('gudang')),
+    //                 // ];
+
+    //                 // // Simpan data ke tabel kartu_stok
+    //                 // $kartuStokModel->insert($kartuStokData);
+
+    //                 // Mengirim data ke gudang
+    //                 $gudangModel = $this->getGudangModel($data['gudang']);
+    //                 $gudangData = [
+    //                     'id_kode_barang' => $selectedSparepart['kode_sparepart'],
+    //                     'nama_barang'    => $selectedSparepart['nama_sparepart'],
+    //                     'harga'          => $selectedSparepart['harga'],
+    //                     'debit'          => $this->request->getPost('qty'), // Pastikan qty dikirim melalui form
+    //                     'stok'           => $this->request->getPost('qty'),
+    //                     'nopol'          => $this->request->getPost('no_kendaraan'),
+    //                     'wo'             => strtoupper($this->request->getPost('no_ro')),
+    //                     'gudang'         => $data['gudang'],
+    //                     'id_penerimaan'  => $id_penerimaan,
+    //                 ];
+
+    //                 if ($gudangModel) {
+    //                     $this->saveOrUpdateGudang($gudangModel, $gudangData);
+    //                 } else {
+    //                     return redirect()->back()->with('error', 'Model gudang tidak ditemukan.');
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     return redirect()->back()->with('success', 'Data berhasil diproses.');
+    // }
+
     public function create_partadd()
     {
         $user_id = session()->get('username');
@@ -1159,11 +1265,10 @@ class SparepartController extends BaseController
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
 
-        $kartuStokModel = new M_kartu_stok();
         $modelPartPo = new M_Part_Terima();
         $modelSparepart = new M_SparepartPo();
         $modelPdetailPesan = new M_Pdetail_Terima();
-        $id_penerimaan = $modelPartPo->generateIdSupply();
+        $id_penerimaan = $this->request->getPost('id_penerimaan');
 
         $data = [
             'id_penerimaan'     => $id_penerimaan,
@@ -1188,14 +1293,22 @@ class SparepartController extends BaseController
         }
 
         $selectedIds = $this->request->getPost('selected_ids');
+        $qtyList = $this->request->getPost('qty'); // Ambil semua qty
 
         // Proses hanya sparepart yang dicentang
-        if (!empty($selectedIds)) {
-            foreach ($selectedIds as $id) {
+        if (!empty($selectedIds) && is_array($selectedIds)) {
+            foreach ($selectedIds as $index => $id) {
                 // Ambil sparepart yang dipilih berdasarkan ID
                 $selectedSparepart = $modelSparepart->find($id);
 
                 if ($selectedSparepart) {
+                    // Validasi dan pastikan qty ada untuk index saat ini
+                    $qty = isset($qtyList[$index]) ? $qtyList[$index] : 0;
+
+                    if ($qty <= 0) {
+                        continue; // Skip jika qty tidak valid
+                    }
+
                     // Cek apakah data detail pesan sudah ada
                     $existingDetail = $modelPdetailPesan->where('id_kode_barang', $selectedSparepart['id_sparepart_po'])
                         ->where('id_penerimaan', $data['id_penerimaan'])
@@ -1205,7 +1318,7 @@ class SparepartController extends BaseController
                         // Simpan data di tabel M_Pdetail_Pesan
                         $dataDetailPesan = [
                             'id_penerimaan'  => $data['id_penerimaan'],
-                            'qty'            => $selectedSparepart['qty'],
+                            'qty'            => $qty,
                             'satuan'         => 'PCS',
                             'id_kode_barang' => $selectedSparepart['kode_sparepart'],
                             'nama_barang'    => $selectedSparepart['nama_sparepart'],
@@ -1216,30 +1329,13 @@ class SparepartController extends BaseController
                     // Update is_sent menjadi 1 untuk sparepart yang dipilih
                     $modelSparepart->update($id, ['is_sent' => '1']);
 
-                    // Siapkan data untuk kartu stok
-                    // $kartuStokData = [
-                    //     'nomor' => $id_penerimaan,
-                    //     'id_kode_barang' => $selectedSparepart['kode_sparepart'],
-                    //     'nama_barang' => $selectedSparepart['nama_sparepart'],
-                    //     'nopol' => $this->request->getPost('nopol'),
-                    //     'tanggal' => $this->request->getPost('tgl'),
-                    //     'transaksi' => 'SUPPLY DARI ' . strtoupper($this->request->getPost('asuransi')),
-                    //     'debit' => $this->request->getPost('qty'),
-                    //     'saldo' => $this->request->getPost('qty'),
-                    //     'gudang' => strtoupper($this->request->getPost('gudang')),
-                    // ];
-
-                    // // Simpan data ke tabel kartu_stok
-                    // $kartuStokModel->insert($kartuStokData);
-
-                    // Mengirim data ke gudang
                     $gudangModel = $this->getGudangModel($data['gudang']);
                     $gudangData = [
                         'id_kode_barang' => $selectedSparepart['kode_sparepart'],
                         'nama_barang'    => $selectedSparepart['nama_sparepart'],
                         'harga'          => $selectedSparepart['harga'],
-                        'debit'          => $this->request->getPost('qty'), // Pastikan qty dikirim melalui form
-                        'stok'           => $this->request->getPost('qty'),
+                        'debit'          => $qty,
+                        'stok'           => $qty,
                         'nopol'          => $this->request->getPost('no_kendaraan'),
                         'wo'             => strtoupper($this->request->getPost('no_ro')),
                         'gudang'         => $data['gudang'],
@@ -1257,6 +1353,7 @@ class SparepartController extends BaseController
 
         return redirect()->back()->with('success', 'Data berhasil diproses.');
     }
+
 
 
 

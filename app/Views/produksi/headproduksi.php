@@ -5,93 +5,93 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-<?php if (session()->getFlashdata('success')) : ?>
-Swal.fire({
-    toast: true,
-    position: 'top-end',
-    icon: 'success',
-    title: '<?= session()->getFlashdata('success') ?>',
-    showConfirmButton: false,
-    timer: 3000
-});
-<?php endif; ?>
+    <?php if (session()->getFlashdata('success')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '<?= session()->getFlashdata('success') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
 
-<?php if (session()->getFlashdata('error')) : ?>
-Swal.fire({
-    toast: true,
-    position: 'top-end',
-    icon: 'error',
-    title: '<?= session()->getFlashdata('error') ?>',
-    showConfirmButton: false,
-    timer: 3000
-});
-<?php endif; ?>
+    <?php if (session()->getFlashdata('error')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: '<?= session()->getFlashdata('error') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
 </script>
 <style>
-.form-check-inline {
-    display: flex;
-    align-items: center;
-    margin: 10px;
-}
-
-.form-check-input {
-    display: none;
-}
-
-.form-check-input:checked+div {
-    border: 2px solid #007bff;
-    border-radius: 8px;
-    padding: 5px;
-}
-
-.form-check div {
-    cursor: pointer;
-    padding: 5px;
-    text-align: center;
-}
-
-.fa-2x {
-    margin-bottom: 5px;
-}
-
-@media (max-width: 768px) {
-    header {
-        padding: 10px 15px;
-    }
-
-    .breadcrumb-wrapper {
-        font-size: 12px;
-    }
-
-    h5.page-title {
-        font-size: 16px;
-    }
-
-    .table th,
-    .table td {
-        font-size: 12px;
-    }
-
-    .btn {
-        padding: 5px 10px;
-        font-size: 12px;
-    }
-
     .form-check-inline {
-        margin: 5px;
+        display: flex;
+        align-items: center;
+        margin: 10px;
+    }
+
+    .form-check-input {
+        display: none;
     }
 
     .form-check-input:checked+div {
         border: 2px solid #007bff;
-        border-radius: 5px;
-        padding: 3px;
+        border-radius: 8px;
+        padding: 5px;
+    }
+
+    .form-check div {
+        cursor: pointer;
+        padding: 5px;
+        text-align: center;
     }
 
     .fa-2x {
-        font-size: 1.5rem;
-        margin-bottom: 3px;
+        margin-bottom: 5px;
     }
-}
+
+    @media (max-width: 768px) {
+        header {
+            padding: 10px 15px;
+        }
+
+        .breadcrumb-wrapper {
+            font-size: 12px;
+        }
+
+        h5.page-title {
+            font-size: 16px;
+        }
+
+        .table th,
+        .table td {
+            font-size: 12px;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .form-check-inline {
+            margin: 5px;
+        }
+
+        .form-check-input:checked+div {
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            padding: 3px;
+        }
+
+        .fa-2x {
+            font-size: 1.5rem;
+            margin-bottom: 3px;
+        }
+    }
 </style>
 
 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3"
@@ -120,24 +120,23 @@ Swal.fire({
         </thead>
         <tbody>
             <?php foreach ($repairOrders as $index => $order) : ?>
-            <tr class="text-center">
-                <td><?= $index + 1 ?></td>
-                <td><a href="#" class="detail-link"
-                        data-id="<?= $order['id_repair_order'] ?>"><?= $order['id_terima_po'] ?></a></td>
-                <td>
-                    <?= $order['tgl_masuk'] ? date('d M Y', strtotime($order['tgl_masuk'])) : '-' ?>
-                </td>
-                <td><?= esc($order['no_kendaraan']) ?></td>
-                <td><?= esc($order['customer_name']) ?></td>
-                <td><?= esc($order['jenis_mobil']) ?></td>
-                <td><?= esc($order['progres_pengerjaan']) ?></td>
-                <td>
-                    <button class="btn btn-primary btn-sm"
-                        onclick="openModal(<?= $order['id_repair_order'] ?>, '<?= $order['progres_pengerjaan'] ?>')">
-                        Update
-                    </button>
-                </td>
-            </tr>
+                <tr class="text-center">
+                    <td><?= $index + 1 ?></td>
+                    <td><?= esc($order['id_terima_po']) ?></td>
+                    <td>
+                        <?= $order['tgl_masuk'] ? date('d M Y', strtotime($order['tgl_masuk'])) : '-' ?>
+                    </td>
+                    <td><?= esc($order['no_kendaraan']) ?></td>
+                    <td><?= esc($order['customer_name']) ?></td>
+                    <td><?= esc($order['jenis_mobil']) ?></td>
+                    <td><?= esc($order['progres_pengerjaan']) ?></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm"
+                            onclick="openModal(<?= $order['id_repair_order'] ?>, '<?= $order['progres_pengerjaan'] ?>')">
+                            Update
+                        </button>
+                    </td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
@@ -265,82 +264,82 @@ Swal.fire({
 
 
 <script>
-function formatDate(dateString) {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    const options = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    return new Intl.DateTimeFormat('id-ID', options).format(date);
-}
+    function formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        const options = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        return new Intl.DateTimeFormat('id-ID', options).format(date);
+    }
 
-function formatCurrency(amount) {
-    if (!amount) return '-';
-    return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
-}
+    function formatCurrency(amount) {
+        if (!amount) return '-';
+        return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
+    }
 
-$(document).ready(function() {
-    $(document).on('click', '.detail-link', function(e) {
-        e.preventDefault();
-        const idRepairOrder = $(this).data('id');
-        $.ajax({
-            url: '/produksi/getRepairOrderDetail/' + idRepairOrder,
-            method: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    $('#bengkel').text(data.bengkel);
-                    $('#no-klaim').text(data.id_terima_po);
-                    $('#tgl-masuk').text(formatDate(data.tgl_masuk));
-                    $('#tgl-keluar').text(formatDate(data.tgl_keluar));
-                    $('#customer-name').text(data.customer_name);
-                    $('#no-polisi').text(data.no_kendaraan);
-                    $('#no-rangka').text(data.no_rangka);
-                    $('#asuransi').text(data.asuransi);
-                    $('#jenis-mobil').text(data.jenis_mobil);
-                    $('#total-biaya').text(formatCurrency(data.total_biaya));
-                    $('#detailModal').modal('show');
-                    $('#copy-no-klaim').click(function() {
-                        const noKlaim = $('#no-klaim').text();
-                        navigator.clipboard.writeText(noKlaim).then(function() {
-                            alert('No Klaim berhasil disalin!');
-                        }).catch(function(error) {
-                            console.error('Gagal menyalin: ', error);
+    $(document).ready(function() {
+        $(document).on('click', '.detail-link', function(e) {
+            e.preventDefault();
+            const idRepairOrder = $(this).data('id');
+            $.ajax({
+                url: '/produksi/getRepairOrderDetail/' + idRepairOrder,
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        $('#bengkel').text(data.bengkel);
+                        $('#no-klaim').text(data.id_terima_po);
+                        $('#tgl-masuk').text(formatDate(data.tgl_masuk));
+                        $('#tgl-keluar').text(formatDate(data.tgl_keluar));
+                        $('#customer-name').text(data.customer_name);
+                        $('#no-polisi').text(data.no_kendaraan);
+                        $('#no-rangka').text(data.no_rangka);
+                        $('#asuransi').text(data.asuransi);
+                        $('#jenis-mobil').text(data.jenis_mobil);
+                        $('#total-biaya').text(formatCurrency(data.total_biaya));
+                        $('#detailModal').modal('show');
+                        $('#copy-no-klaim').click(function() {
+                            const noKlaim = $('#no-klaim').text();
+                            navigator.clipboard.writeText(noKlaim).then(function() {
+                                alert('No Klaim berhasil disalin!');
+                            }).catch(function(error) {
+                                console.error('Gagal menyalin: ', error);
+                            });
                         });
-                    });
+                    }
+                },
+                error: function() {
+                    alert('Terjadi kesalahan saat memuat detail repair order.');
                 }
-            },
-            error: function() {
-                alert('Terjadi kesalahan saat memuat detail repair order.');
-            }
+            });
         });
     });
-});
 </script>
 
 
 <script>
-function openModal(id, currentProgress) {
-    document.getElementById('repairOrderId').value = id;
-    const radios = document.getElementsByName('progres_pengerjaan');
-    radios.forEach(radio => {
-        if (radio.value === currentProgress) {
-            radio.checked = true;
-        } else {
-            radio.checked = false;
-        }
-    });
+    function openModal(id, currentProgress) {
+        document.getElementById('repairOrderId').value = id;
+        const radios = document.getElementsByName('progres_pengerjaan');
+        radios.forEach(radio => {
+            if (radio.value === currentProgress) {
+                radio.checked = true;
+            } else {
+                radio.checked = false;
+            }
+        });
 
-    document.getElementById('progressModal').style.display = 'block';
-}
+        document.getElementById('progressModal').style.display = 'block';
+    }
 
-function closeModal() {
-    document.getElementById('progressModal').style.display = 'none';
-}
+    function closeModal() {
+        document.getElementById('progressModal').style.display = 'none';
+    }
 </script>
 
 <?= $this->endSection() ?>

@@ -305,7 +305,6 @@ foreach ($poData as $po):
                                                 </tbody>
                                             </table>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>

@@ -10,18 +10,18 @@
             <div class="card">
                 <div class="card-content">
                     <div class="card-header d-flex align-items-center justify-content-start flex-wrap" style="padding: 20px;">
-                            <!-- Input Pencarian -->
-                            <input type="text" name="search" class="form-control form-control-sm me-2 mb-2 mb-md-0 mt-2" placeholder="Cari Kode/Nama Barang" style="width: 100%; max-width: 200px;" value="<?= $search ?? '' ?>">
-                            <!-- Input Tanggal -->
-                            <input type="date" name="date" class="form-control form-control-sm flatpickr-range me-2 mb-2 mb-md-0 mt-2" placeholder="Select date.." style="width: 100%; max-width: 130px;" value="<?= $date ?? '' ?>">
-                            <div>
-                                <select id="bengkelSelect" class="form-select form-select-sm me-2 mb-2 mb-md-0 mt-2" style="width: auto;">
-                                    <option value="GUDANG STOK SPAREPART">GUDANG STOK SPAREPART</option>
-                                    <option value="GUDANG SUPPLY ASURANSI">GUDANG SUPPLY ASURANSI</option>
-                                    <option value="GUDANG WAITING">GUDANG WAITING</option>
-                                    <option value="GUDANG SALVAGE">GUDANG SALVAGE</option>
-                                </select>
-                            </div>
+                        <!-- Input Pencarian -->
+                        <input type="text" name="search" class="form-control form-control-sm me-2 mb-2 mb-md-0 mt-2" placeholder="Cari Kode/Nama Barang" style="width: 100%; max-width: 200px;" value="<?= $search ?? '' ?>">
+                        <!-- Input Tanggal -->
+                        <input type="date" name="date" class="form-control form-control-sm flatpickr-range me-2 mb-2 mb-md-0 mt-2" placeholder="Select date.." style="width: 100%; max-width: 130px;" value="<?= $date ?? '' ?>">
+                        <div>
+                            <select id="bengkelSelect" class="form-select form-select-sm me-2 mb-2 mb-md-0 mt-2" style="width: auto;">
+                                <option value="GUDANG STOK SPAREPART">GUDANG STOK SPAREPART</option>
+                                <option value="GUDANG SUPPLY ASURANSI">GUDANG SUPPLY ASURANSI</option>
+                                <option value="GUDANG WAITING">GUDANG WAITING</option>
+                                <option value="GUDANG SALVAGE">GUDANG SALVAGE</option>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- stok -->
