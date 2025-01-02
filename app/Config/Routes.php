@@ -260,6 +260,8 @@ $routes->get('supp_asuransi', 'SparepartController::supply_asuransi');
 
 
 $routes->get('waiting_part', 'SparepartController::part_dalam_pesanan');
+$routes->get('part_pasang', 'SparepartController::sparepart_terpasang');
+
 $routes->get('sparepart_masuk', 'SparepartController::part_diterima');
 
 $routes->get('part_salvage', 'SparepartController::sparepart_salvage');

@@ -122,7 +122,7 @@ class M_Part_Po extends Model
         $builder = $db->table('part_po');
 
         // Query dengan Join dan Subquery untuk detail
-        $builder->select('part_po.id_pesan, part_po.tanggal, part_po.jenis_mobil, part_po.asuransi, part_po.supplier, part_po.no_kendaraan, part_po.warna,  part_po.oke, pdetail_pesan.id_kode_barang, pdetail_pesan.nama_barang, pdetail_pesan.is_sent, pdetail_pesan.harga');
+        $builder->select('part_po.id_pesan, part_po.tanggal, part_po.jenis_mobil, part_po.asuransi, part_po.supplier, part_po.nopol, part_po.warna,  part_po.oke, pdetail_pesan.id_kode_barang, pdetail_pesan.nama_barang, pdetail_pesan.is_sent, pdetail_pesan.harga');
         $builder->join('pdetail_pesan', 'part_po.id_pesan = pdetail_pesan.id_pesan', 'left');
 
 
