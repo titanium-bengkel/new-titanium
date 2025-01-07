@@ -251,7 +251,22 @@ class SparepartController extends BaseController
         $partTerimaModel = new M_Pdetail_Terima();
         $userModel = new UserModel();
 
-        $sparepart = $partbahanModel->orderBy('id_pesan', 'DESC')->findAll();
+        // Ambil nilai filter tanggal dari parameter GET
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+
+        // Query awal untuk mengambil data
+        $query = $partbahanModel->orderBy('id_pesan', 'DESC');
+
+        // Tambahkan filter tanggal jika ada
+        if ($startDate && $endDate) {
+            $query->where('tanggal >=', $startDate)
+                ->where('tanggal <=', $endDate);
+        }
+
+        // Ambil data sesuai query
+        $sparepart = $query->findAll();
+
         $partmerge = [];
         $grandTotalJumlah = 0; // Variabel untuk menyimpan total keseluruhan jumlah
 
@@ -300,6 +315,8 @@ class SparepartController extends BaseController
             'title' => 'Pemesanan Sparepart PO',
             'sparepart' => $partmerge,
             'grandTotalJumlah' => $grandTotalJumlah, // Total keseluruhan jumlah
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ];
 
         return view('sparepart/pesan_part', $data);
@@ -389,10 +406,25 @@ class SparepartController extends BaseController
         $sparepartModel = new M_Part_Terima();
         $userModel = new UserModel();
 
-        $sparepartsData = $sparepartModel
-            ->where('gudang !=', 'GUDANG SUPPLY ASURANSI')
-            ->orderBy('created_at', 'DESC')
-            ->findAll();
+        // Ambil nilai filter dari parameter GET
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+
+        // Query awal
+        $query = $sparepartModel->where('gudang !=', 'GUDANG SUPPLY ASURANSI');
+
+        // Jika tidak ada filter tanggal, gunakan default bulan berjalan
+        if (!$startDate && !$endDate) {
+            $startDate = date('Y-m-01'); // Awal bulan
+            $endDate = date('Y-m-t');   // Akhir bulan
+        }
+
+        // Terapkan filter tanggal jika ada
+        $query->where('tanggal >=', $startDate)
+            ->where('tanggal <=', $endDate);
+
+        // Ambil data
+        $sparepartsData = $query->orderBy('created_at', 'DESC')->findAll();
 
         // Variabel untuk menghitung total keseluruhan
         $grandTotalQty = 0;
@@ -412,6 +444,7 @@ class SparepartController extends BaseController
             $grandTotalNetto += $item['netto'];
         }
 
+        // Data yang akan dikirim ke view
         $data = [
             'title' => 'Penerimaan Sparepart',
             'sparepart' => $sparepartsData,
@@ -419,10 +452,15 @@ class SparepartController extends BaseController
             'grandTotalJumlah' => $grandTotalJumlah,
             'grandTotalPpn' => $grandTotalPpn,
             'grandTotalNetto' => $grandTotalNetto,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ];
 
         return view('sparepart/terima_part', $data);
     }
+
+
+
 
 
 
@@ -1430,8 +1468,29 @@ class SparepartController extends BaseController
         $partRepairModel = new M_Part_Repair();
         $userModel = new UserModel();
 
-        $repair = $partRepairModel->orderBy('id_material', 'DESC')->findAll();
+        // Ambil nilai filter tanggal dari parameter GET
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
 
+        // Query awal
+        $query = $partRepairModel->orderBy('id_material', 'DESC');
+
+        // Jika tidak ada filter tanggal, gunakan default bulan berjalan
+        if (!$startDate && !$endDate) {
+            $startDate = date('Y-m-01'); // Awal bulan
+            $endDate = date('Y-m-t');   // Akhir bulan
+        }
+
+        // Tambahkan filter tanggal jika ada
+        if ($startDate && $endDate) {
+            $query->where('tanggal >=', $startDate)
+                ->where('tanggal <=', $endDate);
+        }
+
+        // Ambil data sesuai query
+        $repair = $query->findAll();
+
+        // Tambahkan username ke masing-masing item
         foreach ($repair as &$item) {
             $user = $userModel->find($item['user_id']);
             $item['username'] = $user ? $user['username'] : 'Unknown';
@@ -1440,10 +1499,13 @@ class SparepartController extends BaseController
         $data = [
             'repair' => $repair,
             'title' => 'RM Sparepart',
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ];
 
         return view('sparepart/repair_material_part', $data);
     }
+
 
     public function getSparepartsTerima()
     {

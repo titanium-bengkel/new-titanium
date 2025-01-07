@@ -18,31 +18,23 @@
                 <div class="card-content">
                     <div class="card-header d-flex align-items-center justify-content-start flex-wrap" style="padding: 20px;">
                         <div class="d-flex align-items-center ms-md-auto w-100 w-md-auto">
-                            <form action="/preorder/filter" method="get" class="d-flex align-items-center flex-wrap w-100">
-                                <input type="text" name="search" class="form-control form-control-sm me-2 mb-2 mb-md-0" placeholder="Cari data" style="width: 100%; max-width: 130px;">
-                                <input type="date" name="date" class="form-control form-control-sm flatpickr-range me-2 mb-2 mb-md-0" placeholder="Select date.." style="width: 100%; max-width: 130px;">
-                                <select name="month" class="form-control form-control-sm me-2 mb-2 mb-md-0" id="selectMonth" style="width: 100%; max-width: 100px;">
-                                    <option value="1">Januari</option>
-                                    <option value="2">Februari</option>
-                                    <option value="3">Maret</option>
-                                    <option value="4">April</option>
-                                    <option value="5">Mei</option>
-                                    <option value="6">Juni</option>
-                                    <option value="7">Juli</option>
-                                    <option value="8">Agustus</option>
-                                    <option value="9">September</option>
-                                    <option value="10">Oktober</option>
-                                    <option value="11">November</option>
-                                    <option value="12">Desember</option>
-                                </select>
-                                <select name="year" class="form-control form-control-sm mb-2 mb-md-0" id="selectYear" style="width: 100%; max-width: 100px;">
-                                    <!-- Tahun akan diisi otomatis -->
-                                </select>
+                            <div class="d-flex align-items-center w-100 justify-content-start">
+                                <a href="<?= base_url('repair_material_add') ?>" class="btn btn-primary btn-sm me-2" style="width: 60px;">Add</a>
+                                <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
+                            </div>
+                            <form method="GET" action="">
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <label for="start-date" class="form-label mb-0 text-muted fw-bold">Periode:</label>
+                                    <input type="date" id="start-date" name="start_date" class="form-control form-control-sm rounded-2 w-auto"
+                                        value="<?= isset($startDate) ? $startDate : '' ?>" />
+                                    <span class="mx-1 text-muted fw-bold">to</span>
+                                    <input type="date" id="end-date" name="end_date" class="form-control form-control-sm rounded-2 w-auto"
+                                        value="<?= isset($endDate) ? $endDate : '' ?>" />
+                                    <button type="submit" class="btn btn-primary btn-sm rounded-2">
+                                        <i class="fas fa-filter"></i> Filter
+                                    </button>
+                                </div>
                             </form>
-                        </div>
-                        <div class="d-flex align-items-center mt-4 w-100 justify-content-start">
-                            <a href="<?= base_url('repair_material_add') ?>" class="btn btn-primary btn-sm me-2" style="width: 60px;">Add</a>
-                            <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
                         </div>
                     </div>
                     <!-- table head dark -->

@@ -20,6 +20,19 @@
                             <a href="<?= base_url('beli_part') ?>" class="btn btn-primary btn-sm me-2">Add Pemesanan</a>
                             <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
                         </div>
+                        <form method="GET" action="">
+                            <div class="d-flex align-items-center gap-2 mt-2">
+                                <label for="start-date" class="form-label mb-0 text-muted fw-bold">Periode:</label>
+                                <input type="date" id="start-date" name="start_date" class="form-control form-control-sm rounded-2 w-auto"
+                                    value="<?= isset($startDate) ? $startDate : '' ?>" />
+                                <span class="mx-1 text-muted fw-bold">to</span>
+                                <input type="date" id="end-date" name="end_date" class="form-control form-control-sm rounded-2 w-auto"
+                                    value="<?= isset($endDate) ? $endDate : '' ?>" />
+                                <button type="submit" class="btn btn-primary btn-sm rounded-2">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <!-- table head dark -->

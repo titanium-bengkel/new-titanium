@@ -40,8 +40,25 @@
                 </header>
                 <div class="card-content">
                     <div class="card-header d-flex align-items-center justify-content-start flex-wrap" style="padding: 20px;">
-                        <a href="<?= base_url('order_terima_bahan') ?>" class="btn btn-primary btn-sm me-2">Add Penerimaan</a>
-                        <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
+                        <div class="d-flex align-items-center ms-md-auto w-100 w-md-auto">
+                            <div class="d-flex align-items-center w-100 justify-content-start">
+                                <a href="<?= base_url('order_terima_bahan') ?>" class="btn btn-primary btn-sm me-2">Add Pemesanan</a>
+                                <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
+                            </div>
+                            <form method="GET" action="">
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <label for="start-date" class="form-label mb-0 text-muted fw-bold">Periode:</label>
+                                    <input type="date" id="start-date" name="start_date" class="form-control form-control-sm rounded-2 w-auto" onclick="this.showPicker()"
+                                        value="<?= isset($startDate) ? $startDate : '' ?>" />
+                                    <span class="mx-1 text-muted fw-bold">to</span>
+                                    <input type="date" id="end-date" name="end_date" class="form-control form-control-sm rounded-2 w-auto" onclick="this.showPicker()"
+                                        value="<?= isset($endDate) ? $endDate : '' ?>" />
+                                    <button type="submit" class="btn btn-primary btn-sm rounded-2">
+                                        <i class="fas fa-filter"></i> Filter
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                     <!-- table head dark -->
                     <div class="table-responsive" style="font-size: 12px; margin:20px">
@@ -65,7 +82,7 @@
                                     <th style="text-align: center;">Act</th>
                                 </tr>
                             </thead>
-                            <tbody >
+                            <tbody>
                                 <?php if (!empty($bahan)) : ?>
                                     <?php foreach ($bahan as $index => $data) : ?>
                                         <tr>
@@ -101,7 +118,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    
+
                                     <td colspan="7" style="text-align: right;">Grand Total</td>
                                     <td class="text-end" style="font-weight: bold;"><?= number_format($totalJumlah, 2, ',', '.'); ?></td>
                                     <td class="text-end" style="font-weight: bold;"></td>
