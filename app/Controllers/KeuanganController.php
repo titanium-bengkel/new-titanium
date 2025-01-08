@@ -426,32 +426,66 @@ class KeuanganController extends BaseController
 
 
 
+
     public function jurnal_kasbank()
     {
-        $modelKas = new M_KasBank();
-        $modelform = new M_KasBank_Form();
+        $jurnalM = new M_ReportJurnal();
         $modelCoa = new M_Coa();
         $userModel = new UserModel();
 
+        // Ambil data filter dari GET request
+        $searchKeyword = $this->request->getGet('search_keyword');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $showAll = $this->request->getGet('show_all');
+
+        // Default tanggal untuk bulan saat ini
+        $defaultStartDate = date('Y-m-01'); // Awal bulan
+        $defaultEndDate = date('Y-m-t');   // Akhir bulan
+
+        // Query dasar
+        $query = $jurnalM->like('doc_no', 'OCB', 'after')->orderBy('date', 'DESC');
+
+        // Terapkan filter pencarian jika ada
+        if (!empty($searchKeyword)) {
+            $query->groupStart() // Mulai kondisi OR
+                ->like('doc_no', $searchKeyword) // Filter berdasarkan doc_no
+                ->orLike('description', $searchKeyword) // Filter berdasarkan deskripsi
+                ->groupEnd(); // Akhiri kondisi OR
+        }
+
+        // Terapkan filter tanggal jika "Tampilkan Semua" tidak diaktifkan
+        if (empty($showAll)) {
+            $query->where('date >=', $startDate ?: $defaultStartDate);
+            $query->where('date <=', $endDate ?: $defaultEndDate);
+        }
+
+        // Eksekusi query
+        $datakasbank = $query->findAll();
+
+        // Ambil data COA dan user
         $coa = $modelCoa->findAll();
-        $id_doc = $modelform->generateDoc();
-        $datakasbank = $modelKas->findAll();
+        $id_doc = $jurnalM->generateOCB();
 
         foreach ($datakasbank as &$item) {
             $user = $userModel->find($item['user_id']);
             $item['username'] = $user ? $user['username'] : 'Unknown';
         }
 
+        // Siapkan data untuk dikirim ke view
         $data = [
-            'title' => 'Kas&Bank',
+            'title' => 'Kas & Bank',
             'coa' => $coa,
             'generate' => $id_doc,
             'datakasbank' => $datakasbank,
+            'searchKeyword' => $searchKeyword ?? '',
+            'startDate' => $startDate ?? $defaultStartDate,
+            'endDate' => $endDate ?? $defaultEndDate,
+            'showAll' => $showAll,
         ];
 
         return view('keuangan/kas_bank', $data);
     }
-
 
 
     public function createKasBank()
@@ -460,37 +494,53 @@ class KeuanganController extends BaseController
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
-
-        $modelKas = new M_KasBank();
-        $modelform = new M_KasBank_Form();
         $modelJurnal = new M_ReportJurnal();
+        $modelKasKecil = new M_KasKecil();
         $auditLogModel = new M_AuditLog();
-        $doc_no = $modelform->generateDoc();
+        $doc_no = $modelJurnal->generateOCB();
 
+        // Ambil data dari form  
         $tanggal = $this->request->getPost('tgl');
+
+        // Pastikan akun_debet berupa array  
         $akun_debet = $this->request->getPost('akun_debet');
         if (!is_array($akun_debet)) {
             return redirect()->back()->with('error', 'Akun debet harus berupa array.');
         }
+
+        // Bersihkan data akun_debet untuk menyimpan hanya nama akun  
         $nama_akun_debet = array_map(function ($item) {
-            return strtoupper(trim(explode('-', $item)[1])); // Ambil hanya nama akun setelah tanda '-'
+            return strtoupper(trim(explode('-', $item)[1])); // Ambil hanya nama akun setelah tanda '-'  
         }, $akun_debet);
+
+        // Ambil kode akun debet  
         $kode_akun_debet = array_map(function ($item) {
-            return strtoupper(trim(explode('-', $item)[0])); // Ambil kode akun sebelum tanda '-'
+            return strtoupper(trim(explode('-', $item)[0])); // Ambil kode akun sebelum tanda '-'  
         }, $akun_debet);
+
+        // Bersihkan data nilai  
         $nilai = $this->request->getPost('nilai');
         if (!is_array($nilai)) {
             return redirect()->back()->with('error', 'Nilai harus berupa array.');
         }
+
+        // Bersihkan data keterangan  
         $keterangan = $this->request->getPost('keterangan');
         if (!is_array($keterangan)) {
             return redirect()->back()->with('error', 'Keterangan harus berupa array.');
         }
+
+        // Proses setiap keterangan menjadi uppercase  
         $keterangan = array_map('strtoupper', $keterangan);
-        $akun_credit = strtoupper(trim(explode('-', $this->request->getPost('akun_credit'))[1])); // Ambil hanya nama akun
-        $kode_akun_credit = strtoupper(trim(explode('-', $this->request->getPost('akun_credit'))[0]));
+
+        // Bersihkan data akun_credit untuk menyimpan hanya nama akun  
+        $akun_credit = strtoupper(trim(explode('-', $this->request->getPost('akun_credit'))[1])); // Ambil hanya nama akun  
+        $kode_akun_credit = strtoupper(trim(explode('-', $this->request->getPost('akun_credit'))[0])); // Ambil kode akun  
+
+        // Bersihkan total_debit  
         $total_debit = intval($this->request->getPost('total_debit'));
 
+        // Simpan data untuk akun debet ke model M_KasBank_Form  
         foreach ($nama_akun_debet as $index => $akun) {
             $dataForm = [
                 'doc_no' => $doc_no,
@@ -498,126 +548,174 @@ class KeuanganController extends BaseController
                 'account_debit' => $akun,
                 'keterangan' => $keterangan[$index],
                 'debit' => intval($nilai[$index]),
-                'kredit' => 0,
+                'kredit' => 0,  // Untuk debit, kredit harus 0  
                 'user_id' => $user_id,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ];
-            $modelform->insert($dataForm);
-
-            // Tambahkan log CREATE untuk data debit
-            $auditLogModel->logCreate(
-                'k_kasbank_form',
-                $user_id,
-                'Menambahkan data debit dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun
-            );
         }
 
-        $dataFormKredit = [
-            'doc_no' => $doc_no,
-            'tanggal' => $tanggal,
-            'account_credit' => $akun_credit,
-            'keterangan' => implode(" ", $keterangan),
-            'debit' => 0,
-            'kredit' => $total_debit,
-            'user_id' => session()->get('user_id'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-        ];
-        $modelform->insert($dataFormKredit);
-
-        // Tambahkan log CREATE untuk data kredit
-        $auditLogModel->logCreate(
-            'k_kasbank_form',
-            $user_id,
-            'Menambahkan data kredit dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun_credit
-        );
-
-        foreach ($nama_akun_debet as $index => $akun) {
-            $dataKasBankDebit = [
+        // Cek apakah akun debit adalah "KAS KECIL"  
+        if (strtoupper($nama_akun_debet[$index]) === 'KAS KECIL') { // Pastikan kita memeriksa kode akun debit  
+            // Simpan ke model M_KasKecil  
+            $dataKasKecil = [
                 'tanggal' => $tanggal,
                 'doc_no' => $doc_no,
-                'kode_account' => $kode_akun_debet[$index],
-                'nama_account' => $akun,
-                'deskripsi' => $keterangan[$index],
-                'debit' => intval($nilai[$index]),
-                'kredit' => 0,
+                'kode_account' => $kode_akun_debet[$index], // Simpan kode akun debit  
+                'nama_account' => $nama_akun_debet[$index], // Simpan nama akun debit  
+                'keterangan' => implode(" ", $keterangan), // Gabungkan keterangan jika diperlukan  
+                'debit' => intval($nilai[$index]), // Simpan nilai debit  
+                'kredit' => 0, // Untuk KAS KECIL, kredit harus 0  
                 'user_id' => $user_id,
                 'tgl_input' => date('Y-m-d H:i:s'),
             ];
-            $modelKas->insert($dataKasBankDebit);
 
-            // Tambahkan log CREATE untuk debit di kasbank
+            // Simpan ke database k_kas_kecil  
+            $modelKasKecil->insert($dataKasKecil);
             $auditLogModel->logCreate(
-                'k_kasbank',
+                'Jurnal',
                 $user_id,
-                'Menambahkan data debit di kas bank dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun
+                'Menambahkan nilai debit di kas kecil dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun
             );
         }
 
-        $dataKasBankKredit = [
-            'tanggal' => $tanggal,
-            'doc_no' => $doc_no,
-            'kode_account' => $kode_akun_credit,
-            'nama_account' => $akun_credit,
-            'deskripsi' => implode(" ", $keterangan),
-            'debit' => 0,
-            'kredit' => $total_debit,
-            'user_id' => $user_id,
-            'tgl_input' => date('Y-m-d H:i:s'),
-        ];
-        $modelKas->insert($dataKasBankKredit);
-
-        // Tambahkan log CREATE untuk kredit di kasbank
-        $auditLogModel->logCreate(
-            'k_kasbank',
-            $user_id,
-            'Menambahkan data kredit di kas bank dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun_credit
-        );
-
+        // Simpan data untuk model M_ReportJurnal  
         foreach ($nama_akun_debet as $index => $akun) {
             $dataReport = [
                 'date' => $tanggal,
                 'doc_no' => $doc_no,
-                'account' => $kode_akun_debet[$index],
-                'name' => $akun,
-                'description' => $keterangan[$index],
-                'debit' => intval($nilai[$index]),
-                'kredit' => 0,
+                'account' => $kode_akun_debet[$index], // Simpan kode akun debet  
+                'name' => $akun, // Simpan hanya nama akun debet  
+                'description' => $keterangan[$index],  // Ambil keterangan berdasarkan index  
+                'debit' => intval($nilai[$index]),  // Simpan nilai sebagai integer  
+                'kredit' => 0,  // Untuk debit, kredit harus 0  
                 'aksi' => 'Posted',
                 'user_id' => $user_id,
             ];
-            $modelJurnal->insert($dataReport);
 
-            // Tambahkan log CREATE untuk jurnal debit
+            // Simpan ke database k_kasbank  
+            $modelJurnal->insert($dataReport);
             $auditLogModel->logCreate(
-                'k_report_jurnal',
+                'Jurnal',
                 $user_id,
-                'Menambahkan data jurnal debit dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun
+                'Menambahkan nilai debit di kas bank dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun
             );
         }
 
+        // Simpan data untuk akun kredit (hanya satu entri) ke model M_ReportJurnal  
         $dataJurnal = [
             'date' => $tanggal,
             'doc_no' => $doc_no,
-            'account' => $kode_akun_credit,
-            'name' => $akun_credit,
-            'description' => implode(" ", $keterangan),
-            'debit' => 0,
-            'kredit' => $total_debit,
+            'account' => $kode_akun_credit,  // Simpan kode akun kredit  
+            'name' => $akun_credit,  // Simpan hanya nama akun kredit  
+            'description' => implode(" ", $keterangan),  // Gabungkan keterangan jika diperlukan  
+            'debit' => 0,  // Untuk kredit, debit harus 0  
+            'kredit' => $total_debit,  // Simpan total kredit  
             'user_id' => $user_id,
         ];
-        $modelJurnal->insert($dataJurnal);
 
-        // Tambahkan log CREATE untuk jurnal kredit
+        // Simpan ke database k_kasbank  
+        $modelJurnal->insert($dataJurnal);
         $auditLogModel->logCreate(
-            'k_report_jurnal',
+            'Jurnal',
             $user_id,
-            'Menambahkan data jurnal kredit dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun_credit
+            'Menambahkan nilai kredit di kas bank dengan Doc No: ' . $doc_no . ' dan Nama Akun: ' . $akun
         );
 
+        // Redirect atau tampilkan pesan sukses  
         return redirect()->to(base_url('kas_bank'))->with('success', 'Data berhasil disimpan!');
     }
+
+    public function updateKasBank($id_report)
+    {
+        $user_id = session()->get('username');
+        if (!$user_id) {
+            return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
+        }
+
+        $modelJurnal = new M_ReportJurnal();
+        $auditLogModel = new M_AuditLog();
+
+        // Ambil data lama dari database berdasarkan id_report
+        $dataLama = $modelJurnal->find($id_report);
+        if (!$dataLama) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        }
+
+        $doc_no = $this->request->getPost('doc_no');
+
+        // Ambil data baru dari form
+        $dataBaru = [
+            // 'date' => $this->request->getPost('tgl'),
+            'doc_no' => $doc_no,
+            'account' => $this->request->getPost('account'),
+            'name' => strtoupper($this->request->getPost('name')),
+            'description' => strtoupper($this->request->getPost('description')),
+            'debit' => intval($this->request->getPost('debit')),
+            'kredit' => intval($this->request->getPost('credit')),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+
+        // Simpan perubahan ke database
+        $modelJurnal->update($id_report, $dataBaru);
+
+        // Log perubahan untuk setiap kolom
+        foreach ($dataBaru as $key => $newValue) {
+            $oldValue = $dataLama[$key] ?? null;
+
+            // Bandingkan nilai lama dan baru
+            if ($oldValue != $newValue) {
+                $auditLogModel->logEdit(
+                    'Report Jurnal',
+                    $id_report,
+                    $key,
+                    strval($oldValue ?? ''),   // Konversi nilai lama menjadi string
+                    strval($newValue ?? ''),   // Konversi nilai baru menjadi string
+                    $user_id,
+                    "$user_id Mengedit kolom $key pada No. Dokumen $doc_no."
+                );
+            }
+        }
+
+        // Redirect dengan pesan sukses
+        return redirect()->to(base_url('kas_bank'))->with('success', 'Data berhasil diperbarui!');
+    }
+
+    public function deleteKasBank($id_report)
+    {
+        $user_id = session()->get('username');
+        if (!$user_id) {
+            return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
+        }
+
+        $modelJurnal = new M_ReportJurnal();
+        $auditLogModel = new M_AuditLog();
+
+        $doc_no = $this->request->getPost('doc_no');
+
+        // Ambil data lama untuk log
+        $dataLama = $modelJurnal->find($id_report);
+        if (!$dataLama) {
+            return redirect()->to(base_url('kas_bank'))->with('error', 'Data tidak ditemukan.');
+        }
+
+        // Hapus data dari database
+        $modelJurnal->delete($id_report);
+
+        // Simpan log penghapusan
+        $auditLogModel->logDelete(
+            'report_jurnal',
+            $id_report,
+            $user_id,
+            $dataLama,
+            "$user_id menghapus data dengan No. Dokumen $doc_no."
+        );
+
+        return redirect()->to(base_url('kas_bank'))->with('success', 'Data berhasil dihapus!');
+    }
+
+
+
 
 
     public function getCoa()
@@ -633,20 +731,85 @@ class KeuanganController extends BaseController
         $model = new M_KasKecil();
         $userModel = new UserModel();
 
-        $kaskecil = $model->orderBy('id_kc', 'DESC')->findAll();
+        // Mengambil input filter
+        $searchKeyword = $this->request->getGet('search_keyword');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $showAll = $this->request->getGet('show_all');
 
-        foreach ($kaskecil as &$item) {
-            $user = $userModel->find($item['user_id']);
-            $item['username'] = $user ? $user['username'] : 'Unknown';
+        // Default query builder
+        $query = $model->orderBy('tanggal', 'DESC');
+
+        // Jika "Tampilkan Semua" tidak dipilih, tambahkan filter
+        if (!$showAll) {
+            if (!empty($searchKeyword)) {
+                $query->like('keterangan', $searchKeyword)
+                    ->orLike('no_document', $searchKeyword); // Asumsi ada kolom 'no_document'
+            }
+            if (!empty($startDate)) {
+                $query->where('tanggal >=', $startDate);
+            }
+            if (!empty($endDate)) {
+                $query->where('tanggal <=', $endDate);
+            }
         }
 
+        // Eksekusi query
+        $kaskecil = $query->findAll();
+
+        $totalDebit = 0;
+        $totalKredit = 0;
+
+        foreach ($kaskecil as &$item) {
+            // Menambahkan nama user berdasarkan user_id
+            $user = $userModel->find($item['user_id']);
+            $item['username'] = $user ? $user['username'] : 'Unknown';
+
+            // Menambahkan nilai debit dan kredit untuk menghitung total
+            $totalDebit += $item['debit'];
+            $totalKredit += $item['kredit'];
+        }
+
+        // Menghitung sisa debit
+        $sisaDebit = $totalDebit - $totalKredit;
+
+        // Data yang dikirim ke view
         $data = [
             'title' => 'Kas Kecil',
-            'kaskecil' => $kaskecil
+            'kaskecil' => $kaskecil,
+            'totalDebit' => $totalDebit,
+            'totalKredit' => $totalKredit,
+            'sisaDebit' => $sisaDebit,
+            'searchKeyword' => $searchKeyword,
+            'startDate' => $startDate,
+            'endDate' => $endDate
         ];
 
         return view('keuangan/kas_kecil', $data);
     }
+
+
+
+    public function getKasKecilData()
+    {
+        $kasM = new M_KasKecil();
+
+        // Ambil data dari model
+        $dataKas = $kasM->findAll();
+
+        // Hitung total jumlah
+        $totalJumlah = 0;
+        foreach ($dataKas as $data) {
+            $totalJumlah += $data['kredit'];
+        }
+
+        // Kirim data sebagai JSON
+        return $this->response->setJSON([
+            'dataKasKecil' => $dataKas,
+            'totalJumlah' => $totalJumlah
+        ]);
+    }
+
 
     public function createKasKecil()
     {
@@ -693,7 +856,7 @@ class KeuanganController extends BaseController
             // Tambahkan log CREATE untuk setiap baris data
             foreach ($dataBatch as $data) {
                 $auditLogModel->logCreate(
-                    'k_kas_kecil',
+                    'Kas Kecil',
                     $user_id,
                     'Menambahkan data kas kecil dengan Doc No: ' . $docNo . ' dan Nama Akun: ' . $data['nama_account']
                 );
@@ -717,7 +880,7 @@ class KeuanganController extends BaseController
                 'debit'       => str_replace('.', '', $nilai[$key]), // Menghapus titik pada nilai
                 'kredit'      => 0,
                 'aksi'        => 'Posted',
-                'user_id'     => session()->get('user_id'),
+                'user_id'     => $user_id
             ];
 
             // Simpan ke database M_ReportJurnal (Debit)
@@ -725,7 +888,7 @@ class KeuanganController extends BaseController
 
             // Tambahkan log CREATE untuk jurnal debit
             $auditLogModel->logCreate(
-                'k_report_jurnal',
+                'Report Jurnal',
                 $user_id,
                 'Menambahkan jurnal debit dengan Doc No: ' . $docNo . ' dan Nama Akun: ' . $dataReportDebit['name']
             );
@@ -735,12 +898,12 @@ class KeuanganController extends BaseController
         $dataReportKredit = [
             'date'        => strtoupper($tanggal),
             'doc_no'      => strtoupper($docNo),
-            'account'     => '10001',
+            'account'     => '11111',
             'name'        => 'KAS KECIL',
             'description' => 'PENGELUARAN KAS KECIL ' . strtoupper($tanggal),
             'debit'       => 0,
             'kredit'      => str_replace('.', '', $totalNilai), // Menghapus titik pada total nilai
-            'user_id'     => session()->get('user_id'),
+            'user_id'     => $user_id
         ];
 
         // Simpan ke database M_ReportJurnal (Kredit Total)
@@ -748,7 +911,7 @@ class KeuanganController extends BaseController
 
         // Tambahkan log CREATE untuk jurnal kredit
         $auditLogModel->logCreate(
-            'k_report_jurnal',
+            'Report Jurnal',
             $user_id,
             'Menambahkan jurnal kredit untuk pengeluaran kas kecil dengan Doc No: ' . $docNo
         );
@@ -757,7 +920,7 @@ class KeuanganController extends BaseController
         $dataKeluar = [
             'tanggal'      => strtoupper($tanggal),
             'no_doc'       => strtoupper($docNo),
-            'kode_account' => '10001',
+            'kode_account' => '11111',
             'nama_account' => 'KAS KECIL',
             'keterangan'   => 'PENGELUARAN KAS KECIL ' . strtoupper($tanggal),
             'kredit'       => str_replace('.', '', $totalNilai), // Menghapus titik pada total nilai
@@ -778,39 +941,177 @@ class KeuanganController extends BaseController
         return redirect()->to('/kas_kecil');
     }
 
+    public function updateKasKecil($idKc)
+    {
+        $model = new M_KasKecil();
+        $modelJurnal = new M_ReportJurnal();
+        $auditLogModel = new M_AuditLog();
+
+        $user_id = session()->get('username');
+        if (!$user_id) {
+            return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
+        }
+
+        $tanggal = strtoupper($this->request->getPost('tanggal'));
+        $kodeAccount = $this->request->getPost('kode_account');
+        $namaAccount = $this->request->getPost('nama_account');
+        $keterangan = $this->request->getPost('keterangan');
+        $kredit = $this->request->getPost('kredit');
+
+        // Ambil data lama berdasarkan id_kc untuk log audit dan mendapatkan doc_no
+        $dataLamaKasKecil = $model->find($idKc);
+        if (!$dataLamaKasKecil) {
+            return redirect()->to('/kas_kecil')->with('error', 'Data tidak ditemukan.');
+        }
+
+        $docNo = $dataLamaKasKecil['doc_no']; // Ambil doc_no dari data lama untuk digunakan di ReportJurnal
+
+        // Update data di M_KasKecil
+        $dataKasKecil = [
+            'tanggal'      => strtoupper($tanggal),
+            'kode_account' => strtoupper($kodeAccount),
+            'nama_account' => strtoupper($namaAccount),
+            'keterangan'   => strtoupper($keterangan),
+            'kredit'       => str_replace('.', '', $kredit), // Hilangkan titik jika ada
+            'user_id'      => $user_id,
+            'tgl_input'    => date('Y-m-d H:i:s'),
+        ];
+
+        $model->update($idKc, $dataKasKecil);
+
+        // Tambahkan log UPDATE untuk kas kecil
+        $auditLogModel->logEdit(
+            'M_KasKecil',
+            $idKc,
+            'id_kc',
+            json_encode($dataLamaKasKecil),
+            json_encode($dataKasKecil),
+            $user_id,
+            'Memperbarui data kas kecil dengan ID KC: ' . $idKc
+        );
+
+        // Ambil semua data lama di M_ReportJurnal berdasarkan doc_no
+        $dataLamaReportJurnal = $modelJurnal->where('doc_no', $docNo)->findAll();
+
+        // Update data di M_ReportJurnal (Debit)
+        $dataReportDebit = [
+            'date'        => strtoupper($tanggal),
+            'account'     => strtoupper($kodeAccount),
+            'name'        => strtoupper($namaAccount),
+            'description' => strtoupper($keterangan),
+            'debit'       => str_replace('.', '', $kredit),
+            'kredit'      => 0,
+            'aksi'        => 'Updated',
+            'user_id'     => $user_id,
+        ];
+
+        $modelJurnal->where('doc_no', $docNo)->where('account', $kodeAccount)->set($dataReportDebit)->update();
+
+        // Tambahkan log UPDATE untuk jurnal debit
+        $auditLogModel->logEdit(
+            'M_ReportJurnal',
+            $docNo,
+            'account',
+            json_encode($dataLamaReportJurnal),
+            json_encode($dataReportDebit),
+            $user_id,
+            'Memperbarui jurnal debit dengan Doc No: ' . $docNo
+        );
+
+        // Update data di M_ReportJurnal (Kredit untuk total nilai)
+        $dataReportKredit = [
+            'date'        => strtoupper($tanggal),
+            'account'     => '11111',
+            'name'        => 'KAS KECIL',
+            'description' => 'PENGELUARAN KAS KECIL ' . strtoupper($tanggal),
+            'debit'       => 0,
+            'kredit'      => str_replace('.', '', $kredit), // Gunakan nilai kredit yang baru
+            'user_id'     => $user_id,
+        ];
+
+        $modelJurnal->where('doc_no', $docNo)->where('account', '11111')->set($dataReportKredit)->update();
+
+        // Tambahkan log UPDATE untuk jurnal kredit
+        $auditLogModel->logEdit(
+            'M_ReportJurnal',
+            $docNo,
+            'account',
+            json_encode($dataLamaReportJurnal),
+            json_encode($dataReportKredit),
+            $user_id,
+            'Memperbarui jurnal kredit untuk pengeluaran kas kecil dengan Doc No: ' . $docNo
+        );
+
+        // Redirect ke halaman kas kecil
+        return redirect()->to('/kas_kecil')->with('success', 'Data berhasil diperbarui.');
+    }
+
+
+
 
 
     public function keluarkasbesar()
     {
-        $model = new M_P_KasBesar();
-        $userModel = new UserModel();
+        $model = new M_ReportJurnal();
 
-        $data_kasbesar = $model->orderBy('id_kb', 'DESC')->findAll();
+        // Mengambil input filter dari request
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $showAll = $this->request->getGet('show_all');
 
-        foreach ($data_kasbesar as &$item) {
-            $user = $userModel->find($item['user_id']);
-            $item['username'] = $user ? $user['username'] : 'Unknown';
+        // Query data dengan filter
+        $builder = $model->orderBy('date', 'DESC');
+
+        $kodeAwal = '01.01';
+        $bulan = str_pad(date('m'), 2, '0', STR_PAD_LEFT);
+        $pattern = "$kodeAwal.$bulan.KB%";
+
+        $builder->like('doc_no', $pattern, 'after');
+
+        $builder->where('debit !=', 0);
+
+        if (!$showAll) {
+
+            if ($startDate && $endDate) {
+                $builder->where('date >=', $startDate)
+                    ->where('date <=', $endDate);
+            } elseif ($startDate) {
+                $builder->where('date >=', $startDate);
+            } elseif ($endDate) {
+                $builder->where('date <=', $endDate);
+            }
         }
 
+        $data_kasbesar = $builder->findAll();
         $data = [
-            'title' => 'Kas Keluar',
-            'data_kasbesar' => $data_kasbesar
+            'title' => 'Pengeluaran Kas Besar',
+            'data_kasbesar' => $data_kasbesar,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ];
 
         return view('keuangan/keluar_kasbesar', $data);
     }
 
+
+
     public function getKasBesarData()
     {
-        $kasBesarModel = new M_P_KasBesar();
+        $kasBesarModel = new M_ReportJurnal();
 
-        // Ambil data dari model
-        $dataKasBesar = $kasBesarModel->select('tanggal, nilai')->findAll();
+        $currentMonth = str_pad(date('m'), 2, '0', STR_PAD_LEFT);
+        $pattern = "01.01.$currentMonth.KB%";
+
+        $dataKasBesar = $kasBesarModel
+            ->select('date, debit, doc_no')
+            ->like('doc_no', $pattern, 'after')
+            ->findAll();
+
 
         // Hitung total jumlah
         $totalJumlah = 0;
         foreach ($dataKasBesar as $data) {
-            $totalJumlah += $data['nilai'];
+            $totalJumlah += $data['debit'];
         }
 
         // Kirim data sebagai JSON
@@ -819,32 +1120,13 @@ class KeuanganController extends BaseController
             'totalJumlah' => $totalJumlah
         ]);
     }
-    public function getKasKecilData()
-    {
-        $kasBesarModel = new M_KasKecil();
 
-        // Ambil data dari model
-        $dataKasBesar = $kasBesarModel->select('tanggal, kredit')->findAll();
-
-        // Hitung total jumlah
-        $totalJumlah = 0;
-        foreach ($dataKasBesar as $data) {
-            $totalJumlah += $data['kredit'];
-        }
-
-        // Kirim data sebagai JSON
-        return $this->response->setJSON([
-            'dataKasKecil' => $dataKasBesar,
-            'totalJumlah' => $totalJumlah
-        ]);
-    }
 
 
     public function createPKasbesar()
     {
-        $model = new M_P_KasBesar();
         $modelJurnal = new M_ReportJurnal();
-        $auditLogModel = new M_AuditLog(); // Tambahkan model untuk log audit
+        $auditLogModel = new M_AuditLog();
 
         $user_id = session()->get('username');
         if (!$user_id) {
@@ -857,42 +1139,7 @@ class KeuanganController extends BaseController
         $keterangan = $this->request->getPost('keterangan');
         $nilai = $this->request->getPost('nilai');
 
-        $dataBatch = []; // Menyimpan data untuk batch insert
-        $totalNilai = 0; // Variabel untuk menghitung total nilai
-
-        // Simpan setiap baris data yang diinput
-        foreach ($kodeAccount as $key => $kode) {
-            $parts = explode(' - ', $kode); // Pisahkan kode dan nama akun
-
-            $dataBatch[] = [
-                'tanggal'      => strtoupper($tanggal),
-                'doc_no'       => strtoupper($docNo),
-                'kode_account' => isset($parts[0]) ? strtoupper($parts[0]) : '',
-                'nama_account' => isset($parts[1]) ? strtoupper($parts[1]) : '',
-                'keterangan'   => strtoupper($keterangan[$key]),
-                'nilai'        => str_replace('.', '', $nilai[$key]), // Menghapus titik pada nilai
-                'user_id'      => $user_id,
-                'tgl_input'    => date('Y-m-d H:i:s'),
-            ];
-
-            $totalNilai += str_replace('.', '', $nilai[$key]); // Menghapus titik pada nilai
-        }
-
-        // Simpan data ke database dengan batch insert
-        if ($model->insertBatch($dataBatch)) {
-            // Tambahkan log CREATE untuk setiap baris data yang disimpan
-            foreach ($dataBatch as $data) {
-                $auditLogModel->logCreate(
-                    'p_kas_besar',
-                    $user_id,
-                    'Menambahkan data pengeluaran kas besar dengan Doc No: ' . $docNo . ' dan Nama Akun: ' . $data['nama_account']
-                );
-            }
-
-            session()->setFlashdata('success', 'Data berhasil disimpan.');
-        } else {
-            session()->setFlashdata('error', 'Gagal menyimpan data.');
-        }
+        $totalNilai = 0; // Inisialisasi total nilai kredit
 
         // Simpan data untuk model M_ReportJurnal (Debit)
         foreach ($kodeAccount as $key => $kode) {
@@ -907,7 +1154,7 @@ class KeuanganController extends BaseController
                 'debit'       => str_replace('.', '', $nilai[$key]), // Menghapus titik pada nilai
                 'kredit'      => 0,
                 'aksi'        => 'Posted',
-                'user_id'     => session()->get('user_id'),
+                'user_id'     => $user_id
             ];
 
             // Simpan ke database M_ReportJurnal (Debit)
@@ -915,22 +1162,25 @@ class KeuanganController extends BaseController
 
             // Tambahkan log CREATE untuk jurnal debit
             $auditLogModel->logCreate(
-                'report_jurnal',
+                'Report Jurnal',
                 $user_id,
                 'Menambahkan jurnal debit dengan Doc No: ' . $docNo . ' dan Nama Akun: ' . $dataReportDebit['name']
             );
+
+            // Tambahkan nilai debit ke totalNilai
+            $totalNilai += str_replace('.', '', $nilai[$key]); // Penjumlahan total nilai
         }
 
         // Simpan data untuk model M_ReportJurnal (Kredit sebagai total nilai)
         $dataReportKredit = [
             'date'        => strtoupper($tanggal),
             'doc_no'      => strtoupper($docNo),
-            'account'     => '10002',
+            'account'     => '11112', // Kode account untuk kas besar
             'name'        => 'KAS BESAR',
             'description' => 'PENGELUARAN KAS BESAR ' . strtoupper($tanggal),
             'debit'       => 0,
-            'kredit'      => str_replace('.', '', $totalNilai), // Menghapus titik pada total nilai
-            'user_id'     => session()->get('user_id'),
+            'kredit'      => $totalNilai, // Menggunakan totalNilai yang dihitung
+            'user_id'     => $user_id
         ];
 
         // Simpan ke database M_ReportJurnal (Kredit Total)
@@ -938,14 +1188,123 @@ class KeuanganController extends BaseController
 
         // Tambahkan log CREATE untuk jurnal kredit
         $auditLogModel->logCreate(
-            'report_jurnal',
+            'Report Jurnal',
             $user_id,
             'Menambahkan jurnal kredit untuk pengeluaran kas besar dengan Doc No: ' . $docNo
         );
 
         // Redirect ke halaman lain setelah simpan data
-        return redirect()->to('/keluar_kasbesar');
+        return redirect()->to('/keluar_kasbesar')->with('success', 'Data berhasil disimpan.');
     }
+    public function updatePKasbesar($idReport)
+    {
+        $modelJurnal = new M_ReportJurnal();
+        $auditLogModel = new M_AuditLog();
+
+        $user_id = session()->get('username');
+        if (!$user_id) {
+            return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
+        }
+
+        $tanggal = strtoupper($this->request->getPost('tanggal'));
+        $kodeAccount = $this->request->getPost('kode_account');
+        $keterangan = $this->request->getPost('keterangan');
+        $nilai = $this->request->getPost('nilai');
+
+        $totalNilai = 0; // Inisialisasi total nilai kredit
+
+        // Ambil data lama untuk log audit
+        $dataLamaReportJurnal = $modelJurnal->where('id_report', $idReport)->findAll();
+
+        if (!$dataLamaReportJurnal) {
+            return redirect()->to('/keluar_kasbesar')->with('error', 'Data tidak ditemukan.');
+        }
+
+        // Update data di M_ReportJurnal (Debit)
+        foreach ($kodeAccount as $key => $kode) {
+            $parts = explode(' - ', $kode); // Pisahkan kode account dan nama account
+
+            $dataReportDebit = [
+                'date'        => strtoupper($tanggal),
+                'account'     => isset($parts[0]) ? strtoupper($parts[0]) : '',
+                'name'        => isset($parts[1]) ? strtoupper($parts[1]) : '',
+                'description' => strtoupper($keterangan[$key]),
+                'debit'       => str_replace('.', '', $nilai[$key]), // Menghapus titik pada nilai
+                'kredit'      => 0,
+                'aksi'        => 'Posted',
+                'user_id'     => $user_id
+            ];
+
+            // Cari data lama yang sesuai dengan id_report
+            $dataLamaDebit = $modelJurnal->where('id_report', $idReport)
+                ->where('account', $dataReportDebit['account'])
+                ->first();
+
+            if ($dataLamaDebit) {
+                // Update data di database
+                $modelJurnal->where('id_report', $dataLamaDebit['id_report'])->set($dataReportDebit)->update();
+
+                // Tambahkan log UPDATE
+                foreach ($dataReportDebit as $column => $newValue) {
+                    if ($dataLamaDebit[$column] != $newValue) {
+                        $auditLogModel->logEdit(
+                            'Report Jurnal',
+                            $dataLamaDebit['id_report'],
+                            $column,
+                            $dataLamaDebit[$column],
+                            $newValue,
+                            $user_id,
+                            "Memperbarui jurnal debit dengan ID Report: $idReport, kolom: $column"
+                        );
+                    }
+                }
+            }
+
+            // Tambahkan nilai debit ke totalNilai
+            $totalNilai += str_replace('.', '', $nilai[$key]); // Penjumlahan total nilai
+        }
+
+        // Update data di M_ReportJurnal (Kredit sebagai total nilai)
+        $dataReportKredit = [
+            'date'        => strtoupper($tanggal),
+            'account'     => '11112', // Kode account untuk kas besar
+            'name'        => 'KAS BESAR',
+            'description' => 'PENGELUARAN KAS BESAR ' . strtoupper($tanggal),
+            'debit'       => 0,
+            'kredit'      => $totalNilai, // Menggunakan totalNilai yang dihitung
+            'user_id'     => $user_id
+        ];
+
+        // Cari data lama untuk jurnal kredit
+        $dataLamaKredit = $modelJurnal->where('id_report', $idReport)
+            ->where('account', '11112')
+            ->first();
+
+        if ($dataLamaKredit) {
+            // Update data di database
+            $modelJurnal->where('id_report', $dataLamaKredit['id_report'])->set($dataReportKredit)->update();
+
+            // Tambahkan log UPDATE
+            foreach ($dataReportKredit as $column => $newValue) {
+                if ($dataLamaKredit[$column] != $newValue) {
+                    $auditLogModel->logEdit(
+                        'Report Jurnal',
+                        $dataLamaKredit['id_report'],
+                        $column,
+                        $dataLamaKredit[$column],
+                        $newValue,
+                        $user_id,
+                        "$user_id Memperbarui jurnal kredit dengan ID Report: $idReport, kolom: $column"
+                    );
+                }
+            }
+        }
+
+        // Redirect ke halaman lain setelah simpan data
+        return redirect()->to('/keluar_kasbesar')->with('success', 'Data berhasil diperbarui.');
+    }
+
+
 
 
 
@@ -974,22 +1333,71 @@ class KeuanganController extends BaseController
     public function jurnal_kaskeluar()
     {
         $modelKas = new M_ReportJurnal();
-        $userModel = new UserModel();
 
-        $kas = $modelKas->orderBy('id_report', 'DESC')->findAll();
+        // Tangkap filter dari request (GET method)
+        $filterName = $this->request->getVar('filter_name');
+        $startDate = $this->request->getVar('start_date');
+        $endDate = $this->request->getVar('end_date');
+        $searchKeyword = $this->request->getVar('search_keyword');
 
-        foreach ($kas as &$item) {
-            $user = $userModel->find($item['user_id']);
-            $item['username'] = $user ? $user['username'] : 'Unknown';
+        // Query dasar untuk mengambil data
+        $builder = $modelKas->where('kredit >', 0);
+
+        // Filter berdasarkan Nama Kas
+        if (!empty($filterName)) {
+            $builder->where('name', $filterName);
+        } else {
+            $builder->whereIn('name', ['KAS BESAR', 'KAS KECIL', 'REK BCA']);
+        }
+
+        // Filter berdasarkan rentang tanggal
+        if (!empty($startDate)) {
+            $builder->where('date >=', $startDate);
+        }
+        if (!empty($endDate)) {
+            $builder->where('date <=', $endDate);
+        }
+
+        // Filter berdasarkan kata kunci pencarian (search)
+        if (!empty($searchKeyword)) {
+            $builder->groupStart()
+                ->like('description', $searchKeyword) // Cari di kolom keterangan
+                ->orLike('doc_no', $searchKeyword)    // Cari di kolom nomor dokumen
+                ->groupEnd();
+        }
+
+        // Ambil data dari database
+        $kas = $builder->orderBy('date', 'DESC')->findAll();
+
+        // Kelompokkan transaksi berdasarkan tanggal
+        $groupedData = [];
+        foreach ($kas as $transaction) {
+            $tanggal = $transaction['date'];
+            if (!isset($groupedData[$tanggal])) {
+                $groupedData[$tanggal] = [
+                    'transactions' => [],
+                    'total' => 0,
+                ];
+            }
+            $groupedData[$tanggal]['transactions'][] = $transaction;
+            $groupedData[$tanggal]['total'] += $transaction['kredit'];
         }
 
         $data = [
             'title' => 'Kas Keluar Real',
-            'kasKeluar' => $kas
+            'groupedData' => $groupedData,
+            'filterName' => $filterName,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'searchKeyword' => $searchKeyword, // Kirim kata kunci ke view untuk menampilkan ulang
         ];
 
         return view('keuangan/kas_keluar', $data);
     }
+
+
+
+
 
 
     public function repairoder_list()

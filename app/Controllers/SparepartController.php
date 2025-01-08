@@ -1128,38 +1128,34 @@ class SparepartController extends BaseController
     // }
     public function permintaan_sparepart_supply($id_terima_po = null)
     {
-        // Inisialisasi model yang diperlukan
         $partbahanModel = new M_Part_Terima();
         $Pomodel = new M_Po();
         $SparepartPoModel = new M_SparepartPo();
         $supplierModel = new M_Supplier();
-        $repairOrderModel = new M_RepairOrder(); // Inisialisasi M_RepairOrder
+        $repairOrderModel = new M_RepairOrder();
 
-        // Ambil data PO yang belum terkirim sparepart
         $poData = $Pomodel->getFilteredDataSparepartNotSentSupply();
 
-        // Ambil data Repair Order yang belum terkirim sparepart
         $repairOrderData = $repairOrderModel->findAll();
 
-        // Gabungkan data PO dan Repair Order
+
         $combinedData = array_merge($poData, $repairOrderData);
 
-        // Ambil sparepart dan detail berdasarkan id_terima_po
+
         $sparepart = [];
-        $detailData = []; // Gabungan detail untuk PO dan Repair Order
-        $filteredCombinedData = []; // Array untuk menyimpan hanya data yang memiliki sparepart
+        $detailData = [];
+        $filteredCombinedData = [];
 
         if ($id_terima_po) {
             $sparepart = $SparepartPoModel->where('id_terima_po', $id_terima_po)
                 ->where('jenis_part', 'SUPPLY')
-                ->where('is_sent', '0') // Hanya ambil sparepart yang belum dikirim
+                ->where('is_sent', '0')
                 ->findAll();
 
             if (!empty($sparepart)) {
                 $detailData[$id_terima_po] = $SparepartPoModel->getDetail($id_terima_po);
             }
         } else {
-            // Jika tidak ada id_terima_po, ambil data untuk semua PO dan Repair Order
             foreach ($combinedData as $data) {
                 $sparepart = $SparepartPoModel->where('id_terima_po', $data['id_terima_po'])
                     ->where('jenis_part', 'SUPPLY')
@@ -2407,21 +2403,4 @@ class SparepartController extends BaseController
 
         return view('sparepart/stok_part', $data);
     }
-
-
-
-    // ---------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

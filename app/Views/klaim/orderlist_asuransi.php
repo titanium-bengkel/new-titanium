@@ -43,116 +43,58 @@
                 </header>
                 <div class="card-header py-3 px-4 border-muted" style="font-size: 12px;">
                     <div class="d-flex flex-column">
-                        <!-- Top: Buttons and Period Input -->
                         <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
-                            <!-- Left: Buttons -->
                             <div class="d-flex align-items-center gap-3 flex-wrap">
                                 <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">
                                     <i class="fas fa-file-excel"></i> Export to Excel
                                 </a>
                             </div>
-
-                            <!-- Letak Rentang Waktu -->
-                            <div class="dropdown position-relative">
-                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span id="dropdown-label">30 hari terakhir</span>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" href="#" data-period="7hari">7 hari terakhir</a></li>
-                                    <li><a class="dropdown-item" href="#" data-period="30hari">30 hari terakhir</a></li>
-                                    <li><a class="dropdown-item" href="#" data-period="perminggu">Per Minggu</a></li>
-                                    <li><a class="dropdown-item" href="#" data-period="perbulan">Per Bulan</a></li>
-                                </ul>
-                                <div id="selected-period" class="mt-2 text-muted">
-                                    <span>27 Okt - 25 Nov 2024</span>
-                                </div>
-                            </div>
-
-                            <script>
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    const dropdownItems = document.querySelectorAll('.dropdown-item');
-                                    const dropdownLabel = document.getElementById('dropdown-label');
-                                    const selectedPeriod = document.getElementById('selected-period');
-
-                                    // Fungsi untuk menghitung tanggal yang dimulai dari N hari terakhir
-                                    function getDateRange(days) {
-                                        const endDate = new Date(); // Tanggal hari ini
-                                        const startDate = new Date();
-                                        startDate.setDate(endDate.getDate() - days); // Hitung tanggal N hari yang lalu
-
-                                        const options = {
-                                            year: 'numeric',
-                                            month: '2-digit',
-                                            day: '2-digit'
-                                        };
-                                        const start = startDate.toLocaleDateString('id-ID', options);
-                                        const end = endDate.toLocaleDateString('id-ID', options);
-
-                                        return `${start} - ${end}`;
-                                    }
-
-                                    // Fungsi untuk memperbarui label dan konten
-                                    dropdownItems.forEach(item => {
-                                        item.addEventListener('click', function(e) {
-                                            e.preventDefault();
-                                            const period = this.getAttribute('data-period');
-
-                                            // Update label dropdown
-                                            dropdownLabel.textContent = this.textContent;
-
-                                            // Update content below dropdown based on selection
-                                            if (period === '7hari') {
-                                                selectedPeriod.innerHTML = `<span>${getDateRange(7)}</span>`;
-                                            } else if (period === '30hari') {
-                                                selectedPeriod.innerHTML = `<span>${getDateRange(30)}</span>`;
-                                            } else if (period === 'perminggu') {
-                                                selectedPeriod.innerHTML = '<span>Pilih minggu di kalender</span>';
-                                                renderWeeklyCalendar();
-                                            } else if (period === 'perbulan') {
-                                                selectedPeriod.innerHTML = '<span>Pilih bulan di kalender</span>';
-                                                renderMonthlyCalendar();
-                                            }
-                                        });
-                                    });
-
-                                    // Fungsi untuk menampilkan kalender mingguan
-                                    function renderWeeklyCalendar() {
-                                        // Logic untuk menampilkan kalender mingguan
-                                    }
-
-                                    // Fungsi untuk menampilkan kalender bulanan
-                                    function renderMonthlyCalendar() {
-                                        // Logic untuk menampilkan kalender bulanan
-                                    }
-                                });
-                            </script>
-
-                        </div>
-
-                        <!-- Bottom: Search and Rows Per Page -->
-                        <div class="d-flex justify-content-between align-items-center mt-4">
-                            <!-- Left: Search -->
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="text" id="search-bar" class="form-control form-control-sm rounded-2" placeholder="Search data..." />
-                                <button class="btn btn-outline-secondary btn-sm rounded-2" id="search-btn">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-
-                            <!-- Right: Rows Per Page -->
-                            <div class="d-flex align-items-center gap-2">
-                                <label for="rows-per-page" class="form-label mb-0 text-muted fw-bold">Tampilkan:</label>
-                                <select id="rows-per-page" class="form-select form-select-sm rounded-2 w-auto">
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                    <option value="all">All</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
+                    <!-- Form Filter -->
+                    <form method="get" action="<?= base_url('filter/asuransi') ?>" class="form-inline mt-2">
+                        <div class="row g-3 align-items-center">
+                            <!-- Cari -->
+                            <div class="col-md-8 col-sm-6">
+                                <label for="search_keyword" class="form-label fw-bold text-primary mb-1">Cari:</label>
+                                <input
+                                    type="text"
+                                    name="search_keyword"
+                                    id="search_keyword"
+                                    class="form-control form-control-sm"
+                                    placeholder="No. Acc/Nopol"
+                                    value="<?= $searchKeyword ?? '' ?>">
+                            </div>
+
+                            <!-- Tanggal Mulai dan Akhir -->
+                            <div class="col-md-4 col-sm-12 d-flex justify-content-end align-items-end gap-2">
+                                <div>
+                                    <label for="start_date" class="form-label fw-bold text-primary mb-1">Mulai:</label>
+                                    <input
+                                        type="date"
+                                        name="start_date"
+                                        id="start_date"
+                                        class="form-control form-control-sm"
+                                        value="<?= $startDate ?? date('Y-m-01') ?>">
+                                </div>
+                                <div>
+                                    <label for="end_date" class="form-label fw-bold text-primary mb-1">Akhir:</label>
+                                    <input
+                                        type="date"
+                                        name="end_date"
+                                        id="end_date"
+                                        class="form-control form-control-sm"
+                                        value="<?= $endDate ?? date('Y-m-d') ?>">
+                                </div>
+                                <div>
+                                    <button type="submit" class="btn btn-primary btn-sm fw-bold">Filter</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
                 </div>
+
                 <div class="card-content">
                     <div class="table-responsive" style="font-size: 11px; margin: 20px;">
                         <table class="table table-bordered table-striped table-hover text-center mb-0">
@@ -167,9 +109,9 @@
                                     <th class="text-center">Sparepart</th>
                                     <th class="text-center">Nilai</th>
                                     <th class="text-center">Tgl. Masuk</th>
-                                    <th class="text-center">Jenis Mobil</th>
+                                    <th class="text-center">Car Model</th>
                                     <th class="text-center">Nopol</th>
-                                    <th class="text-center">Customer</th>
+                                    <th class="text-center">Pelanggan</th>
                                     <th class="text-center">User ID</th>
                                     <th class="text-center">Tgl. Input</th>
                                     <th class="text-center">Aksi</th>
@@ -200,7 +142,7 @@
                                             <td><?= $acc['jenis_mobil'] ?></td>
                                             <td><?= $acc['no_kendaraan'] ?></td>
                                             <td><?= $acc['customer_name'] ?></td>
-                                            <td><?= isset($acc['username']) ? esc($acc['username']) : 'N/A'; ?></td>
+                                            <td><?= isset($acc['user_id']) ? esc($acc['user_id']) : 'N/A'; ?></td>
                                             <td><?= date('Y-m-d', strtotime($acc['tgl_acc'])) ?></td>
                                             <td>
                                                 <div class="d-flex justify-content-between" style="height: 30px;">

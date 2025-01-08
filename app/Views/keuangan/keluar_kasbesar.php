@@ -39,111 +39,165 @@
                     </div>
                     <h5 class="page-title mb-0 fw-bold">Pengeluaran Kas Besar</h5>
                 </header>
-                <div class="card-content">
-                    <div class="card-header d-flex align-items-center" style="width: fit-content;">
-                        <h6 class="mt-3" style="margin-left: 15px;">Sort by</h6>
-                        <input type="text" id="dateRange" class="form-control flatpickr-range mt-2" placeholder="Select date range" style="margin-left:20px; width: 250px;">
+                <div class="card-header py-3 px-4">
+                    <div class="d-flex justify-content-end align-items-center gap-3 flex-wrap">
+                        <!-- Filter dan Tampilkan Semua -->
+                        <form method="get" action="<?= base_url('filter/keluar_kasbesar') ?>" class="d-flex align-items-center gap-3 flex-wrap">
+                            <!-- Input Cari -->
+                            <div class="d-flex align-items-center">
+                                <label for="search_keyword" class="form-label fw-bold text-primary me-2 mb-0">Cari:</label>
+                                <input
+                                    type="text"
+                                    name="search_keyword"
+                                    id="search_keyword"
+                                    class="form-control form-control-sm"
+                                    placeholder="No. Document/Deskripsi"
+                                    value="<?= $searchKeyword ?? '' ?>">
+                            </div>
+
+                            <!-- Input Tanggal Mulai -->
+                            <div class="d-flex align-items-center">
+                                <label for="start_date" class="form-label fw-bold text-primary me-2 mb-0">Mulai:</label>
+                                <input
+                                    type="date"
+                                    name="start_date"
+                                    id="start_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $startDate ?? date('Y-m-01') ?>">
+                            </div>
+
+                            <!-- Input Tanggal Akhir -->
+                            <div class="d-flex align-items-center">
+                                <label for="end_date" class="form-label fw-bold text-primary me-2 mb-0">Akhir:</label>
+                                <input
+                                    type="date"
+                                    name="end_date"
+                                    id="end_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $endDate ?? date('Y-m-d') ?>">
+                            </div>
+
+                            <!-- Tombol Filter -->
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-sm fw-bold">Filter</button>
+                            </div>
+
+                            <!-- Tombol Tampilkan Semua -->
+                            <div>
+                                <button type="submit" name="show_all" value="1" class="btn btn-secondary btn-sm fw-bold">Tampilkan Semua</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <div class="row" style="margin: 20px;" style="font-size: 14px;">
-                    <div class="col-md-3">
-                        <h5>Jumlah Pengeluaran</h5>
-                        <div class="table-responsive" style="max-height: 800px; overflow-y: 20px;">
-                            <table class="table table-bordered text-center">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th>Tanggal</th>
-                                        <th>Jumlah</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tableBody">
-                                    <!-- Tanggal dan jumlah akan ditambahkan di sini oleh JS -->
-                                </tbody>
-                            </table>
+                <div class="card-content">
+                    <div class="row" style="margin: 20px;" style="font-size: 14px;">
+                        <div class="col-md-3">
+                            <h5>Jumlah Pengeluaran</h5>
+                            <div class="table-responsive" style="max-height: 800px; overflow-y: 20px;">
+                                <table class="table table-bordered text-center">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Tanggal</th>
+                                            <th>Jumlah</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody">
+                                        <!-- Tanggal dan jumlah akan ditambahkan di sini oleh JS -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-9">
-                        <h3>Rincian Pengeluaran Kas Besar</h3>
+                        <div class="col-md-9">
+                            <h3>Rincian Pengeluaran Kas Besar</h3>
 
-                        <?php if (!empty($data_kasbesar)): ?>
-                            <?php
-                            // Mengurutkan data berdasarkan tanggal
-                            usort($data_kasbesar, function ($a, $b) {
-                                return strtotime($a['tanggal']) - strtotime($b['tanggal']);
-                            });
-
-                            // Mengelompokkan data berdasarkan tanggal
-                            $groupedData = [];
-                            foreach ($data_kasbesar as $item) {
-                                // Cek apakah item tanggal berada di bulan dan tahun saat ini
-                                $currentMonth = date('Y-m'); // Format tahun-bulan
-                                if (date('Y-m', strtotime($item['tanggal'])) === $currentMonth) {
-                                    $groupedData[$item['tanggal']][] = $item;
+                            <?php if (!empty($data_kasbesar)): ?>
+                                <?php
+                                $groupedData = [];
+                                foreach ($data_kasbesar as $item) {
+                                    // Cek apakah item tanggal berada di bulan dan tahun saat ini
+                                    $currentMonth = date('Y-m'); // Format tahun-bulan
+                                    if (date('Y-m', strtotime($item['date'])) === $currentMonth) {
+                                        $groupedData[$item['date']][] = $item;
+                                    }
                                 }
-                            }
-                            ?>
+                                ?>
 
-                            <?php if (!empty($groupedData)): ?>
-                                <?php foreach ($groupedData as $tanggal => $items): ?>
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <table class="table table-bordered text-center" style="font-size: 14px;">
-                                                <thead class="thead-dark">
-                                                    <tr>
-                                                        <th>No.</th>
-                                                        <th>Tanggal</th>
-                                                        <th>Account</th>
-                                                        <th>Keterangan</th>
-                                                        <th>Jumlah</th>
-                                                        <th>User</th>
-                                                        <th>Tgl. Input</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                                                    $totalJumlah = 0;
-                                                    foreach ($items as $index => $item):
-                                                        $totalJumlah += $item['nilai'];
-                                                    ?>
+                                <?php if (!empty($groupedData)): ?>
+                                    <?php foreach ($groupedData as $tanggal => $items): ?>
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <table class="table table-bordered TABLE-HOVER table-striped text-center" style="font-size: 14px;">
+                                                    <thead class="thead-dark table-secondary">
                                                         <tr>
-                                                            <td><?= $index + 1 ?></td>
-                                                            <td><?= esc($item['tanggal']) ?></td>
-                                                            <td><?= esc($item['kode_account']) ?> - <?= esc($item['nama_account']) ?></td>
-                                                            <td><?= esc($item['keterangan']) ?></td>
-                                                            <td><?= number_format($item['nilai'], 0, ',', '.') ?></td>
-                                                            <td><?= esc($item['username']) ?></td>
-                                                            <td><?= esc($item['tgl_input']) ?></td>
-                                                            <td>
-                                                                <div class="d-flex">
-                                                                    <button type="button" class="btn btn-sm edit-user-btn" data-id="<?= esc($item['id_kb']) ?>"><i class="fas fa-edit"></i></button>
-                                                                    <button type="button" class="btn btn-sm delete-user-btn" data-id="<?= esc($item['id_kb']) ?>"><i class="fas fa-trash-alt"></i></button>
-                                                                </div>
-                                                            </td>
+                                                            <th>No.</th>
+                                                            <th>Tanggal</th>
+                                                            <th>Account</th>
+                                                            <th>Keterangan</th>
+                                                            <th>Jumlah</th>
+                                                            <th>User ID</th>
+                                                            <th>Tgl. Input</th>
+                                                            <th>Action</th>
                                                         </tr>
-                                                    <?php endforeach; ?>
-                                                </tbody>
-                                                <tfoot>
-                                                    <tr>
-                                                        <td colspan="4" class="text-right font-weight-bold">Total:</td>
-                                                        <td><?= number_format($totalJumlah, 0, ',', '.') ?></td>
-                                                        <td colspan="3"></td>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php
+                                                        $totalJumlah = 0;
+                                                        foreach ($items as $index => $item):
+                                                            $totalJumlah += $item['debit'];
+                                                        ?>
+                                                            <tr>
+                                                                <td><?= $index + 1 ?></td>
+                                                                <td><?= esc($item['date']) ?></td>
+                                                                <td><?= esc($item['account']) ?> - <?= esc($item['name']) ?></td>
+                                                                <td><?= esc($item['description']) ?></td>
+                                                                <td><?= number_format($item['debit'], 0, ',', '.') ?></td>
+                                                                <td><?= esc($item['user_id']) ?></td>
+                                                                <td><?= esc($item['created_at']) ?></td>
+                                                                <td>
+                                                                    <div class="d-flex">
+                                                                        <!-- Tombol Edit -->
+                                                                        <button type="button" class="btn btn-sm edit-user-btn"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#editModal"
+                                                                            data-id="<?= esc($item['id_report']) ?>"
+                                                                            data-date="<?= esc($item['date']) ?>"
+                                                                            data-account="<?= esc($item['account']) ?>"
+                                                                            data-name="<?= esc($item['name']) ?>"
+                                                                            data-description="<?= esc($item['description']) ?>"
+                                                                            data-debit="<?= esc($item['debit']) ?>">
+                                                                            <i class="fas fa-edit"></i>
+                                                                        </button>
+                                                                        <!-- Tombol Hapus -->
+                                                                        <button type="button" class="btn btn-sm delete-user-btn" data-id="<?= esc($item['id_report']) ?>">
+                                                                            <i class="fas fa-trash-alt"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td colspan="4" class="text-right font-weight-bold">Total:</td>
+                                                            <td><?= number_format($totalJumlah, 0, ',', '.') ?></td>
+                                                            <td colspan="3"></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
                                         </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="alert alert-warning" role="alert">
+                                        Tidak ada data tersedia untuk bulan ini.
                                     </div>
-                                <?php endforeach; ?>
+                                <?php endif; ?>
                             <?php else: ?>
-                                <div class="alert alert-warning" role="alert">
-                                    Tidak ada data tersedia untuk bulan ini.
+                                <div class="alert alert-info text-center" role="alert">
+                                    Belum ada Pengeluaran Bulan ini.
                                 </div>
                             <?php endif; ?>
-                        <?php else: ?>
-                            <div class="alert alert-info text-center" role="alert">
-                                Belum ada Pengeluaran Bulan ini.
-                            </div>
-                        <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -157,13 +211,13 @@
 <div class="modal fade" id="tanggalModal" tabindex="-1" aria-labelledby="tanggalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="tanggalModalLabel">Input Pengeluaran Kas Kecil</h5>
+            <div class="modal-header bg-gradient-ltr">
+                <h5 class="modal-title text-white" id="tanggalModalLabel">Input Pengeluaran Kas Kecil</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <!-- Form Input -->
-                <form id="formPengeluaran" action="<?= base_url('keuangan/createPKasbesar') ?>" method="POST">
+            <form id="formPengeluaran" action="<?= base_url('keuangan/createPKasbesar') ?>" method="POST">
+                <div class="modal-body">
+                    <!-- Form Input -->
                     <div class="mb-3">
                         <label for="tanggal" class="form-label">Tanggal</label>
                         <input type="text" class="form-control" id="tanggal" name="tanggal" readonly>
@@ -175,8 +229,8 @@
 
                     <!-- Tombol Tambah dan Hapus Baris -->
                     <div class="mb-1">
-                        <button type="button" class="btn btn-sm add-row">+</button>
-                        <button type="button" class="btn btn-sm remove-row">-</button>
+                        <button type="button" class="btn btn-sm add-row btn-light-info"><i class="fas fa-plus"></i></button>
+                        <button type="button" class="btn btn-sm remove-row btn-light-danger"><i class="fas fa-minus"></i></button>
                     </div>
 
                     <div class="table-responsive">
@@ -200,18 +254,110 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" id="saveData" class="btn btn-primary btn-sm">Simpan</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" id="saveData" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 <datalist id="coaList">
     <!-- Datalist akan diisi oleh AJAX -->
 </datalist>
+
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" id="editForm">
+                <div class="modal-header bg-gradient-ltr">
+                    <h5 class="modal-title text-white" id="editModalLabel">Edit Pengeluaran Kas Besar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id_report" id="id_report">
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Tanggal</label>
+                        <input type="date" class="form-control" id="date" name="tanggal" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="account" class="form-label">Account</label>
+                        <input type="text" class="form-control" id="account" name="kode_account" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="nama_account" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Keterangan</label>
+                        <textarea class="form-control" id="description" name="keterangan" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="debit" class="form-label">Jumlah</label>
+                        <input type="number" class="form-control" id="debit" name="nilai" required>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Script untuk Modal dan SweetAlert 2 -->
+<script>
+    // Modal Edit
+    const editModal = document.getElementById('editModal');
+    editModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget; // Tombol yang diklik
+        const id = button.getAttribute('data-id');
+        const date = button.getAttribute('data-date');
+        const account = button.getAttribute('data-account');
+        const name = button.getAttribute('data-name');
+        const description = button.getAttribute('data-description');
+        const debit = button.getAttribute('data-debit');
+
+        // Isi form di modal
+        document.getElementById('id_report').value = id;
+        document.getElementById('date').value = date;
+        document.getElementById('account').value = account;
+        document.getElementById('name').value = name;
+        document.getElementById('description').value = description;
+        document.getElementById('debit').value = debit;
+
+        // Set action form
+        const editForm = document.getElementById('editForm');
+        editForm.action = `<?= base_url('keuangan/updatePKasbesar') ?>/${id}`;
+    });
+
+    // SweetAlert 2 untuk Konfirmasi Hapus
+    document.querySelectorAll('.delete-user-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = button.getAttribute('data-id');
+
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: "Data yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Arahkan ke endpoint hapus
+                    window.location.href = `<?= base_url('keuangan/deletePKasbesar') ?>/${id}`;
+                }
+            });
+        });
+    });
+</script>
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -335,7 +481,7 @@
             var formattedDate = `${currentYear}-${formattedMonth}-${formattedDay}`;
             dates.push({
                 tanggal: formattedDate,
-                nilai: 0 // Default 0 untuk pengeluaran
+                debit: 0 // Default 0 untuk pengeluaran
             });
         }
         return dates;
@@ -361,17 +507,17 @@
 
         // Hitung total nilai per tanggal
         dataFromServer.forEach(function(item) {
-            if (!transactions[item.tanggal]) {
-                transactions[item.tanggal] = 0; // Inisialisasi jika belum ada
+            if (!transactions[item.date]) {
+                transactions[item.date] = 0; // Inisialisasi jika belum ada
             }
-            transactions[item.tanggal] += parseFloat(item.nilai); // Pastikan nilainya diubah menjadi angka
+            transactions[item.date] += parseFloat(item.debit); // Pastikan nilainya diubah menjadi angka
         });
 
         // Gabungkan data transaksi dengan semua tanggal
         return dates.map(function(dateItem) {
             return {
                 tanggal: dateItem.tanggal,
-                nilai: transactions[dateItem.tanggal] || 0 // Jika tidak ada transaksi, set nilai 0
+                debit: transactions[dateItem.tanggal] || 0 // Jika tidak ada transaksi, set nilai 0
             };
         });
     }
@@ -385,28 +531,28 @@
 
         // Looping data untuk mengisi tabel dan menghitung total jumlah
         data.forEach(function(item) {
-            totalJumlah += item.nilai; // Tambahkan jumlah ke total
+            totalJumlah += item.debit; // Tambahkan jumlah ke total
 
             // Format nilai dengan format uang Rp
-            var formattedNilai = '' + item.nilai.toLocaleString('id-ID');
+            var formattedDebit = 'Rp. ' + item.debit.toLocaleString('id-ID');
 
             // Tambahkan data ke tabel
             tableBody.append(
                 `<tr class="text-center">
                     <td><a href="#" class="open-modal" data-date="${item.tanggal}" data-bs-toggle="modal" data-bs-target="#tanggalModal">${item.tanggal}</a></td>
-                    <td>${formattedNilai}</td>
+                    <td>${formattedDebit}</td>
                 </tr>`
             );
         });
 
         // Update total jumlah di bagian footer
-        $('#totalJumlah').text('Rp.' + totalJumlah.toLocaleString('id-ID'));
+        $('#totalJumlah').text('Rp. ' + totalJumlah.toLocaleString('id-ID'));
     }
 
     // Fungsi untuk mengambil data dari server
     function fetchKasBesarData() {
         $.ajax({
-            url: '<?= base_url("keuangan/getKasBesarData") ?>', // Ganti dengan URL yang sesuai
+            url: '<?= base_url("keuangan/getKasBesarData") ?>', // URL controller
             type: 'GET',
             dataType: 'json',
             success: function(response) {
@@ -467,6 +613,7 @@
         });
     });
 </script>
+
 
 
 

@@ -38,17 +38,69 @@
                     </div>
                     <h5 class="page-title mb-0 fw-bold">Jurnal Kas & Bank</h5>
                 </header>
-                <div class="card-content" style="margin:20px; font-size: 12px;">
-                    <div class="buttons d-flex align-items-center mt-2 mb-2">
-                        <button type="button" class="btn btn-info btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#record">
-                            New Record
-                        </button>
-                        <button type="button" class="btn btn-secondary btn-sm mr-2">
-                            Export to Excel
-                        </button>
+                <div class="card-header py-3 px-4">
+                    <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                        <!-- Tombol Add dan Export -->
+                        <div class="d-flex align-items-center gap-3">
+                            <button type="button" class="btn btn-info btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#record">
+                                New Record
+                            </button>
+                            <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">
+                                <i class="fas fa-file-excel"></i> Export to Excel
+                            </a>
+                        </div>
+
+                        <!-- Filter dan Tampilkan Semua -->
+                        <form method="get" action="<?= base_url('filter/kas_bank') ?>" class="d-flex align-items-center gap-3 flex-wrap">
+                            <!-- Input Cari -->
+                            <div class="d-flex align-items-center">
+                                <label for="search_keyword" class="form-label fw-bold text-primary me-2 mb-0">Cari:</label>
+                                <input
+                                    type="text"
+                                    name="search_keyword"
+                                    id="search_keyword"
+                                    class="form-control form-control-sm"
+                                    placeholder="No. Document/Deskripsi"
+                                    value="<?= $searchKeyword ?? '' ?>">
+                            </div>
+
+                            <!-- Input Tanggal Mulai -->
+                            <div class="d-flex align-items-center">
+                                <label for="start_date" class="form-label fw-bold text-primary me-2 mb-0">Mulai:</label>
+                                <input
+                                    type="date"
+                                    name="start_date"
+                                    id="start_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $startDate ?? date('Y-m-01') ?>">
+                            </div>
+
+                            <!-- Input Tanggal Akhir -->
+                            <div class="d-flex align-items-center">
+                                <label for="end_date" class="form-label fw-bold text-primary me-2 mb-0">Akhir:</label>
+                                <input
+                                    type="date"
+                                    name="end_date"
+                                    id="end_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $endDate ?? date('Y-m-d') ?>">
+                            </div>
+
+                            <!-- Tombol Filter -->
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-sm fw-bold">Filter</button>
+                            </div>
+
+                            <!-- Tombol Tampilkan Semua -->
+                            <div>
+                                <button type="submit" name="show_all" value="1" class="btn btn-secondary btn-sm fw-bold">Tampilkan Semua</button>
+                            </div>
+                        </form>
                     </div>
+                </div>
+                <div class="card-content" style="margin:20px; font-size: 12px;">
                     <div class="table-responsive">
-                        <table id="myTable" class="table table-bordered table-striped table-hover mb-0 text-center">
+                        <table id="kasTable" class="table table-bordered table-striped table-hover mb-0 text-center">
                             <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th style="text-align: center;">#</th>
@@ -56,12 +108,12 @@
                                     <th style="text-align: center;">No. Dokumen</th>
                                     <th style="text-align: center;">Account</th>
                                     <th style="text-align: center;">Name</th>
-                                    <th style="text-align: center;">Deskripsi</th>
-                                    <th style="text-align: center;">Debit</th>
-                                    <th style="text-align: center;">Credit</th>
-                                    <th style="text-align: center;">User</th>
-                                    <th style="text-align: center;">Tanggal Input</th>
-                                    <th style="text-align: center;">Action</th>
+                                    <th style="text-align: left;">Deskripsi</th>
+                                    <th style="text-align: right;">Debit</th>
+                                    <th style="text-align: right;">Credit</th>
+                                    <th style="text-align: center;">User ID</th>
+                                    <th style="text-align: center;">Tgl. Input</th>
+                                    <th style="text-align: center;">Act</th>
                                 </tr>
                             </thead>
 
@@ -70,39 +122,44 @@
                                 foreach ($datakasbank as $row): ?>
                                     <tr>
                                         <td><?= $no++; ?></td>
-                                        <td><?= $row['tanggal']; ?></td>
+                                        <td><?= $row['date']; ?></td>
                                         <td><?= $row['doc_no']; ?></td>
-                                        <td><?= $row['kode_account']; ?></td>
-                                        <td><?= $row['nama_account']; ?></td>
-                                        <td><?= $row['deskripsi']; ?></td>
-                                        <td><?= number_format($row['debit'], 0, ',', '.'); ?></td>
-                                        <td><?= number_format($row['kredit'], 0, ',', '.'); ?></td>
-                                        <td><?= $row['username']; ?></td>
-                                        <td><?= $row['tgl_input']; ?></td>
+                                        <td><?= $row['account']; ?></td>
+                                        <td><?= $row['name']; ?></td>
+                                        <td style="text-align: left;"><?= $row['description']; ?></td>
+                                        <td style="text-align: right;"><?= number_format($row['debit'], 0, ',', '.'); ?></td>
+                                        <td style="text-align: right;"><?= number_format($row['kredit'], 0, ',', '.'); ?></td>
+                                        <td><?= $row['user_id']; ?></td>
+                                        <td><?= $row['created_at']; ?></td>
                                         <td>
-                                            <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editModal"
-                                                data-tanggal="<?= $row['tanggal']; ?>"
-                                                data-doc_no="<?= $row['doc_no']; ?>"
-                                                data-kode_account="<?= $row['kode_account']; ?>"
-                                                data-nama_account="<?= $row['nama_account']; ?>"
-                                                data-deskripsi="<?= $row['deskripsi']; ?>"
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editModal"
+                                                data-id-report="<?= $row['id_report']; ?>"
+                                                data-doc-no="<?= $row['doc_no']; ?>"
+                                                data-account="<?= $row['account']; ?>"
+                                                data-name="<?= $row['name']; ?>"
+                                                data-description="<?= $row['description']; ?>"
                                                 data-debit="<?= $row['debit']; ?>"
-                                                data-kredit="<?= $row['kredit']; ?>"
-                                                data-username="<?= $row['username']; ?>"
-                                                data-tgl_input="<?= $row['tgl_input']; ?>">
+                                                data-credit="<?= $row['kredit']; ?>">
                                                 <i class="fas fa-edit"></i>
                                             </button>
+                                            <button class="btn btn-danger btn-sm btn-delete" data-id="<?= $row['id_report']; ?>">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
                                         </td>
+
+
 
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
 
-                            <thead style="text-align: center;">
+                            <thead>
                                 <tr>
                                     <th colspan="6" style="text-align: right;">Total</th>
-                                    <th class="text-center"><?= number_format(array_sum(array_column($datakasbank, 'debit')), 0, ',', '.'); ?></th>
-                                    <th class="text-center"><?= number_format(array_sum(array_column($datakasbank, 'kredit')), 0, ',', '.'); ?></th>
+                                    <th class="text-center" style="text-align: right;"><?= number_format(array_sum(array_column($datakasbank, 'debit')), 0, ',', '.'); ?></th>
+                                    <th class="text-center" style="text-align: right;"><?= number_format(array_sum(array_column($datakasbank, 'kredit')), 0, ',', '.'); ?></th>
                                     <th colspan="3"></th>
                                 </tr>
                             </thead>
@@ -115,76 +172,16 @@
 </section>
 <!-- Table head options end -->
 
-<!-- Modal Edit -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit Data</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editForm" action="process_edit.php" method="POST">
-                    <!-- Input fields -->
-                    <div class="mb-3">
-                        <label for="tanggal" class="form-label">Tanggal</label>
-                        <input type="date" class="form-control" id="tanggal" name="tanggal" value="<?= $row['tanggal']; ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="doc_no" class="form-label">Document Number</label>
-                        <input type="text" class="form-control" id="doc_no" name="doc_no" value="<?= $row['doc_no']; ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="kode_account" class="form-label">Kode Account</label>
-                        <input type="text" class="form-control" id="kode_account" name="kode_account" value="<?= $row['kode_account']; ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="nama_account" class="form-label">Nama Account</label>
-                        <input type="text" class="form-control" id="nama_account" name="nama_account" value="<?= $row['nama_account']; ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="deskripsi" class="form-label">Deskripsi</label>
-                        <input type="text" class="form-control" id="deskripsi" name="deskripsi" value="<?= $row['deskripsi']; ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="debit" class="form-label">Debit</label>
-                        <input type="number" class="form-control" id="debit" name="debit" value="<?= $row['debit']; ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="kredit" class="form-label">Kredit</label>
-                        <input type="number" class="form-control" id="kredit" name="kredit" value="<?= $row['kredit']; ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" value="<?= $row['username']; ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tgl_input" class="form-label">Tanggal Input</label>
-                        <input type="date" class="form-control" id="tgl_input" name="tgl_input" value="<?= $row['tgl_input']; ?>" required>
-                    </div>
-                    <input type="hidden" name="id" id="editId" value="<?= $row['id_kasbank']; ?>"> <!-- Hidden input to store ID for updates -->
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <!-- Modal New Record -->
 <div class="modal fade" id="record" tabindex="-1" aria-labelledby="myModalLabel1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel1">New Record</h5>
+            <div class="modal-header bg-gradient-ltr">
+                <h5 class="modal-title text-white" id="myModalLabel1">New Record</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <!-- Form untuk menyimpan data -->
-                <form action="<?= base_url('keuangan/createKasBank') ?>" method="POST">
+            <form action="<?= base_url('keuangan/createKasBank') ?>" method="POST">
+                <div class="modal-body">
                     <div class="row mb-3">
                         <div class="col-md-12">
                             <input type="date" id="tgl" class="form-control" name="tgl" onkeydown="return false" onclick="this.showPicker()" required>
@@ -245,22 +242,124 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                            <span class="d-none d-sm-block">Close</span>
-                        </button>
-                        <button type="submit" class="btn btn-primary ms-1">
-                            <span class="d-none d-sm-block">Save</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                        <span class="d-none d-sm-block">Close</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary ms-1">
+                        <span class="d-none d-sm-block">Save</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 <!-- Tambahkan datalist di luar modal -->
 <datalist id="akun_debet_list"></datalist>
 <datalist id="akun_credit_list"></datalist>
+
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-ltr">
+                <h5 class="modal-title text-white" id="editModalLabel">Edit Kas Bank</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="doc_no" class="form-label">No. Dokumen</label>
+                        <input type="text" class="form-control" id="doc_no" name="doc_no" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="account" class="form-label">Account</label>
+                        <input type="text" class="form-control" id="account" name="account" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Deskripsi</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="debit" class="form-label">Debit</label>
+                        <input type="number" class="form-control" id="debit" name="debit" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="credit" class="form-label">Credit</label>
+                        <input type="number" class="form-control" id="credit" name="credit" required>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const editModal = document.getElementById('editModal');
+    editModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget; // Tombol yang diklik
+
+        // Ambil data dari atribut tombol
+        const idReport = button.getAttribute('data-id-report');
+        const docNo = button.getAttribute('data-doc-no');
+        const account = button.getAttribute('data-account');
+        const name = button.getAttribute('data-name');
+        const description = button.getAttribute('data-description');
+        const debit = button.getAttribute('data-debit');
+        const credit = button.getAttribute('data-credit');
+
+        // Isi form di modal
+        document.getElementById('doc_no').value = docNo;
+        document.getElementById('account').value = account;
+        document.getElementById('name').value = name;
+        document.getElementById('description').value = description;
+        document.getElementById('debit').value = debit;
+        document.getElementById('credit').value = credit;
+
+        // Tambahkan ID report untuk pengiriman ke server
+        const form = editModal.querySelector('form');
+        form.action = `<?= base_url('keuangan/updateKasBank/'); ?>${idReport}`;
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.btn-delete');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id'); // Ambil id dari data-id tombol
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect ke URL untuk menghapus data
+                        window.location.href = `<?= base_url('keuangan/deleteKasBank/'); ?>${id}`;
+                    }
+                });
+            });
+        });
+    });
+</script>
 
 <!-- Script untuk modal -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -375,31 +474,39 @@
     });
 </script>
 
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#myTable').DataTable({
-            "paging": true,
-            "pageLength": 20,
-            "lengthMenu": [
-                [20, 50, 100, -1],
-                [20, 50, 100, "All"]
-            ],
-            "ordering": false,
-            "language": {
-                "lengthMenu": "Show _MENU_ entries",
-                "paginate": {
-                    "first": "First",
-                    "last": "Last",
-                    "next": "Next",
-                    "previous": "Previous"
-                },
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries"
-            },
-            "pagingType": "full_numbers"
+    function exportToExcel() {
+        const table = document.getElementById('kasTable');
+        const workbook = XLSX.utils.table_to_book(table, {
+            sheet: "Kas Bank"
+        });
+        XLSX.writeFile(workbook, 'Kas&Bank.xlsx');
+    }
+    updateTable();
+
+    document.querySelectorAll(".delete-user-btn").forEach(button => {
+        button.addEventListener("click", function() {
+            const nomor = this.getAttribute("data-nomor");
+            Swal.fire({
+                title: "Apakah Anda yakin?",
+                text: "Kwitansi ini akan dihapus secara permanen!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ya, hapus!",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/deleteKwitansi/${nomor}`;
+                }
+            });
         });
     });
 </script>
+
 
 
 <?= $this->endSection() ?>

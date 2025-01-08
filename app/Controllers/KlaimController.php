@@ -33,9 +33,52 @@ class KlaimController extends BaseController
     public function preorder()
     {
         $poModel = new M_Po();
+
+        // Ambil data filter dari URL (GET request)
+        $filterName = $this->request->getGet('filter_name');
+        $searchKeyword = $this->request->getGet('search_keyword');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $showAll = $this->request->getGet('show_all');
+
+        // Ambil data PO dengan Username
         $poData = $poModel->getPoWithUsername();
         $accData = $poModel->getPoWithAccAsuransi();
 
+        if (!$showAll) {
+            // Terapkan filter pada data PO dan Acc Asuransi
+            if ($filterName) {
+                $poData = array_filter($poData, function ($item) use ($filterName) {
+                    return $item['bengkel'] === $filterName;
+                });
+                $accData = array_filter($accData, function ($item) use ($filterName) {
+                    return $item['bengkel'] === $filterName;
+                });
+            }
+
+            if ($searchKeyword) {
+                $poData = array_filter($poData, function ($item) use ($searchKeyword) {
+                    return strpos($item['id_terima_po'], $searchKeyword) !== false || strpos($item['no_kendaraan'], $searchKeyword) !== false;
+                });
+                $accData = array_filter($accData, function ($item) use ($searchKeyword) {
+                    return strpos($item['id_terima_po'], $searchKeyword) !== false || strpos($item['no_kendaraan'], $searchKeyword) !== false;
+                });
+            }
+
+            if ($startDate) {
+                $poData = array_filter($poData, function ($item) use ($startDate) {
+                    return strtotime($item['tgl_klaim']) >= strtotime($startDate);
+                });
+            }
+
+            if ($endDate) {
+                $poData = array_filter($poData, function ($item) use ($endDate) {
+                    return strtotime($item['tgl_klaim']) <= strtotime($endDate);
+                });
+            }
+        }
+
+        // Gabungkan data PO dengan data Acc Asuransi
         foreach ($poData as &$po_item) {
             foreach ($accData as $acc_item) {
                 if ($po_item['id_terima_po'] === $acc_item['id_terima_po']) {
@@ -45,22 +88,27 @@ class KlaimController extends BaseController
                 }
             }
         }
-        usort($poData, function ($a, $b) {
-            return strtotime($b['tgl_klaim']) <=> strtotime($a['tgl_klaim']);
-        });
 
+        // Generate ID untuk Pre-Order dan PO
         $preOrderId = $poModel->generateIdTerimaPo();
         $idPo = $poModel->generateIdPo();
 
+        // Kirim data ke view
         $data = [
             'title' => 'Pre-Order',
             'preOrderId' => $preOrderId,
             'idPo' => $idPo,
             'po' => $poData,
+            'filterName' => $filterName,
+            'searchKeyword' => $searchKeyword,
+            'startDate' => $startDate ?? date('Y-m-01'),
+            'endDate' => $endDate ?? date('Y-m-d'),
+            'showAll' => $showAll,
         ];
 
         return view('klaim/preorder', $data);
     }
+
 
 
 
@@ -1308,19 +1356,47 @@ class KlaimController extends BaseController
 
     public function orderlist_asuransi()
     {
-
         $accAsuransiModel = new M_AccAsuransi();
 
-        // Menggunakan metode untuk mengambil semua data acc dengan username
-        $accData = $accAsuransiModel->getAccAsuransiWithUser();
+        // Ambil data filter dari URL (GET request)
+        $searchKeyword = $this->request->getGet('search_keyword');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
 
+        // Ambil data dari model
+        $accData = $accAsuransiModel->orderBy('tgl_acc', 'DESC')->findAll();
+
+
+        if ($searchKeyword) {
+            $accData = array_filter($accData, function ($item) use ($searchKeyword) {
+                return strpos($item['id_acc_asuransi'], $searchKeyword) !== false || strpos($item['no_kendaraan'], $searchKeyword) !== false;
+            });
+        }
+
+        if ($startDate) {
+            $accData = array_filter($accData, function ($item) use ($startDate) {
+                return strtotime($item['tgl_acc']) >= strtotime($startDate);
+            });
+        }
+
+        if ($endDate) {
+            $accData = array_filter($accData, function ($item) use ($endDate) {
+                return strtotime($item['tgl_acc']) <= strtotime($endDate);
+            });
+        }
+
+        // Data untuk dikirim ke view
         $data = [
             'title' => 'Asuransi',
             'accData' => $accData,
+            'searchKeyword' => $searchKeyword,
+            'startDate' => $startDate ?? date('Y-m-01'),
+            'endDate' => $endDate ?? date('Y-m-d'),
         ];
 
         return view('klaim/orderlist_asuransi', $data);
     }
+
 
 
     public function prev_as($id_terima_po)
@@ -1349,10 +1425,47 @@ class KlaimController extends BaseController
         $userModel = new UserModel();
         $accAsuransiModel = new M_AccAsuransi();
 
-        $repair = $model->where('status !=', 'Mobil Keluar')
-            ->orderBy('id_terima_po', 'DESC')
-            ->findAll();
+        // Ambil data filter dari GET request
+        $filterName = $this->request->getGet('filter_name');
+        $searchKeyword = $this->request->getGet('search_keyword');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $showAll = $this->request->getGet('show_all'); // Tambahkan untuk menangani tombol Show All
 
+        // Mulai query dasar
+        $query = $model->where('status !=', 'Mobil Keluar')->orderBy('id_terima_po', 'DESC');
+
+        // Jika tombol "Tampilkan Semua" diklik, abaikan semua filter dan tampilkan semua data
+        if ($showAll) {
+            $query = $model->orderBy('id_terima_po', 'DESC'); // Tampilkan semua data tanpa filter
+        } else {
+            // Terapkan filter nama bengkel
+            if (!empty($filterName)) {
+                $query->where('bengkel', $filterName);
+            }
+
+            // Terapkan filter pencarian
+            if (!empty($searchKeyword)) {
+                $query->groupStart()
+                    ->like('id_terima_po', $searchKeyword)
+                    ->orLike('no_kendaraan', $searchKeyword)
+                    ->groupEnd();
+            }
+
+            // Terapkan filter tanggal
+            if (!empty($startDate)) {
+                $query->where('tgl_masuk >=', $startDate);
+            }
+
+            if (!empty($endDate)) {
+                $query->where('tgl_masuk <=', $endDate);
+            }
+        }
+
+        // Jalankan query untuk mendapatkan data
+        $repair = $query->findAll();
+
+        // Proses data untuk mendapatkan username dan biaya asuransi
         foreach ($repair as &$order) {
             $user = $userModel->find($order['user_id']);
             $order['username'] = $user ? $user['username'] : 'Unknown';
@@ -1369,12 +1482,19 @@ class KlaimController extends BaseController
         // Siapkan data untuk dikirim ke view
         $data = [
             'title' => 'Repair Order',
-            'repairOrders' => $repair
+            'repairOrders' => $repair,
+            'filterName' => $filterName,
+            'searchKeyword' => $searchKeyword,
+            'startDate' => $startDate ?? date('Y-m-01'),
+            'endDate' => $endDate ?? date('Y-m-d'),
+            'showAll' => $showAll, // Menambahkan showAll ke dalam data yang dikirim ke view
         ];
 
         // Kembalikan tampilan dengan data yang sudah diproses
         return view('klaim/repair_order', $data);
     }
+
+
 
 
 
@@ -1394,11 +1514,6 @@ class KlaimController extends BaseController
             ->groupEnd()
             ->findAll();
 
-        foreach ($pendingData as &$order) {
-            $user = $userModel->find($order['user_id']);
-            $order['username'] = $user ? $user['username'] : 'Unknown';
-        }
-
         $data = [
             'title' => 'Pending Invoice',
             'pending' => $pendingData
@@ -1412,22 +1527,52 @@ class KlaimController extends BaseController
     public function kwitansi()
     {
         $kwitansiData = new M_Kwitansi();
-        $userModel = new UserModel();
 
-        $kwitansi = $kwitansiData->findAll();
+        // Ambil data filter dari GET request
+        $searchKeyword = $this->request->getGet('search_keyword');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $showAll = $this->request->getGet('show_all');
 
-        foreach ($kwitansi as &$kwitansiItem) {
-            $user = $userModel->find($kwitansiItem['user_id']);
-            $kwitansiItem['username'] = $user ? $user['username'] : 'Unknown';
+        // Default tanggal untuk bulan saat ini
+        $defaultStartDate = date('Y-m-01'); // Awal bulan
+        $defaultEndDate = date('Y-m-t');   // Akhir bulan
+
+        // Query dasar
+        $query = $kwitansiData->orderBy('tanggal', 'DESC');
+
+        // Terapkan filter pencarian jika ada
+        if (!empty($searchKeyword)) {
+            $query->groupStart()
+                ->like('nomor', $searchKeyword)
+                ->orLike('no_kendaraan', $searchKeyword)
+                ->groupEnd();
         }
 
+        // Terapkan filter tanggal jika "Tampilkan Semua" tidak diaktifkan
+        if (empty($showAll)) {
+            $query->where('tanggal >=', $startDate ?: $defaultStartDate);
+            $query->where('tanggal <=', $endDate ?: $defaultEndDate);
+        }
+
+        // Eksekusi query
+        $kwitansi = $query->findAll();
+
+        // Siapkan data untuk dikirim ke view
         $data = [
             'title' => 'Kwitansi',
-            'kwitansi' => $kwitansi
+            'kwitansi' => $kwitansi,
+            'searchKeyword' => $searchKeyword ?? '',
+            'startDate' => $startDate ?? $defaultStartDate,
+            'endDate' => $endDate ?? $defaultEndDate,
+            'showAll' => $showAll,
         ];
 
         return view('klaim/kwitansi', $data);
     }
+
+
+
 
 
     // In your controller
@@ -2477,7 +2622,6 @@ class KlaimController extends BaseController
     public function bayar_piutang()
     {
         $pembayaranModel = new M_Pembayaran();
-        $userModel = new UserModel();
 
         $dataPembayaran = $pembayaranModel->getPembayaranWithInvoice();
 

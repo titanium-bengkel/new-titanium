@@ -39,118 +39,202 @@
                     </div>
                     <h5 class="page-title mb-0 fw-bold">Kas Kecil</h5>
                 </header>
-                <div class="card-content">
-                    <div class="card-header d-flex align-items-center" style="width: fit-content;">
-                        <h6 class="mt-3" style="margin-left: 15px;">Sort by</h6>
-                        <input type="text" id="dateRange" class="form-control flatpickr-range mt-2" placeholder="Select date range" style="margin-left:20px; width: 250px;">
+                <div class="card-header py-3 px-4">
+                    <div class="d-flex justify-content-end align-items-center gap-3 flex-wrap">
+                        <!-- Filter dan Tampilkan Semua -->
+                        <form method="get" action="<?= base_url('filter/kaskecil') ?>" class="d-flex align-items-center gap-3 flex-wrap">
+                            <!-- Input Cari -->
+                            <div class="d-flex align-items-center">
+                                <label for="search_keyword" class="form-label fw-bold text-primary me-2 mb-0">Cari:</label>
+                                <input
+                                    type="text"
+                                    name="search_keyword"
+                                    id="search_keyword"
+                                    class="form-control form-control-sm"
+                                    placeholder="No. Document/Deskripsi"
+                                    value="<?= $searchKeyword ?? '' ?>">
+                            </div>
+
+                            <!-- Input Tanggal Mulai -->
+                            <div class="d-flex align-items-center">
+                                <label for="start_date" class="form-label fw-bold text-primary me-2 mb-0">Mulai:</label>
+                                <input
+                                    type="date"
+                                    name="start_date"
+                                    id="start_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $startDate ?? date('Y-m-01') ?>">
+                            </div>
+
+                            <!-- Input Tanggal Akhir -->
+                            <div class="d-flex align-items-center">
+                                <label for="end_date" class="form-label fw-bold text-primary me-2 mb-0">Akhir:</label>
+                                <input
+                                    type="date"
+                                    name="end_date"
+                                    id="end_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $endDate ?? date('Y-m-d') ?>">
+                            </div>
+
+                            <!-- Tombol Filter -->
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-sm fw-bold">Filter</button>
+                            </div>
+
+                            <!-- Tombol Tampilkan Semua -->
+                            <div>
+                                <button type="submit" name="show_all" value="1" class="btn btn-secondary btn-sm fw-bold">Tampilkan Semua</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <div class="row" style="margin: 20px;" style="font-size: 14px;">
-                    <div class="col-md-3">
-                        <h5>Jumlah Pengeluaran</h5>
-                        <div class="table-responsive" style="max-height: 800px; overflow-y: auto;">
-                            <table class="table table-bordered text-center">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th>Tanggal</th>
-                                        <th>Jumlah</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tableBody">
-                                    <!-- Tanggal dan jumlah akan ditambahkan di sini oleh JS -->
-                                </tbody>
-                            </table>
+                <div class="card-content">
+                    <div class="row" style="margin: 20px;" style="font-size: 14px;">
+                        <div class="col-md-3">
+                            <h5>Jumlah Pengeluaran</h5>
+                            <div class="table-responsive" style="max-height: 800px; overflow-y: auto;">
+                                <table class="table table-bordered table-hover table-striped text-center">
+                                    <thead class="thead-dark table-secondary">
+                                        <tr>
+                                            <th>Tanggal</th>
+                                            <th>Jumlah</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody">
+                                        <!-- Tanggal dan jumlah akan ditambahkan di sini oleh JS -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-9">
-                        <h3>Rincian Kas Kecil</h3>
-
-                        <?php if (!empty($kaskecil)): ?>
+                        <div class="col-md-9">
                             <?php
-                            // Mengurutkan data berdasarkan tanggal
-                            usort($kaskecil, function ($a, $b) {
-                                return strtotime($a['tanggal']) - strtotime($b['tanggal']);
-                            });
+                            $totalDebit = 0;
+                            $totalKredit = 0;
 
-                            // Mengelompokkan data berdasarkan tanggal
-                            $groupedData = [];
+                            // Menghitung total debit dan total kredit
                             foreach ($kaskecil as $item) {
-                                // Cek apakah item tanggal berada di bulan dan tahun saat ini
-                                $currentMonth = date('Y-m'); // Format tahun-bulan
-                                if (date('Y-m', strtotime($item['tanggal'])) === $currentMonth) {
-                                    $groupedData[$item['tanggal']][] = $item;
-                                }
+                                $totalDebit += $item['debit'];
+                                $totalKredit += $item['kredit'];
                             }
+
+                            // Menghitung Sisa Debit
+                            $sisaDebit = $totalDebit - $totalKredit;
                             ?>
 
-                            <?php if (!empty($groupedData)): ?>
-                                <?php foreach ($groupedData as $tanggal => $items): ?>
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <table class="table table-bordered text-center" style="font-size: 14px;">
-                                                <thead class="thead-dark">
-                                                    <tr>
-                                                        <th>No.</th>
-                                                        <th>Tanggal</th>
-                                                        <th>Account</th>
-                                                        <th>Name</th>
-                                                        <th>Keterangan</th>
-                                                        <th>Debit</th>
-                                                        <th>Kredit</th>
-                                                        <th>User ID</th>
-                                                        <th>Tgl. Input</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                                                    $totalDebit = 0;
-                                                    $totalKredit = 0;
-                                                    foreach ($items as $index => $item):
-                                                        $totalDebit += $item['debit'];
-                                                        $totalKredit += $item['kredit'];
-                                                    ?>
-                                                        <tr>
-                                                            <td><?= $index + 1 ?></td>
-                                                            <td><?= esc($item['tanggal']) ?></td>
-                                                            <td><?= esc($item['kode_account']) ?></td>
-                                                            <td><?= esc($item['nama_account']) ?></td>
-                                                            <td><?= esc($item['keterangan']) ?></td>
-                                                            <td><?= number_format($item['debit'], 0, ',', '.') ?></td>
-                                                            <td><?= number_format($item['kredit'], 0, ',', '.') ?></td>
-                                                            <td><?= esc($item['user_id']) ?></td>
-                                                            <td><?= esc($item['tgl_input']) ?></td>
-                                                            <td>
-                                                                <div class="d-flex">
-                                                                    <button type="button" class="btn btn-sm edit-user-btn" data-id="<?= esc($item['id_kc']) ?>"><i class="fas fa-edit"></i></button>
-                                                                    <button type="button" class="btn btn-sm delete-user-btn" data-id="<?= esc($item['id_kc']) ?>"><i class="fas fa-trash-alt"></i></button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                </tbody>
-                                                <tfoot>
-                                                    <tr>
-                                                        <td colspan="5" class="text-right font-weight-bold">Total:</td>
-                                                        <td><?= number_format($totalDebit, 0, ',', '.') ?></td>
-                                                        <td><?= number_format($totalKredit, 0, ',', '.') ?></td>
-                                                        <td colspan="3"></td>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h3>Rincian Kas Kecil</h3>
+                                <div>
+                                    <h6>Sisa Debit:</h6>
+                                    <h5><?= number_format($sisaDebit, 0, ',', '.') ?></h5>
+                                </div>
+                            </div>
+
+                            <?php if ($sisaDebit < 500000): ?>
                                 <div class="alert alert-warning" role="alert">
-                                    Tidak ada data tersedia untuk bulan ini.
+                                    <strong>Perhatian!</strong> Sisa debit kas kecil kurang dari Rp 500.000. Segera isi ulang kas kecil.
                                 </div>
                             <?php endif; ?>
-                        <?php else: ?>
-                            <div class="alert alert-info text-center" role="alert">
-                                Belum ada Pengeluaran Bulan ini.
-                            </div>
-                        <?php endif; ?>
+
+
+                            <?php if (!empty($kaskecil)): ?>
+                                <?php
+                                // Mengelompokkan data berdasarkan tanggal
+                                $groupedData = [];
+                                foreach ($kaskecil as $item) {
+                                    // Cek apakah item tanggal berada di bulan dan tahun saat ini
+                                    $currentMonth = date('Y-m'); // Format tahun-bulan
+                                    if (date('Y-m', strtotime($item['tanggal'])) === $currentMonth) {
+                                        $groupedData[$item['tanggal']][] = $item;
+                                    }
+                                }
+                                ?>
+
+                                <?php if (!empty($groupedData)): ?>
+                                    <?php foreach ($groupedData as $tanggal => $items): ?>
+                                        <?php
+                                        // Menghitung total debit dan kredit per kelompok data yang ditampilkan
+                                        $totalDebitview = 0;
+                                        $totalKreditview = 0;
+                                        foreach ($items as $item) {
+                                            $totalDebitview += $item['debit'];
+                                            $totalKreditview += $item['kredit'];
+                                        }
+                                        ?>
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <table class="table table-bordered table-hover table-striped text-center" style="font-size: 14px;">
+                                                    <thead class="thead-dark table-secondary">
+                                                        <tr>
+                                                            <th>No.</th>
+                                                            <th>Tanggal</th>
+                                                            <th>Account</th>
+                                                            <th>Name</th>
+                                                            <th>Keterangan</th>
+                                                            <th>Debit</th>
+                                                            <th>Kredit</th>
+                                                            <th>User</th>
+                                                            <th>Tgl. Input</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php foreach ($items as $index => $item): ?>
+                                                            <tr>
+                                                                <td><?= $index + 1 ?></td>
+                                                                <td><?= esc($item['tanggal']) ?></td>
+                                                                <td style="text-align: left;"><?= esc($item['kode_account']) ?></td>
+                                                                <td style="text-align: left;"><?= esc($item['nama_account']) ?></td>
+                                                                <td style="text-align: left;"><?= esc($item['keterangan']) ?></td>
+                                                                <td style="text-align: right;"><?= number_format($item['debit'], 0, ',', '.') ?></td>
+                                                                <td style="text-align: right;"><?= number_format($item['kredit'], 0, ',', '.') ?></td>
+                                                                <td><?= esc($item['user_id']) ?></td>
+                                                                <td><?= esc($item['tgl_input']) ?></td>
+                                                                <td>
+                                                                    <div class="d-flex">
+                                                                        <button type="button" class="btn btn-primary btn-sm"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#editModal"
+                                                                            data-id-kc="<?= $item['id_kc']; ?>"
+                                                                            data-kode-account="<?= $item['kode_account']; ?>"
+                                                                            data-nama-account="<?= $item['nama_account']; ?>"
+                                                                            data-keterangan="<?= $item['keterangan']; ?>"
+                                                                            data-debit="<?= $item['debit']; ?>"
+                                                                            data-kredit="<?= $item['kredit']; ?>"
+                                                                            data-user-id="<?= $item['user_id']; ?>">
+                                                                            <i class="fas fa-edit"></i>
+                                                                        </button>
+                                                                        <!-- <button type="button" class="btn btn-sm edit-user-btn" data-id="<?= esc($item['id_kc']) ?>"></button> -->
+                                                                        <button type="button" class="btn btn-sm delete-user-btn" data-id="<?= esc($item['id_kc']) ?>"><i class="fas fa-trash-alt"></i></button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td colspan="5" class="text-right font-weight-bold">Total:</td>
+                                                            <td style="text-align: right;"><?= number_format($totalDebitview, 0, ',', '.') ?></td>
+                                                            <td style="text-align: right;"><?= number_format($totalKreditview, 0, ',', '.') ?></td>
+                                                            <td colspan="3"></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="alert alert-warning" role="alert">
+                                        Tidak ada data tersedia untuk bulan ini.
+                                    </div>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <div class="alert alert-info text-center" role="alert">
+                                    Belum ada Pengeluaran Bulan ini.
+                                </div>
+                            <?php endif; ?>
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -160,12 +244,12 @@
 
 
 
-<!-- Modal Bootstrap -->
+<!-- Modal Add -->
 <div class="modal fade" id="tanggalModal" tabindex="-1" aria-labelledby="tanggalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="tanggalModalLabel">Input Kas Kecil</h5>
+            <div class="modal-header bg-gradient-ltr">
+                <h5 class="modal-title text-white" id="tanggalModalLabel">Input Kas Kecil</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -182,8 +266,8 @@
 
                     <!-- Tombol Tambah dan Hapus Baris -->
                     <div class="mb-1">
-                        <button type="button" class="btn btn-sm add-row">+</button>
-                        <button type="button" class="btn btn-sm remove-row">-</button>
+                        <button type="button" class="btn btn-sm add-row btn-light-info"><i class="fas fa-plus"></i></button>
+                        <button type="button" class="btn btn-sm remove-row btn-light-danger"><i class="fas fa-minus"></i></button>
                     </div>
 
                     <div class="table-responsive">
@@ -207,7 +291,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
                         <button type="submit" id="saveData" class="btn btn-primary btn-sm">Simpan</button>
                     </div>
@@ -219,6 +303,87 @@
 <datalist id="coaList">
     <!-- Datalist akan diisi oleh AJAX -->
 </datalist>
+
+
+
+<!-- Modal Edit  -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-ltr">
+                <h5 class="modal-title text-white" id="editModalLabel">Edit Kas Kecil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="id_kc" id="id_kc">
+
+                    <div class="mb-3">
+                        <label for="kode_account" class="form-label">Kode Account</label>
+                        <input type="text" class="form-control" id="kode_account" name="kode_account" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="nama_account" class="form-label">Nama Account</label>
+                        <input type="text" class="form-control" id="nama_account" name="nama_account" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="keterangan" class="form-label">Keterangan</label>
+                        <textarea class="form-control" id="keterangan" name="keterangan" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="debit" class="form-label">Debit</label>
+                        <input type="number" class="form-control" id="debit" name="debit" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="kredit" class="form-label">Kredit</label>
+                        <input type="number" class="form-control" id="kredit" name="kredit" required>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const editModal = document.getElementById('editModal');
+    editModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget; // Tombol yang diklik
+
+        // Ambil data dari atribut tombol
+        const idKc = button.getAttribute('data-id-kc');
+        const tanggal = button.getAttribute('data-tanggal');
+        const kodeAccount = button.getAttribute('data-kode-account');
+        const namaAccount = button.getAttribute('data-nama-account');
+        const keterangan = button.getAttribute('data-keterangan');
+        const debit = button.getAttribute('data-debit');
+        const kredit = button.getAttribute('data-kredit');
+        const userId = button.getAttribute('data-user-id');
+
+        // Isi form di modal
+        document.getElementById('id_kc').value = idKc;
+        document.getElementById('tanggal').value = tanggal;
+        document.getElementById('kode_account').value = kodeAccount;
+        document.getElementById('nama_account').value = namaAccount;
+        document.getElementById('keterangan').value = keterangan;
+        document.getElementById('debit').value = debit;
+        document.getElementById('kredit').value = kredit;
+        document.getElementById('user_id').value = userId;
+
+        // Tambahkan ID KC untuk pengiriman ke server
+        const form = editModal.querySelector('form');
+        form.action = `<?= base_url('keuangan/updateKasKecil/'); ?>${idKc}`;
+    });
+</script>
+
+
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -300,7 +465,6 @@
         $('#tanggalModal').modal('hide');
     });
 </script>
-
 <script>
     // Fungsi untuk generate semua tanggal dalam bulan berjalan
     function generateDatesForCurrentMonth() {
@@ -338,11 +502,33 @@
         document.getElementById('docNo').value = docNo;
     }
 
-    // Fungsi untuk mempopulasi tabel
+    // Fungsi untuk menggabungkan data dari server dengan tanggal yang sudah di-generate
+    function mergeDataWithDates(dataFromServer, dates) {
+        var transactions = {}; // Objek untuk menyimpan nilai total per tanggal
+
+        // Hitung total nilai per tanggal
+        dataFromServer.forEach(function(item) {
+            if (!transactions[item.tanggal]) {
+                transactions[item.tanggal] = 0; // Inisialisasi jika belum ada
+            }
+            transactions[item.tanggal] += parseFloat(item.kredit); // Pastikan nilainya diubah menjadi angka
+        });
+
+        // Gabungkan data transaksi dengan tanggal yang sudah di-generate
+        return dates.map(function(dateItem) {
+            return {
+                date: dateItem.date,
+                amount: transactions[dateItem.date] || 0 // Jika tidak ada transaksi, set nilai 0
+            };
+        });
+    }
+
+    // Fungsi untuk mempopulasi tabel dengan data
     function populateTable(data) {
         var tableBody = $('#tableBody');
         tableBody.empty(); // Kosongkan tabel sebelum diisi ulang
 
+        // Looping data untuk mengisi tabel
         data.forEach(function(item) {
             tableBody.append(
                 `<tr class="text-center">
@@ -353,9 +539,28 @@
         });
     }
 
+    // Fungsi untuk mengambil data dari server
+    function fetchKasKecilData() {
+        $.ajax({
+            url: '<?= base_url("keuangan/getKasKecilData") ?>', // URL controller
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                // Generate tanggal untuk bulan berjalan
+                var dates = generateDatesForCurrentMonth();
+                // Gabungkan data dari server dengan semua tanggal dalam bulan berjalan
+                var mergedData = mergeDataWithDates(response.dataKasKecil, dates);
+                // Populate table dengan data yang sudah digabungkan
+                populateTable(mergedData);
+            },
+            error: function() {
+                alert('Gagal memuat data');
+            }
+        });
+    }
+
     $(document).ready(function() {
-        var dates = generateDatesForCurrentMonth(); // Generate tanggal untuk bulan berjalan
-        populateTable(dates); // Populate tabel dengan tanggal-tanggal yang sudah di-generate
+        fetchKasKecilData(); // Ambil data kas kecil dari server
 
         // Saat tanggal diklik, tampilkan modal
         $(document).on('click', '.open-modal', function() {
@@ -396,19 +601,10 @@
             // Tampilkan data yang sudah difilter di tabel
             populateTable(filteredData);
         });
-
-        // JavaScript to handle click and show modal
-        const tableClickable = document.querySelectorAll('.table-clickable');
-        tableClickable.forEach(function(cell) {
-            cell.addEventListener('click', function() {
-                const targetModal = this.getAttribute('data-target');
-
-                const modal = new bootstrap.Modal(document.querySelector(targetModal));
-                modal.show();
-            });
-        });
     });
 </script>
+
+
 
 
 <!-- End Modal -->

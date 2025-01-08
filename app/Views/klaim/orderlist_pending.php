@@ -1,8 +1,6 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content') ?>
 
-
-<!-- Table Pending Invoice -->
 <section class="section">
     <div class="row" id="table-bordered">
         <div class="col-12">
@@ -17,20 +15,19 @@
                 </header>
                 <div class="card-content">
                     <div class="table-responsive" style="margin: 20px; font-size: 12px;">
-                        <table class="table table-bordered mb-0 text-center">
-                            <thead class="thead-dark">
+                        <table class="table table-bordered table-hover table-striped mb-0 text-center">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th class="text-center">#</th>
                                     <th class="text-center">Nomor</th>
                                     <th class="text-center">Tgl. Masuk</th>
                                     <th class="text-center">Progres Pengerjaan</th>
-                                    <th class="text-center">Keterangan</th>
                                     <th class="text-center">User ID</th>
                                     <th class="text-center">Est. Keluar</th>
                                     <th class="text-center">Harga Acc</th>
                                     <th class="text-center">Nopol</th>
-                                    <th class="text-center">Jenis Mobil</th>
-                                    <th class="text-center">Customer</th>
+                                    <th class="text-center">Car Model</th>
+                                    <th class="text-center">Pelanggan</th>
                                     <th class="text-center">Asuransi</th>
                                     <th class="text-center">Tgl. Acc</th>
                                 </tr>
@@ -42,8 +39,7 @@
                                         <td style=" font-weight: normal;"><a href="<?= base_url('order_pospending/' . $order['id_terima_po']) ?>"><?= esc($order['id_terima_po']) ?></a></td>
                                         <th style=" font-weight: normal;"><?= $order['tgl_masuk'] ?></th>
                                         <th style=" font-weight: normal;"><?= $order['progres_pengerjaan'] ?></th>
-                                        <th style=" font-weight: normal;"><?= $order['keterangan'] ?></th>
-                                        <th style=" font-weight: normal;"><?= $order['username'] ?></th>
+                                        <th style=" font-weight: normal;"><?= $order['user_id'] ?></th>
                                         <th style=" font-weight: normal;"><?= $order['tgl_keluar'] ?></th>
 
                                         <!-- Logika untuk menampilkan harga estimasi atau harga acc -->

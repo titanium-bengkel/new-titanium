@@ -77,7 +77,7 @@
                             </tr>
                         </thead>
                         <tbody class="text-center">
-                            <?php if (!empty($poData)): ?> <!-- Pastikan poData sudah terfilter di controller -->
+                            <?php if (!empty($poData)): ?>
                                 <?php
                                 $hasData = false;
                                 $displayedIds = [];
