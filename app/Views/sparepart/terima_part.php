@@ -90,7 +90,7 @@
                                     <?php foreach ($sparepart as $index => $data) : ?>
                                         <tr>
                                             <td class="text-center"><?= $index + 1 ?></td>
-                                            <td class="text-start"><a href="<?= base_url('order_pos_terimapartprev/' . $data['id_penerimaan']); ?>">
+                                            <td class="text-start"><a href="<?= base_url('order_pos_terimapartprev/' . str_replace('/', '_', $data['id_penerimaan'])); ?>">
                                                     <?= $data['id_penerimaan']; ?>
                                                 </a>
                                             <td class="text-start"><?= $data['tanggal'] ?></td>

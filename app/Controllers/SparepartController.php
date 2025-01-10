@@ -872,6 +872,7 @@ class SparepartController extends BaseController
     public function add_terimapart_preview($id_penerimaan)
     {
 
+        $id_penerimaan = str_replace('_', '/', $id_penerimaan);
         $terimaPartModel = new M_Part_Terima();
         $dataTerima = $terimaPartModel->find($id_penerimaan);
         // ambil
@@ -989,6 +990,7 @@ class SparepartController extends BaseController
         // Mengambil data dari request
         $id_penerimaan = $this->request->getPost('id_penerimaan');
         $dataUpdate = [
+            'id_penerimaan' => $this->request->getPost('id_penerimaan'),
             'tanggal' => $this->request->getPost('tanggal'),
             'supplier' => strtoupper($this->request->getPost('supplier')),
             'jatuh_tempo' => $this->request->getPost('jatuh_tempo'),
