@@ -6,21 +6,27 @@
     <div class="">
         <div class="row">
             <div class="col-12">
-                <h4 class="mb-0 ms-3 mb-3">MASTER BAHAN</h4>
                 <div class="card">
+                    <header class="d-flex justify-content-between align-items-center border-bottom" style="border-color: #6c757d; padding: 15px 20px;">
+                        <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                            <a href="<?= base_url('dashboard/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                            <span class="breadcrumb-divider text-muted mx-3">/</span>
+                            <span class="breadcrumb-current text-muted">Master Bahan</span>
+                        </div>
+                        <h5 class="page-title mb-0 fw-bold">Master Bahan</h5>
+                    </header>
                     <div class="card-header d-flex align-items-center gap-3">
                         <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambahData">
                             Entry Data
                         </button>
                         <button type="button" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</button>
-                        <h6 class="mb-0 ms-auto">List Data Bahan</h6>
                     </div>
                     <div class="card-body">
                         <div class="table-container">
                             <div class="table-section active" id="tableLeft">
                                 <div class="table-responsive" style="margin: 20px; font-size: 14px;">
-                                    <table class="table table-bordered mb-0" id="bahanTable">
-                                        <thead class="thead-dark">
+                                    <table class="table table-bordered table-striped -table-hover mb-0" id="bahanTable">
+                                        <thead class="thead-dark table-secondary">
                                             <tr>
                                                 <td>No</td>
                                                 <th>Aksi</th>
@@ -38,13 +44,13 @@
                                                 <th>Tanggal</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="text-center">
+                                        <tbody>
                                             <!-- Isi tabel barang di sini -->
                                             <?php foreach ($bahan as $index => $item) : ?>
                                                 <tr>
                                                     <td style="display: none;"><?= $item['id_bahan'] ?></td>
-                                                    <td><?= $index + 1 ?></td>
-                                                    <td>
+                                                    <td class="text-center"><?= $index + 1 ?></td>
+                                                    <td class="text-center">
                                                         <button type="button" class="btn btn-sm"><i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#modalEditData<?= $item['id_bahan'] ?>"></i></button>
                                                         <form action="<?= base_url('deleteBahan/' . $item['id_bahan']) ?>" method="post" class="d-inline">
                                                             <button type="submit" class="btn btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus bahan ini?');">
@@ -52,18 +58,18 @@
                                                             </button>
                                                         </form>
                                                     </td>
-                                                    <td><?= $item['kode_bahan'] ?></td>
-                                                    <td><?= $item['nama_bahan'] ?></td>
-                                                    <td><?= $item['kode_group'] ?></td>
-                                                    <td><?= $item['nama_group'] ?></td>
-                                                    <td><?= $item['kode_kategori'] ?></td>
-                                                    <td><?= $item['stok'] ?></td>
-                                                    <td><?= $item['satuan'] ?></td>
-                                                    <td><?= number_format($item['harga_beli'], 0, ',', '.') ?></td>
-                                                    <td><?= $item['harga_jual'] ?></td>
-                                                    <td><?= $item['stok_minimal'] ?></td>
-                                                    <td><?= $item['user_id'] ?></td>
-                                                    <td><?= $item['tanggal'] ?></td>
+                                                    <td class="text-start"><?= $item['kode_bahan'] ?></td>
+                                                    <td class="text-start"><?= $item['nama_bahan'] ?></td>
+                                                    <td class="text-start"><?= $item['kode_group'] ?></td>
+                                                    <td class="text-start"><?= $item['nama_group'] ?></td>
+                                                    <td class="text-start"><?= $item['kode_kategori'] ?></td>
+                                                    <td class="text-end"><?= $item['stok'] ?></td>
+                                                    <td class="text-start"><?= $item['satuan'] ?></td>
+                                                    <td class="text-end"><?= number_format($item['harga_beli'], 2, ',', '.') ?></td>
+                                                    <td class="text-end"><?= number_format($item['harga_jual'], 2, ',', '.') ?></td>
+                                                    <td class="text-end"><?= $item['stok_minimal'] ?></td>
+                                                    <td class="text-start"><?= $item['user_id'] ?></td>
+                                                    <td class="text-start"><?= $item['tanggal'] ?></td>
                                                 </tr>
                                             <?php endforeach; ?>
                                             <!-- Tambahkan lebih banyak baris sesuai kebutuhan -->

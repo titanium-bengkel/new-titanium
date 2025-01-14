@@ -72,6 +72,38 @@ class M_ReportJurnal extends Model
 
         return $new_id;
     }
+    public function generateOCB()
+    {
+        $builder = $this->db->table($this->table);
+        $builder->select('doc_no');
+
+        // Menggunakan format OCB/YYYY/MM/DD untuk pencarian
+        $datePrefix = 'OCB/' . date('Y') . '/' . date('m') . '/' . date('d');
+        $builder->like('doc_no', $datePrefix, 'after');
+        $builder->orderBy('LENGTH(doc_no)', 'DESC'); // Mengurutkan berdasarkan panjang `doc_no` terlebih dahulu
+        $builder->orderBy('doc_no', 'DESC'); // Lalu mengurutkan berdasarkan `doc_no` itu sendiri
+        $builder->limit(1);
+
+        $query = $builder->get();
+        $result = $query->getRow();
+
+        if ($result) {
+            $last_id = $result->doc_no;
+            $last_parts = explode('/', $last_id);
+
+            // Pastikan elemen terakhir dari `last_parts` adalah angka dan mengonversinya ke integer
+            $last_number = isset($last_parts[4]) ? intval($last_parts[4]) : 0;
+
+            // Increment nomor terakhir dengan 1
+            $new_number = $last_number + 1;
+            $new_id = $datePrefix . '/' . $new_number;
+        } else {
+            // Jika tidak ada data, mulai dari 1
+            $new_id = $datePrefix . '/1';
+        }
+
+        return $new_id;
+    }
     // Metode untuk mengambil semua data
     public function getAllReports()
     {

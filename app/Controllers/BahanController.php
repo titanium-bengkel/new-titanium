@@ -27,7 +27,27 @@ class BahanController extends BaseController
         $bahanModel = new M_Po_Bahan();
         $userModel = new UserModel();
 
-        $bahan = $bahanModel->orderBy('id_po_bahan', 'DESC')->findAll();
+        // Ambil nilai filter tanggal dari parameter GET
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+
+        // Query awal
+        $query = $bahanModel->orderBy('id_po_bahan', 'DESC');
+
+        // Jika tidak ada filter tanggal, gunakan default bulan berjalan
+        if (!$startDate && !$endDate) {
+            $startDate = date('Y-m-01'); // Awal bulan
+            $endDate = date('Y-m-t');   // Akhir bulan
+        }
+
+        // Tambahkan filter tanggal jika ada
+        if ($startDate && $endDate) {
+            $query->where('tanggal >=', $startDate)
+                ->where('tanggal <=', $endDate);
+        }
+
+        // Ambil data sesuai query
+        $bahan = $query->findAll();
 
         // Variabel untuk menghitung total jumlah
         $totalJumlahKeseluruhan = 0;
@@ -39,15 +59,17 @@ class BahanController extends BaseController
             $totalJumlahKeseluruhan += $item['total_jumlah'];
         }
 
-
         $data = [
             'title' => 'Pemesanan Bahan',
             'bahan' => $bahan,
-            'totalJumlahKeseluruhan' => $totalJumlahKeseluruhan // Kirim total jumlah ke view
+            'totalJumlahKeseluruhan' => $totalJumlahKeseluruhan, // Kirim total jumlah ke view
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ];
 
         return view('bahan/po_bahan', $data);
     }
+
 
 
     public function add_bahan()
@@ -217,7 +239,27 @@ class BahanController extends BaseController
         $TerimaBahanModel = new M_Terima_Bahan();
         $userModel = new UserModel();
 
-        $bahan = $TerimaBahanModel->orderBy('id_penerimaan', 'DESC')->findAll();
+        // Ambil nilai filter tanggal dari parameter GET
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+
+        // Query awal
+        $query = $TerimaBahanModel->orderBy('id_penerimaan', 'DESC');
+
+        // Jika tidak ada filter tanggal, gunakan default bulan berjalan
+        if (!$startDate && !$endDate) {
+            $startDate = date('Y-m-01'); // Awal bulan
+            $endDate = date('Y-m-t');   // Akhir bulan
+        }
+
+        // Tambahkan filter tanggal jika ada
+        if ($startDate && $endDate) {
+            $query->where('tanggal >=', $startDate)
+                ->where('tanggal <=', $endDate);
+        }
+
+        // Ambil data sesuai query
+        $bahan = $query->findAll();
 
         // Inisialisasi total untuk setiap kolom
         $totalQty = 0;
@@ -243,10 +285,13 @@ class BahanController extends BaseController
             'totalJumlah' => $totalJumlah,
             'totalNilaiPpn' => $totalNilaiPpn,
             'totalNetto' => $totalNetto,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ];
 
         return view('bahan/terima_bahan', $data);
     }
+
 
 
     public function bahan_terima_add($id_po_bahan = null)
@@ -703,7 +748,27 @@ class BahanController extends BaseController
         $bahanRepairModel = new M_Bahan_Repair();
         $userModel = new UserModel();
 
-        $repair = $bahanRepairModel->orderBy('id_material', 'DESC')->findAll();
+        // Ambil nilai filter tanggal dari parameter GET
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+
+        // Query awal
+        $query = $bahanRepairModel->orderBy('id_material', 'DESC');
+
+        // Jika tidak ada filter tanggal, gunakan default bulan berjalan
+        if (!$startDate && !$endDate) {
+            $startDate = date('Y-m-01'); // Awal bulan
+            $endDate = date('Y-m-t');   // Akhir bulan
+        }
+
+        // Tambahkan filter tanggal jika ada
+        if ($startDate && $endDate) {
+            $query->where('tanggal >=', $startDate)
+                ->where('tanggal <=', $endDate);
+        }
+
+        // Ambil data sesuai query
+        $repair = $query->findAll();
 
         foreach ($repair as &$item) {
             // Periksa apakah kunci 'user_id' ada sebelum mencoba mengaksesnya
@@ -717,11 +782,14 @@ class BahanController extends BaseController
 
         $data = [
             'title' => 'Repair Material Bahan',
-            'repair' => $repair
+            'repair' => $repair,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ];
 
         return view('bahan/repair_material', $data);
     }
+
 
 
 

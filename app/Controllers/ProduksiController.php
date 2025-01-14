@@ -37,9 +37,15 @@ class ProduksiController extends Controller
 
         // Data progress yang valid sesuai ENUM
         $validProgress = [
-            'Ketok', 'Dempul', 'Epoxy', 'Cat', 'Poles',
-            'Beres Pengerjaan', 'Menunggu Sparepart Tambahan',
-            'Menunggu Comment User', 'Data Completed'
+            'Ketok',
+            'Dempul',
+            'Epoxy',
+            'Cat',
+            'Poles',
+            'Beres Pengerjaan',
+            'Menunggu Sparepart Tambahan',
+            'Menunggu Comment User',
+            'Data Completed'
         ];
 
         if (!in_array($newProgress, $validProgress)) {
@@ -81,9 +87,15 @@ class ProduksiController extends Controller
         $id = $this->request->getPost('id_repair_order');
         $newProgress = $this->request->getPost('progres_pengerjaan');
         $validProgress = [
-            'Ketok', 'Dempul', 'Epoxy', 'Cat', 'Poles',
-            'Beres Pengerjaan', 'Menunggu Sparepart Tambahan',
-            'Menunggu Comment User', 'Data Completed'
+            'Ketok',
+            'Dempul',
+            'Epoxy',
+            'Cat',
+            'Poles',
+            'Beres Pengerjaan',
+            'Menunggu Sparepart Tambahan',
+            'Menunggu Comment User',
+            'Data Completed'
         ];
 
         if (!in_array($newProgress, $validProgress)) {
@@ -104,17 +116,4 @@ class ProduksiController extends Controller
 
         return redirect()->to('/produksi/kelolaproduksi')->with('success', 'Progress berhasil diupdate.');
     }
-
-    public function getRepairOrderDetail($id)
-{
-    // Ambil detail repair order berdasarkan ID
-    $repairOrder = $this->repairOrderModel->find($id);
-    
-    if ($repairOrder) {
-        return $this->response->setJSON($repairOrder);
-    } else {
-        return $this->response->setJSON(['error' => 'Data tidak ditemukan']);
-    }
-}
-
 }

@@ -68,7 +68,6 @@ class M_Po extends Model
             ->join('auth_user', 'auth_user.id = po.user_id', 'left')
             ->join('sparepart_po', 'sparepart_po.id_terima_po = po.id_terima_po', 'left');
 
-        // Jika id_terima_po diberikan, tambahkan kondisi where
         if (!empty($id_terima_po)) {
             $builder->where('po.id_terima_po', $id_terima_po);
         }

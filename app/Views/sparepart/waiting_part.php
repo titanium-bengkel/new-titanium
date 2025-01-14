@@ -71,7 +71,7 @@
                                             <td><?= $index ?></td>
                                             <td><?= $detail['tanggal'] ?></td>
                                             <td><?= $detail['jenis_mobil'] ?></td>
-                                            <td><?= $detail['no_kendaraan'] ?></td>
+                                            <td><?= $detail['nopol'] ?></td>
                                             <td><?= $detail['asuransi'] ?></td>
                                             <td><?= $detail['nama_barang'] ?></td>
                                             <td><?= $detail['id_kode_barang'] ?></td>

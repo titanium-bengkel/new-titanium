@@ -25,6 +25,9 @@
         });
     <?php endif; ?>
 </script>
+<?php if ($startDate && $endDate): ?>
+    <p class="text-muted">Menampilkan data dari <strong><?= $startDate ?></strong> hingga <strong><?= $endDate ?></strong>.</p>
+<?php endif; ?>
 
 
 <section id="horizontal-input">
@@ -41,9 +44,24 @@
                 </header>
                 <div class="card-content">
                     <div class="card-header d-flex align-items-center justify-content-start flex-wrap" style="padding: 20px;">
-                        <div class="d-flex align-items-center w-100 justify-content-start">
-                            <a href="<?= base_url('order_pos_terimapart') ?>" class="btn btn-primary btn-sm me-2">Add Penerimaan</a>
-                            <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
+                        <div class="d-flex align-items-center ms-md-auto w-100 w-md-auto">
+                            <div class="d-flex align-items-center w-100 justify-content-start">
+                                <a href="<?= base_url('order_pos_terimapart') ?>" class="btn btn-primary btn-sm me-2">Add Penerimaan</a>
+                                <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
+                            </div>
+                            <form method="GET" action="">
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <label for="start-date" class="form-label mb-0 text-muted fw-bold">Periode:</label>
+                                    <input type="date" id="start-date" name="start_date" class="form-control form-control-sm rounded-2 w-auto"
+                                        value="<?= isset($startDate) ? $startDate : '' ?>" />
+                                    <span class="mx-1 text-muted fw-bold">to</span>
+                                    <input type="date" id="end-date" name="end_date" class="form-control form-control-sm rounded-2 w-auto"
+                                        value="<?= isset($endDate) ? $endDate : '' ?>" />
+                                    <button type="submit" class="btn btn-primary btn-sm rounded-2">
+                                        <i class="fas fa-filter"></i> Filter
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                     <div class="table-responsive" style="font-size: 12px; margin:20px; text-align: center;">
@@ -72,7 +90,7 @@
                                     <?php foreach ($sparepart as $index => $data) : ?>
                                         <tr>
                                             <td class="text-center"><?= $index + 1 ?></td>
-                                            <td class="text-start"><a href="<?= base_url('order_pos_terimapartprev/' . $data['id_penerimaan']); ?>">
+                                            <td class="text-start"><a href="<?= base_url('order_pos_terimapartprev/' . str_replace('/', '_', $data['id_penerimaan'])); ?>">
                                                     <?= $data['id_penerimaan']; ?>
                                                 </a>
                                             <td class="text-start"><?= $data['tanggal'] ?></td>
@@ -131,6 +149,12 @@
 </section>
 <!-- Table head options end -->
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
     function exportToExcel() {
@@ -144,6 +168,39 @@
         XLSX.writeFile(workbook, "Data_PenerimaanSparepart.xlsx");
     }
 </script>
+
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr("#start-date", {
+            dateFormat: "Y-m-d"
+        });
+        flatpickr("#end-date", {
+            dateFormat: "Y-m-d"
+        });
+    });
+</script> -->
+
+
+<!-- <script>
+    // Flatpickr initialization for date input fields
+    flatpickr("#start-date", {
+        dateFormat: "Y-m-d"
+    });
+    flatpickr("#end-date", {
+        dateFormat: "Y-m-d"
+    });
+
+    document.getElementById('filter-btn').addEventListener('click', function() {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+
+        if (startDate && endDate) {
+            window.location.href = `?start_date=${startDate}&end_date=${endDate}`;
+        } else {
+            alert('Please select both start and end dates.');
+        }
+    });
+</script> -->
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

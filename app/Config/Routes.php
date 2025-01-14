@@ -50,7 +50,7 @@ $routes->post('/supercontroller/updateUser', 'SuperController::updateUser');
 $routes->get('/supercontroller/deleteUser/(:num)', 'SuperController::deleteUser/$1');
 $routes->get('pengaturan_role', 'SuperController::pengaturan_role');
 $routes->post('role/update_permissions/(:num)', 'SuperController::update_permissions/$1');
-$routes->group('superadmin', function($routes) {
+$routes->group('superadmin', function ($routes) {
     $routes->get('kel_role', 'SuperController::kelolaRole');
     $routes->post('createRole', 'SuperController::createRole');
     $routes->post('updateRole', 'SuperController::updateRole');
@@ -260,6 +260,8 @@ $routes->get('supp_asuransi', 'SparepartController::supply_asuransi');
 
 
 $routes->get('waiting_part', 'SparepartController::part_dalam_pesanan');
+$routes->get('part_pasang', 'SparepartController::sparepart_terpasang');
+
 $routes->get('sparepart_masuk', 'SparepartController::part_diterima');
 
 $routes->get('part_salvage', 'SparepartController::sparepart_salvage');
@@ -297,8 +299,13 @@ $routes->get('/keuangan/delete_detailpembelian/(:any)', 'KeuanganController::del
 $routes->get('kas_bank', 'KeuanganController::jurnal_kasbank');
 $routes->get('keuangan/getCoa', 'KeuanganController::getCoa');
 $routes->post('keuangan/createKasBank', 'KeuanganController::createKasBank');
+$routes->post('keuangan/updateKasBank/(:num)', 'KeuanganController::updateKasBank/$1');
+$routes->get('keuangan/deleteKasBank/(:num)', 'KeuanganController::deleteKasBank/$1');
+
 $routes->post('keuangan/createPKasbesar', 'KeuanganController::createPKasbesar');
+$routes->post('keuangan/updatePKasbesar/(:num)', 'KeuanganController::updatePKasbesar/$1');
 $routes->post('keuangan/createKasKecil', 'KeuanganController::createKasKecil');
+$routes->post('keuangan/updateKasKecil/(:any)', 'KeuanganController::updateKasKecil/$1');
 $routes->post('getDataKeluarkasbesar', 'KeuanganController::getDataKeluarkasbesar');
 
 $routes->get('keuangan/getKasBesarData', 'KeuanganController::getKasBesarData');
@@ -467,3 +474,17 @@ $routes->get('uploads/acc-asuransi/(:any)', function ($file) {
         throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
     }
 });
+
+
+// Generated ID json
+$routes->post('generate-doc', 'KeuanganController::generateDoc');
+
+// Filter
+$routes->get('filter/preorder', 'KlaimController::preorder');
+$routes->get('filter/asuransi', 'KlaimController::orderlist_asuransi');
+$routes->get('filter/repairorder', 'KlaimController::repair_order');
+$routes->get('filter/kwitansi', 'KlaimController::kwitansi');
+$routes->get('filter/kas_bank', 'KeuanganController::jurnal_kasbank');
+$routes->get('filter/kaskecil', 'KeuanganController::kaskecil');
+$routes->get('filter/kaskeluar', 'KeuanganController::jurnal_kaskeluar');
+$routes->get('filter/keluar_kasbesar', 'KeuanganController::keluarkasbesar');
