@@ -33,6 +33,7 @@ class M_Part_Terima extends Model
         'total_jumlah',
         'nilai_ppn',
         'netto',
+        'disc_total',
         'user_id',
         'created_at'
     ];
@@ -105,14 +106,15 @@ class M_Part_Terima extends Model
     }
 
 
-    public function getFilteredPartTerima($start, $end)
+
+    public function getPartTerimaWithDetails($startDate = null, $endDate = null)
     {
-        return $this->where('tanggal >=', $start)
-            ->where('tanggal <=', $end)
-            ->findAll();
-    }
-    public function getPartTerimaWithDetails()
-    {
+        // Jika tidak ada tanggal, gunakan default per bulan ini
+        if (!$startDate || !$endDate) {
+            $startDate = date('Y-m-01'); // Tanggal awal bulan ini
+            $endDate = date('Y-m-t');   // Tanggal akhir bulan ini
+        }
+
         $db      = \Config\Database::connect();
         $builder = $db->table('part_terima');
 
@@ -123,9 +125,14 @@ class M_Part_Terima extends Model
         // Join tabel pdetail_terima dengan part_terima berdasarkan id_penerimaan
         $builder->join('pdetail_terima', 'part_terima.id_penerimaan = pdetail_terima.id_penerimaan');
 
+        // Tambahkan filter tanggal
+        $builder->where('part_terima.tanggal >=', $startDate);
+        $builder->where('part_terima.tanggal <=', $endDate);
+
         $query = $builder->get();
         return $query->getResultArray(); // Mengembalikan hasil sebagai array
     }
+
 
     public function getPartTerimaWithDetailsisa($gudang = 'GUDANG WAITING')
     {

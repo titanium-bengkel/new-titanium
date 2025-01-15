@@ -116,17 +116,28 @@ class M_Part_Po extends Model
     //     return $query->getResultArray(); // Mengembalikan hasil sebagai array
     // }
 
-    public function getPartPoWithDetails()
+    public function getPartPoWithDetails($startDate = null, $endDate = null)
     {
         $db      = \Config\Database::connect();
         $builder = $db->table('part_po');
 
         // Query dengan Join dan Subquery untuk detail
-        $builder->select('part_po.id_pesan, part_po.tanggal, part_po.jenis_mobil, part_po.asuransi, part_po.supplier, part_po.nopol, part_po.warna,  part_po.oke, pdetail_pesan.id_kode_barang, pdetail_pesan.nama_barang, pdetail_pesan.is_sent, pdetail_pesan.harga');
+        $builder->select('part_po.id_pesan, part_po.tanggal, part_po.jenis_mobil, part_po.asuransi, part_po.supplier, part_po.nopol, part_po.warna, part_po.oke, pdetail_pesan.id_kode_barang, pdetail_pesan.nama_barang, pdetail_pesan.is_sent, pdetail_pesan.harga');
         $builder->join('pdetail_pesan', 'part_po.id_pesan = pdetail_pesan.id_pesan', 'left');
 
-
+        // Filter untuk is_sent = 0
         $builder->like('pdetail_pesan.is_sent', '0');
+
+        // Jika tanggal tidak diberikan, gunakan default bulan ini
+        if (!$startDate || !$endDate) {
+            $startDate = date('Y-m-01'); // Tanggal awal bulan ini
+            $endDate = date('Y-m-t');   // Tanggal akhir bulan ini
+        }
+
+        // Tambahkan filter periode tanggal
+        $builder->where('part_po.tanggal >=', $startDate);
+        $builder->where('part_po.tanggal <=', $endDate);
+
         // Eksekusi query
         $query = $builder->get();
 

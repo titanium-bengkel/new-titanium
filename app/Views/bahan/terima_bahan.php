@@ -69,11 +69,10 @@
                                     <th style="text-align: center;">No Faktur</th>
                                     <th style="text-align: center;">Tanggal</th>
                                     <th style="text-align: center;">Jatuh Tempo</th>
-                                    <th style="text-align: center;">No RO</th>
                                     <th style="text-align: center;">Supplier</th>
                                     <th style="text-align: center;">Gudang</th>
                                     <th style="text-align: center;">Jumlah</th>
-                                    <th style="text-align: center;">PPN %</th>
+                                    <th style="text-align: center;">PPN</th>
                                     <th style="text-align: center;">PPN Nilai</th>
                                     <th style="text-align: center;">Netto</th>
                                     <th style="text-align: center;">Qty</th>
@@ -93,11 +92,12 @@
                                             </td> <!-- Memperbaiki kesalahan penutupan tag -->
                                             <td class="text-left"><?= $data['tanggal'] ?></td>
                                             <td class="text-left"><?= $data['jatuh_tempo'] ?></td>
-                                            <td class="text-left"><?= $data['nomor'] ?></td>
                                             <td class="text-left"><?= $data['supplier'] ?></td>
                                             <td class="text-left"><?= $data['gudang'] ?></td>
                                             <td class="text-end"><?= number_format($data['total_jumlah'], 2, ',', '.'); ?></td>
-                                            <td class="text-end"><?= $data['ppn'] ?></td>
+                                            <td class="text-start">
+                                                <?= $data['ppn'] == 0.11 ? 'PPN' : 'NON-PPN' ?>
+                                            </td>
                                             <td class="text-end"><?= number_format($data['nilai_ppn'], 2, ',', '.'); ?></td>
                                             <td class="text-end"><?= number_format($data['netto'], 2, ',', '.'); ?></td>
                                             <td class="text-end"><?= $data['total_qty'] ?></td>
@@ -112,21 +112,20 @@
                                     <?php endforeach; ?>
                                 <?php else : ?>
                                     <tr>
-                                        <td colspan="16">Data tidak tersedia</td>
+                                        <td colspan="14">Data tidak tersedia</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
                             <tfoot>
                                 <tr>
 
-                                    <td colspan="7" style="text-align: right;">Grand Total</td>
+                                    <td colspan="6" style="text-align: right;">Grand Total</td>
                                     <td class="text-end" style="font-weight: bold;"><?= number_format($totalJumlah, 2, ',', '.'); ?></td>
                                     <td class="text-end" style="font-weight: bold;"></td>
                                     <td class="text-end" style="font-weight: bold;"><?= number_format($totalNilaiPpn, 2, ',', '.'); ?></td>
                                     <td class="text-end" style="font-weight: bold;"><?= number_format($totalNetto, 2, ',', '.'); ?></td>
                                     <td class="text-end" style="font-weight: bold;"><?= $totalQty ?></td>
-                                    <td colspan="2"></td>
-                                    <td></td>
+                                    <td colspan="3"></td>
                                 </tr>
                             </tfoot>
                         </table>

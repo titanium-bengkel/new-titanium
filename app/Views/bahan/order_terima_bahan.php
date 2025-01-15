@@ -41,53 +41,64 @@
                 <div class="card-body">
                     <form action="<?= base_url('/bahan/create_terima') ?>" method="post">
                         <div class="form-group row align-items-center">
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="no_faktur">No. Faktur</label>
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="no_faktur">No. Faktur</label>
                             </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="text" id="no_faktur" class="form-control" name="no_faktur" value="<?= $generatedIdTerima ?>">
+                            <div class="col-lg-10 col-9 mb-1">
+                                <input type="text" id="no_faktur" class="form-control form-control-sm" name="no_faktur" value="<?= $generatedIdTerima ?>">
                             </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="tgl">Tanggal</label>
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="tgl">Tanggal</label>
                             </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="date" id="tgl" class="form-control" name="tgl" onkeydown="return false" onclick="this.showPicker()">
+                            <div class="col-lg-10 col-9 mb-1">
+                                <input type="date" id="tgl" class="form-control form-control-sm" name="tgl" onkeydown="return false" onclick="this.showPicker()">
+                            </div>
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="nomor">Nomor</label>
+                            </div>
+                            <div class="col-lg-9 col-7 mb-1">
+                                <input type="text" id="nomor" class="form-control form-control-sm" name="nomor">
+                            </div>
+                            <div class="col-lg-1 col-2 mb-1">
+                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#no-kend">
+                                    <i class="fas fa-search"></i>
+                                </button>
                             </div>
                             <div class="col-lg-2 col-3">
-                                <label class="col-form-label" for="kode_supplier" hidden>Kode Supplier</label>
+                                <label class="col-form-label col-form-label-sm" for="kode_supplier" hidden>Kode Supplier</label>
                             </div>
                             <div class="col-lg-10 col-9">
-                                <input class="form-control" id="kode_supplier" rows="1" name="kode_supplier" hidden></input>
+                                <input class="form-control form-control-sm" id="kode_supplier" rows="1" name="kode_supplier" hidden></input>
                             </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="supplier">Supplier</label>
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="supplier">Supplier</label>
                             </div>
-                            <div class="col-lg-9 col-7 mb-3">
-                                <input type="text" id="supplier" class="form-control" name="supplier">
+                            <div class="col-lg-9 col-7 mb-1">
+                                <input type="text" id="supplier" class="form-control form-control-sm" name="supplier">
                             </div>
-                            <div class="col-lg-1 col-2 mb-3">
+                            <div class="col-lg-1 col-2 mb-1">
                                 <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#supp">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="jatuh_tempo">Jatuh Tempo</label>
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="jatuh_tempo">Jatuh Tempo</label>
                             </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <input type="date" id="jatuh_tempo" class="form-control" name="jatuh_tempo" onkeydown="return false" onclick="this.showPicker()">
+                            <div class="col-lg-10 col-9 mb-1">
+                                <input type="date" id="jatuh_tempo" class="form-control form-control-sm" name="jatuh_tempo" onkeydown="return false" onclick="this.showPicker()">
                             </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="keterangan">Keterangan</label>
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="keterangan">Keterangan</label>
                             </div>
-                            <div class="col-lg-10 col-9 mb-3">
-                                <textarea class="form-control" id="keterangan" name="keterangan" rows="1"></textarea>
+                            <div class="col-lg-10 col-9 mb-1">
+                                <textarea class="form-control form-control-sm" id="keterangan" name="keterangan" rows="1"></textarea>
                             </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="gudang">Gudang</label>
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="gudang">Gudang</label>
                             </div>
-                            <div class="col-lg-10 col-7 mb-3">
+                            <div class="col-lg-10 col-7 mb-1">
                                 <fieldset class="form-group">
-                                    <select class="form-select" id="gudang" name="gudang">
+                                    <select class="form-select form-select-sm" id="gudang" name="gudang">
                                         <option>GUDANG BAHAN</option>
                                     </select>
                                 </fieldset>
@@ -95,35 +106,24 @@
                         </div>
                         <h5>Data Supplier</h5>
                         <div class="form-group row align-items-center">
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="nomor">Nomor</label>
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="kota">Kota</label>
                             </div>
-                            <div class="col-lg-9 col-7 mb-3">
-                                <input type="text" id="nomor" class="form-control" name="nomor">
+                            <div class="col-lg-10 col-7 mb-1">
+                                <input type="text" id="kota" class="form-control form-control-sm" name="kota">
                             </div>
-                            <div class="col-lg-1 col-2 mb-3">
-                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#no-kend">
-                                    <i class="fas fa-search"></i>
-                                </button>
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="alamat">Alamat</label>
                             </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="kota">Kota</label>
+                            <div class="col-lg-10 col-7 mb-1">
+                                <input type="text" id="alamat" class="form-control form-control-sm" name="alamat">
                             </div>
-                            <div class="col-lg-10 col-7 mb-3">
-                                <input type="text" id="kota" class="form-control" name="kota">
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="pembayaran">Metode Pembayaran</label>
                             </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="alamat">Alamat</label>
-                            </div>
-                            <div class="col-lg-10 col-7 mb-3">
-                                <input type="text" id="alamat" class="form-control" name="alamat">
-                            </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="pembayaran">Metode Pembayaran</label>
-                            </div>
-                            <div class="col-lg-10 col-7 mb-3">
+                            <div class="col-lg-10 col-7 mb-1">
                                 <fieldset class="form-group">
-                                    <select id="pembayaran" class="form-select" name="pembayaran">
+                                    <select id="pembayaran" class="form-select form-select-sm" name="pembayaran">
                                         <option value="" disabled selected>--Pilih--</option>
                                         <?php foreach ($coa as $item): ?>
                                             <option value="<?= $item['nama_account']; ?>">
@@ -147,23 +147,23 @@
                                     </select>
                                 </fieldset>
                             </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="ppn">PPN</label>
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="ppn">PPN</label>
                             </div>
-                            <div class="col-lg-10 col-7 mb-3">
+                            <div class="col-lg-10 col-7 mb-1">
                                 <fieldset class="form-group">
-                                    <select class="form-select" id="ppn" name="ppn">
+                                    <select class="form-select form-select-sm" id="ppn" name="ppn">
                                         <option disable selected>--Pilih--</option>
                                         <option>PPN</option>
                                         <option>NON PPN</option>
                                     </select>
                                 </fieldset>
                             </div>
-                            <div class="col-lg-2 col-3 mb-3">
-                                <label class="col-form-label" for="term">Term (days)</label>
+                            <div class="col-lg-2 col-3 mb-1">
+                                <label class="col-form-label col-form-label-sm" for="term">Term (days)</label>
                             </div>
-                            <div class="col-lg-4 col-9 mb-3">
-                                <input type="number" id="term" class="form-control" name="term" oninput="calculateJatuhTempo()" required>
+                            <div class="col-lg-4 col-9 mb-1">
+                                <input type="number" id="term" class="form-control form-control-sm" name="term" oninput="calculateJatuhTempo()" required>
                             </div>
                             <script>
                                 function calculateJatuhTempo() {
@@ -203,15 +203,20 @@
                                         <!-- Baris-baris data akan ditambahkan di sini -->
                                     </tr>
                                 </tbody>
+                                <tbody>
+                                    <tr>
+                                        <th class="text-end" colspan="6">Total</th>
+                                        <th>
+                                            <input type="text" id="totalJumlah" class="form-control form-control-sm" readonly>
+                                        </th>
+                                        <th colspan="6"></th>
+                                    </tr>
+                                </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th colspan="6">Total</th>
+                                        <th class="text-end" colspan="6">Disc Total</th>
                                         <th>
-                                            <input type="text" id="totalQty" class="form-control" readonly>
-                                        </th>
-                                        <th colspan="1"></th>
-                                        <th>
-                                            <input type="text" id="totalJumlah" class="form-control" readonly>
+                                            <input type="text" id="disc_total" name="disc_total" class="form-control form-control-sm">
                                         </th>
                                         <th colspan="6"></th>
                                     </tr>
@@ -419,12 +424,6 @@
         tbody.appendChild(newRow);
     });
 
-    // Fungsi formatNumber untuk format angka dengan format Indonesia
-    function formatNumber(number) {
-        return new Intl.NumberFormat('id-ID', {
-            minimumFractionDigits: 0
-        }).format(number);
-    }
 
     // Inisialisasi tanggal hari ini
     document.addEventListener('DOMContentLoaded', function() {
@@ -491,7 +490,7 @@
                     <tr>
                         <td><input type="text" class="form-control" name="id_kode_barang[]" value="${item.id_kode_barang}" readonly></td>
                         <td><input type="text" class="form-control" name="nama_barang[]" value="${item.nama_barang}" readonly></td>
-                        <td><input type="text" class="form-control" name="qty[]" value="${item.qty}" oninput="updateJumlah(this)"></td>
+                        <td><input type="text" class="form-control qty" name="qty[]" value="${item.qty}" oninput="updateJumlah(this)"></td>
                         <td><input type="text" class="form-control" name="satuan[]" value="${item.satuan}" readonly></td>
                         <td><input type="text" class="form-control harga" name="harga[]" value="${item.harga}" oninput="updateJumlah(this)"></td>
                         <td><input type="text" class="form-control disc" name="disc[]" value="${item.disc || 0}" oninput="updateJumlah(this)"></td>
@@ -511,25 +510,44 @@
             });
         }
 
-        // Fungsi untuk menghitung total qty dan total jumlah
+        function formatNumber(num, withDecimal = true) {
+            return num.toLocaleString('id-ID', {
+                minimumFractionDigits: withDecimal ? 2 : 0,
+                maximumFractionDigits: withDecimal ? 2 : 0
+            });
+        }
+
         function hitungTotal() {
-            let totalQty = 0;
             let totalJumlah = 0;
+
+            // Hitung total jumlah dari semua baris di tabel
             $('#detail-barang-body tr').each(function() {
-                const qty = parseFloat($(this).find('.qty').val()) || 0;
                 const jumlah = parseFloat($(this).find('.jumlah').val().replace(/,/g, '')) || 0;
-                totalQty += qty;
                 totalJumlah += jumlah;
             });
 
-            $('#totalQty').text(formatNumber(totalQty));
-            $('#totalJumlah').text(formatNumber(totalJumlah));
+            // Ambil nilai diskon dari input disc_total
+            const discTotal = parseFloat($('#disc_total').val().replace(/,/g, '')) || 0;
+
+            // Kurangi diskon dari totalJumlah
+            totalJumlah -= discTotal;
+
+            // Update input totalJumlah dengan format desimal
+            $('#totalJumlah').val(formatNumber(totalJumlah));
         }
 
-        // Fungsi untuk format angka
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
+        // Panggil fungsi hitungTotal saat ada perubahan pada elemen yang relevan
+        $('#detail-barang-body').on('input', '.jumlah', function() {
+            hitungTotal();
+        });
+
+        $('#disc_total').on('input', function() {
+            hitungTotal();
+        });
+
+
+
+
 
 
         // Menangani pengiriman form
@@ -581,7 +599,10 @@
             const harga = parseFloat(row.find('.harga').val()) || 0;
             const disc = parseFloat(row.find('.disc').val()) || 0;
             const jumlah = (qty * harga) - disc;
-            row.find('.jumlah').val(formatNumber(jumlah.toFixed(2)));
+            // Format jumlah menggunakan formatNumber dan update input .jumlah
+            row.find('.jumlah').val(formatNumber(jumlah));
+
+            // Hitung total secara keseluruhan
             hitungTotal();
         });
 

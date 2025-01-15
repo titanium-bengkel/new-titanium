@@ -195,17 +195,17 @@
                                 <?php if (!empty($detail_terima)) : ?>
                                     <?php foreach ($detail_terima as $index => $detail) : ?>
                                         <tr>
-                                            <td><?= $detail['id_kode_barang'] ?></td>
-                                            <td><?= $detail['nama_barang'] ?></td>
-                                            <td><?= $detail['qty'] ?></td>
-                                            <td><?= $detail['satuan'] ?></td>
-                                            <td><?= number_format($detail['harga'], 2, ',', '.'); ?></td>
-                                            <td><?= number_format($detail['disc'], 2, ',', '.'); ?></td>
-                                            <td><?= number_format($detail['jumlah'], 2, ',', '.'); ?></td>
-                                            <td><?= $detail['no_po'] ?></td>
-                                            <td><?= $index + 1 ?></td>
-                                            <td><input type="checkbox" class="form-check-input pilih-checkbox" name="ceklis[]" value="<?= $detail['ceklis']; ?>" <?= $detail['ceklis'] == 1 ? 'checked' : ''; ?> disabled></td>
-                                            <td>
+                                            <td class="text-start"><?= $detail['id_kode_barang'] ?></td>
+                                            <td class="text-start"><?= $detail['nama_barang'] ?></td>
+                                            <td class="text-end"><?= $detail['qty'] ?></td>
+                                            <td class="text-start"><?= $detail['satuan'] ?></td>
+                                            <td class="text-end"><?= number_format($detail['harga'], 2, ',', '.'); ?></td>
+                                            <td class="text-end"><?= number_format($detail['disc'], 2, ',', '.'); ?></td>
+                                            <td class="text-end"><?= number_format($detail['jumlah'], 2, ',', '.'); ?></td>
+                                            <td class="text-start"><?= $detail['no_po'] ?></td>
+                                            <td class="text-center"><?= $index + 1 ?></td>
+                                            <td class="text-center"><input type="checkbox" class="form-check-input pilih-checkbox" name="ceklis[]" value="<?= $detail['ceklis']; ?>" <?= $detail['ceklis'] == 1 ? 'checked' : ''; ?> disabled></td>
+                                            <td class="text-center">
                                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
@@ -220,10 +220,15 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="2">Total Qty</td>
-                                    <td style="text-align: center;"><?= $terima['total_qty'] ?></td>
-                                    <td colspan="3">Total Jumlah</td>
-                                    <td style="text-align: center;"> <?= number_format($terima['total_jumlah'], 2, ',', '.'); ?></td>
+                                    <td class="text-end" colspan="2">Total Qty</td>
+                                    <td style="text-align: end;"><?= $terima['total_qty'] ?></td>
+                                    <td class="text-end" colspan="3">Total Jumlah</td>
+                                    <td style="text-align: end;"> <?= number_format($terima['total_jumlah'], 2, ',', '.'); ?></td>
+                                    <td colspan="5"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-end" colspan="6">Disc Total</td>
+                                    <td style="text-align: end;"> <?= number_format($terima['disc_total'], 2, ',', '.'); ?></td>
                                     <td colspan="5"></td>
                                 </tr>
                             </tfoot>

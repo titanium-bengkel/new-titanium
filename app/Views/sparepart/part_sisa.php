@@ -37,8 +37,8 @@
                     </div>
                     <!-- table head dark -->
                     <div class="table-responsive" style="font-size: 12px; margin:20px" ;>
-                        <table class="table table-bordered mb-0">
-                            <thead class="thead-dark" style="text-align: center;">
+                        <table class="table table-bordered table-striped -table-hover mb-0" id="po_bahan_table">
+                            <thead class="thead-dark table-secondary" style="text-align: center;">
                                 <tr>
                                     <th>No</th>
                                     <th>Tanggal</th>
@@ -64,21 +64,21 @@
                                         // Jika tanggal berbeda, tambahkan baris kosong
                                         if ($previousDate != '' && $previousDate != $currentDate) : ?>
                                             <tr>
-                                                <td colspan="11" style="height: 10px; background-color: dark;"></td>
+                                                <td colspan="12=1" style="height: 10px; background-color: dark;"></td>
                                             </tr>
                                         <?php endif; ?>
                                         <tr>
-                                            <td><?= $index ?></td>
-                                            <td><?= $detail['tgl_terima'] ?></td>
-                                            <td><?= $detail['jenis_mobil'] ?></td>
-                                            <td><?= $detail['no_repair_order'] ?></td>
-                                            <td><?= $detail['nopol'] ?></td>
-                                            <td><?= $detail['asuransi'] ?></td>
-                                            <td><?= $detail['nama_barang'] ?></td>
-                                            <td><?= $detail['id_kode_barang'] ?></td>
-                                            <td><?= $detail['harga'] ?></td>
-                                            <td><?= $detail['supplier'] ?></td>
-                                            <td><a href="<?= base_url('order_pos_terimapartprev/' . $detail['id_penerimaan']); ?>">
+                                            <td class="text-cebter"><?= $index ?></td>
+                                            <td class="text-start"><?= $detail['tgl_terima'] ?></td>
+                                            <td class="text-start"><?= $detail['jenis_mobil'] ?></td>
+                                            <td class="text-start"><?= $detail['no_repair_order'] ?></td>
+                                            <td class="text-start"><?= $detail['nopol'] ?></td>
+                                            <td class="text-start"><?= $detail['asuransi'] ?></td>
+                                            <td class="text-start"><?= $detail['nama_barang'] ?></td>
+                                            <td class="text-start"><?= $detail['id_kode_barang'] ?></td>
+                                            <td class="text-end"><?= $detail['harga'] ?></td>
+                                            <td class="text-start"><?= $detail['supplier'] ?></td>
+                                            <td class="text-start"><a href="<?= base_url('order_pos_terimapartprev/' . $detail['id_penerimaan']); ?>">
                                                     <?= $detail['id_penerimaan']; ?>
                                                 </a></td>
                                         </tr>
@@ -97,7 +97,7 @@
                             <thead>
                                 <tr>
                                     <th colspan="8" style="text-align: right;">Total</th>
-                                    <th style="text-align: center;">0</th>
+                                    <th style="text-align: end;">0</th>
                                     <th colspan="3"></th>
                                 </tr>
                             </thead>

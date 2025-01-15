@@ -26,6 +26,7 @@ class M_Terima_Bahan extends Model
         'total_jumlah',
         'nilai_ppn',
         'netto',
+        'disc_total',
         'user_id'
     ];
 

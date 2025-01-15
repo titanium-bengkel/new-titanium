@@ -89,20 +89,20 @@
                                     <?php endforeach; ?>
                                 <?php else : ?>
                                     <tr>
-                                        <td colspan="11">Tidak ada data</td>
+                                        <td colspan="11" style="text-align: center;">Tidak ada data</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
                             <tfoot>
                                 <tr style="text-align: center;">
-                                    <th colspan="6" style="text-align: end;">Total Perpage</th>
-                                    <th></th>
-                                    <th colspan="4"></th>
+                                    <td colspan="6" style="text-align: end;">Total Perpage</td>
+                                    <td></td>
+                                    <td colspan="4"></td>
                                 </tr>
                                 <tr style="text-align: center;">
-                                    <th colspan="6" style="text-align: end;">Total All</th>
-                                    <th class="text-end"><?= number_format($totalJumlahKeseluruhan, 2, ',', '.'); ?></th>
-                                    <th colspan="4"></th>
+                                    <td colspan="6" style="text-align: end;">Total All</td>
+                                    <td class="text-end"><?= number_format($totalJumlahKeseluruhan, 2, ',', '.'); ?></td>
+                                    <td colspan="4"></td>
                                 </tr>
                             </tfoot>
                         </table>

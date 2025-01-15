@@ -278,8 +278,14 @@ class M_Po extends Model
         return $this->db->table('po')->get()->getResult();
     }
 
-    public function getDataWithJoin()
+    public function getDataWithJoin($startDate = null, $endDate = null)
     {
+        // Jika tidak ada tanggal, gunakan default per bulan ini
+        if (!$startDate || !$endDate) {
+            $startDate = date('Y-m-01'); // Tanggal awal bulan ini
+            $endDate = date('Y-m-t');   // Tanggal akhir bulan ini
+        }
+
         $db = \Config\Database::connect();
         $builder = $db->table('po');
 
@@ -290,11 +296,16 @@ class M_Po extends Model
         $builder->join('gambar_po', 'po.id_terima_po = gambar_po.id_terima_po');
 
         // Tambahkan filter untuk hanya mengambil data dengan keterangan yang berisi 'sebelum'
-        $builder->like('gambar_po.keterangan', 'sebelum'); // Asumsikan 'keterangan' ada di tabel po
+        $builder->like('gambar_po.keterangan', 'sebelum');
+
+        // Filter berdasarkan created_at
+        $builder->where('gambar_po.created_at >=', $startDate);
+        $builder->where('gambar_po.created_at <=', $endDate);
 
         $query = $builder->get();
         return $query->getResultArray(); // Mengembalikan hasil sebagai array
     }
+
 
     public function countBengkelTitanium()
     {

@@ -89,15 +89,51 @@ class M_Pdetail_Terima extends Model
         return $this->where('id_pesan', $id_pesan)->findAll(); // Ambil semua sparepart berdasarkan id_pesan
     }
 
-    public function getPartBelumpasang()
+    public function getPartBelumpasang($startDate = null, $endDate = null)
     {
-        return $this->where('is_pasang', 0)->findAll();
+        // Gunakan default bulan berjalan jika tanggal tidak diberikan
+        if (!$startDate || !$endDate) {
+            $startDate = date('Y-m-01'); // Awal bulan ini
+            $endDate = date('Y-m-t');   // Akhir bulan ini
+        }
+
+        // Hubungkan database dan builder
+        $db = \Config\Database::connect();
+        $builder = $db->table('pdetail_terima');
+
+        // Pilih kolom yang dibutuhkan dari kedua tabel
+        $builder->select('pdetail_terima.*, part_terima.id_penerimaan, part_terima.tanggal');
+
+        // Lakukan join dengan tabel part_terima
+        $builder->join('part_terima', 'part_terima.id_penerimaan = pdetail_terima.id_penerimaan');
+
+        // Tambahkan filter is_pasang dan periode tanggal
+        $builder->where('pdetail_terima.is_pasang', 0);
+        $builder->where('part_terima.tanggal >=', $startDate);
+        $builder->where('part_terima.tanggal <=', $endDate);
+
+        // Eksekusi query dan kembalikan hasil sebagai array
+        $query = $builder->get();
+        return $query->getResultArray();
     }
 
-    public function getPartPasang()
+
+
+    public function getPartPasang($startDate = null, $endDate = null)
     {
-        return $this->where('is_pasang', 1)->findAll();
+        // Gunakan default bulan berjalan jika tanggal tidak diberikan
+        if (!$startDate || !$endDate) {
+            $startDate = date('Y-m-01'); // Awal bulan ini
+            $endDate = date('Y-m-t');   // Akhir bulan ini
+        }
+
+        // Filter data berdasarkan is_pasang dan periode tanggal
+        return $this->where('is_pasang', 1)
+            ->where('tanggal >=', $startDate)
+            ->where('tanggal <=', $endDate)
+            ->findAll();
     }
+
 
     public function getSparepartTerima($id_penerimaan)
     {
@@ -105,5 +141,4 @@ class M_Pdetail_Terima extends Model
             ->where('is_pasang', 0)
             ->findAll();
     }
-
 }

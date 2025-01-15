@@ -535,10 +535,20 @@ class SparepartController extends BaseController
         $total_jumlah = 0;
 
         foreach ($qty as $index => $quantity) {
-            $hargaItem = intval(str_replace('.', '', $harga[$index]));
-            $discItem = intval(str_replace('.', '', $disc[$index]));
-            $jumlah = ($hargaItem - $discItem) * $quantity;
-            $total_qty += $quantity;
+            // $hargaItem = intval(str_replace('.', '', $harga[$index]));
+            // $discItem = intval(str_replace('.', '', $disc[$index] ?? 0));
+            // $jumlah = ($hargaItem - $discItem) * $quantity;
+            // $total_qty += $quantity;
+            // $total_jumlah += $jumlah;
+            $hargaItem = intval(str_replace('.', '', $harga[$index] ?? '0')); // Pastikan harga ada, default 0
+            $discItem = floatval($disc[$index] ?? 0); // Diskon dalam persen (default 0 jika tidak ada)
+
+            // Hitung jumlah per item dengan diskon
+            $jumlah = $hargaItem * intval($quantity); // Total sebelum diskon
+            $jumlah -= $jumlah * ($discItem / 100); // Kurangi diskon (jika ada)
+
+            // Update total
+            $total_qty += intval($quantity);
             $total_jumlah += $jumlah;
         }
 
@@ -1051,22 +1061,48 @@ class SparepartController extends BaseController
         $db = \Config\Database::connect();
         $db->transStart(); // Memulai transaksi
 
-        // Menghapus data terkait di tabel detail_barang
-        $detailTerimaModel = new M_Pdetail_Terima();
-        $detailTerimaModel->where('id_penerimaan', $id)->delete();
+        try {
+            // Model untuk tabel terkait
+            $detailTerimaModel = new M_Pdetail_Terima();
+            $terimaPartModel = new M_Part_Terima();
+            $pdetailPesanModel = new M_Pdetail_Pesan();
 
-        // Menghapus data di tabel id_penerimaan
-        $terimaPartModel = new M_Part_Terima();
-        $terimaPartModel->where('id_penerimaan', $id)->delete();
+            // Ambil data detail barang berdasarkan wo
+            $detailTerimaData = $detailTerimaModel->where('wo', $id)->findAll();
 
-        $db->transComplete();
+            // Validasi dan update is_sent di tabel pdetail_pesan
+            foreach ($detailTerimaData as $detail) {
+                $idKodeBarang = $detail['id_kode_barang'];
+                $wo = $detail['wo']; // Ganti id_pemesanan dengan wo
 
-        if ($db->transStatus() === FALSE) {
-            return redirect()->to('terima_part')->with('error', 'Data gagal dihapus');
-        } else {
+                if ($idKodeBarang && $wo) {
+                    // Update is_sent menjadi 0 di tabel pdetail_pesan berdasarkan wo
+                    $pdetailPesanModel->where('id_kode_barang', $idKodeBarang)
+                        ->where('wo', $wo) // Pastikan sesuai dengan kolom yang ada
+                        ->set('is_sent', 0)
+                        ->update();
+                }
+            }
+
+            // Hapus data detail barang
+            $detailTerimaModel->where('id_penerimaan', $id)->delete();
+
+            // Hapus data di tabel id_penerimaan
+            $terimaPartModel->where('id_penerimaan', $id)->delete();
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                throw new \Exception('Data gagal dihapus.');
+            }
+
             return redirect()->to('terima_part')->with('berhasil', 'Data berhasil dihapus');
+        } catch (\Exception $e) {
+            $db->transRollback(); // Jika ada error, rollback transaksi
+            return redirect()->to('terima_part')->with('error', $e->getMessage());
         }
     }
+
 
     public function delete_detailterima($id)
     {
@@ -2269,14 +2305,28 @@ class SparepartController extends BaseController
     // ---------------------------------------------------------------------------------------------------------------------
     public function part_dalam_pesanan()
     {
-
         $partPoModel = new M_Part_Po();
+
+        // Tangkap input periode tanggal dari request
+        $startDate = $this->request->getVar('start_date');
+        $endDate = $this->request->getVar('end_date');
+
+        // Default data tanpa filter tanggal
         $PoDetail = $partPoModel->getPartPoWithDetails();
+
+        if ($startDate && $endDate) {
+            // Pastikan format tanggal valid, lalu filter data berdasarkan tanggal
+            $PoDetail = $partPoModel->getPartPoWithDetails($startDate, $endDate);
+        }
+
 
         $data = [
             'title' => 'Sparepart PO',
             'part' => $PoDetail,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
         ];
+
         return view('sparepart/waiting_part', $data);
     }
 
@@ -2289,22 +2339,19 @@ class SparepartController extends BaseController
     public function part_diterima()
     {
         $partTerimaModel = new M_Part_Terima();
-        $start = $this->request->getGet('start');
-        $end = $this->request->getGet('end');
 
-        if ($start && $end) {
-            $partTerima = $partTerimaModel->getFilteredPartTerima($start, $end);
-        } else {
-            $partTerima = $partTerimaModel->getPartTerimaWithDetails();
-        }
+        // Ambil data input periode (start date dan end date)
+        $startDate = $this->request->getVar('start_date');
+        $endDate = $this->request->getVar('end_date');
 
-        if ($this->request->isAJAX()) {
-            return $this->response->setJSON($partTerima);
-        }
+        // Ambil data sparepart berdasarkan periode
+        $partTerima = $partTerimaModel->getPartTerimaWithDetails($startDate, $endDate);
 
         $data = [
             'title' => 'Sparepart Masuk',
             'part' => $partTerima,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
         ];
 
         return view('sparepart/sparepart_masuk', $data);
@@ -2321,18 +2368,25 @@ class SparepartController extends BaseController
         // Memanggil model M_Po
         $gambarPoModel = new M_Po();
 
-        // Mengambil data dengan join tanpa filter
-        $dataPogambar = $gambarPoModel->getDataWithJoin();
+        // Ambil data input periode (start date dan end date)
+        $startDate = $this->request->getVar('start_date');
+        $endDate = $this->request->getVar('end_date');
+
+        // Mengambil data dengan join dan filter periode
+        $dataPogambar = $gambarPoModel->getDataWithJoin($startDate, $endDate);
 
         // Menyiapkan data untuk view
         $data = [
             'title' => 'Salvage',
             'dataPogambar' => $dataPogambar,
+            'start_date' => $startDate ?? date('Y-m-01'),
+            'end_date' => $endDate ?? date('Y-m-t'),
         ];
 
         // Mengembalikan view dengan data yang diambil
         return view('sparepart/part_salvage', $data);
     }
+
 
     // ---------------------------------------------------------------------------------------------------------------------
 
@@ -2342,28 +2396,46 @@ class SparepartController extends BaseController
     public function sparepart_sisa()
     {
         $partModel = new M_Pdetail_Terima();
-        $partsBelumPasang = $partModel->getPartBelumpasang();
+
+        // Ambil data periode dari input pengguna atau gunakan default
+        $startDate = $this->request->getVar('start_date');
+        $endDate = $this->request->getVar('end_date');
+
+        // Ambil data sparepart sisa berdasarkan periode
+        $partsBelumPasang = $partModel->getPartBelumpasang($startDate, $endDate);
 
         $data = [
             'title' => 'Sparepart Sisa',
             'partsBelumPasang' => $partsBelumPasang,
+            'start_date' => $startDate ?? date('Y-m-01'),
+            'end_date' => $endDate ?? date('Y-m-t'),
         ];
         return view('sparepart/part_sisa', $data);
     }
+
 
     // ---------------------------------------------------------------------------------------------------------------------
 
     public function sparepart_terpasang()
     {
         $partModel = new M_Pdetail_Terima();
-        $getPartPasang = $partModel->getPartPasang();
+
+        // Ambil data periode dari input pengguna atau gunakan default
+        $startDate = $this->request->getVar('start_date');
+        $endDate = $this->request->getVar('end_date');
+
+        // Ambil data sparepart terpasang berdasarkan periode
+        $getPartPasang = $partModel->getPartPasang($startDate, $endDate);
 
         $data = [
             'title' => 'Sparepart Terpasang',
             'getPartPasang' => $getPartPasang,
+            'start_date' => $startDate ?? date('Y-m-01'),
+            'end_date' => $endDate ?? date('Y-m-t'),
         ];
         return view('sparepart/part_pasang', $data);
     }
+
 
     // ---------------------------------------------------------------------------------------------------------------------
     public function stok_sparepart()

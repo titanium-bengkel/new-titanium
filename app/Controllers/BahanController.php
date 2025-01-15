@@ -199,6 +199,8 @@ class BahanController extends BaseController
             return redirect()->to('po_bahan')->with('berhasil', 'Data berhasil dihapus');
         }
     }
+
+
     public function prev_bahan($id_po_bahan)
     {
         $bahanModel = new M_Po_Bahan();
@@ -350,7 +352,16 @@ class BahanController extends BaseController
         $kartuStokModel = new M_Kartu_Stok();
         $modelJurnal = new M_ReportJurnal();
         $modelKasKecil = new M_KasKecil();
+        $barangBahanModel = new M_Barang_Bahan();
         $GenerateIdT = $terimaBahanModel->generateIdTerima();
+
+
+        // Mengambil nilai dari request
+        $raw_disc_total = $this->request->getPost('disc_total'); // Nilai awal dari input
+        $disc_total = str_replace(',', '', $raw_disc_total); // Hapus koma jika ada
+        $ppn_option = strtoupper($this->request->getPost('ppn')); // PPN atau NON-PPN
+        $ppn_rate = $ppn_option === 'PPN' ? 0.11 : 0; // 11% untuk PPN, 0 untuk Non-PPN
+        $disc_total = is_numeric($disc_total) ? (float)$disc_total : 0; // Pastikan nilai berupa angka
 
         // Mengambil data dari request
         $dataBahan = [
@@ -365,7 +376,8 @@ class BahanController extends BaseController
             'kota' => strtoupper($this->request->getPost('kota')),
             'alamat' => strtoupper($this->request->getPost('alamat')),
             'pembayaran' => strtoupper($this->request->getPost('pembayaran')),
-            'ppn' => 11,
+            'ppn' => $ppn_rate,
+            'disc_total' => $disc_total,
             'term' => $this->request->getPost('term'),
             'total_qty' => 0,
             'total_jumlah' => 0,
@@ -383,20 +395,20 @@ class BahanController extends BaseController
         $harga = $this->request->getPost('harga');
         $disc = $this->request->getPost('disc');
         $ceklis = $this->request->getPost('ceklis');
-
         if (!empty($kode_barang)) {
             foreach ($kode_barang as $index => $kode) {
                 $qty_clean = str_replace(',', '', $qty[$index]);
                 $harga_clean = str_replace(',', '', $harga[$index]);
                 $disc_clean = str_replace(',', '', $disc[$index]);
-
                 // Perhitungan jumlah dan diskon
-                $jumlah_sebelum_diskon = $qty_clean * $harga_clean;
-                $jumlah = $jumlah_sebelum_diskon - ($jumlah_sebelum_diskon * ($disc_clean / 100));
+                $jumlah_sebelum_diskon = bcmul($qty_clean, $harga_clean, 2);
+                $jumlah = bcsub($jumlah_sebelum_diskon, bcmul($jumlah_sebelum_diskon, ($disc_clean / 100), 2), 2);
+
 
                 $dataBahan['total_qty'] += $qty_clean;
                 $dataBahan['total_jumlah'] += $jumlah;
-
+                // Kurangkan diskon dari total jumlah
+                
                 // Update data stok atau masukkan data baru ke tabel gd_bahan
                 $existingBahan = $gdBahanModel->where(['kode_bahan' => $kode, 'nama_bahan' => $nama_barang[$index]])->first();
 
@@ -446,13 +458,42 @@ class BahanController extends BaseController
                     'ceklis' => isset($ceklis[$index]) ? 1 : 0
                 ];
 
+
                 $detailTerimaModel->insert($detailTerima);
+            }
+
+            // mengirim stok ke master dan perhitungan hpp
+            foreach ($kode_barang as $index => $kode) {
+                // Ambil daftar barang berdasarkan kode_bahan
+                $barangBahanList = $barangBahanModel->where('kode_bahan', $kode)->findAll();
+
+                // Lakukan update stok dan harga untuk setiap data yang ditemukan
+                foreach ($barangBahanList as $barangBahan) {
+                    $hargaBaru = str_replace(',', '', $harga[$index]); // Harga baru
+                    $stokBaru = str_replace(',', '', $qty[$index]);   // Stok baru
+
+                    // Hitung harga rata-rata
+                    $hargaRataRata = ($barangBahan['harga_jual'] + $hargaBaru) / 2;
+
+                    // Update stok dan harga
+                    $barangBahanModel->update($barangBahan['id_bahan'], [
+                        'stok' => $barangBahan['stok'] + $stokBaru,
+                        'harga_jual' => $hargaRataRata,
+                    ]);
+                }
             }
         }
 
         // Perhitungan nilai ppn dan netto
-        $dataBahan['nilai_ppn'] = $dataBahan['total_jumlah'] * 0.11;
-        $dataBahan['netto'] = $dataBahan['total_jumlah'] + $dataBahan['nilai_ppn'];
+        $dataBahan['nilai_ppn'] = $dataBahan['total_jumlah'] * $ppn_rate;
+        $dataBahan['netto'] = $dataBahan['total_jumlah'];
+        // Kurangi total diskon setelah semua perhitungan selesai
+        // Terapkan diskon total langsung ke total jumlah
+        $dataBahan['total_jumlah'] = bcsub($dataBahan['total_jumlah'], $disc_total, 2); // Kurangi dengan presisi 2 desimal
+
+        // Contoh tambahan jika ingin mencetak nilai akhir
+        echo "Total Jumlah setelah diskon: " . $dataBahan['total_jumlah'];
+
 
         $terimaBahanModel->insert($dataBahan);
 
@@ -529,7 +570,7 @@ class BahanController extends BaseController
                 $dataBarang = [
                     'date' => $this->request->getPost('tgl'),
                     'doc_no' => $doc_no,
-                    'account' => '13350',
+                    'account' => '11350',
                     'name' => 'PERSEDIAAN BARANG',
                     'description' => $description,
                     'debit' => $dataBahan['total_jumlah'],
