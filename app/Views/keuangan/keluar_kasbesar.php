@@ -267,7 +267,6 @@
     <!-- Datalist akan diisi oleh AJAX -->
 </datalist>
 
-
 <!-- Modal Edit -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -278,28 +277,34 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="id_report" id="id_report">
-                    <div class="mb-3">
-                        <label for="date" class="form-label">Tanggal</label>
-                        <input type="date" class="form-control" id="date" name="tanggal" required>
-                    </div>
+                    <!-- Hidden ID Report -->
+                    <input type="hidden" name="id_report[]" id="id_report">
+
+                    <!-- Input Account -->
                     <div class="mb-3">
                         <label for="account" class="form-label">Account</label>
-                        <input type="text" class="form-control" id="account" name="kode_account" required>
+                        <input type="text" class="form-control" id="account" name="account[]" required>
                     </div>
+
+                    <!-- Input Name -->
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" name="nama_account" required>
+                        <input type="text" class="form-control" id="name" name="name[]" required>
                     </div>
+
+                    <!-- Input Keterangan -->
                     <div class="mb-3">
                         <label for="description" class="form-label">Keterangan</label>
-                        <textarea class="form-control" id="description" name="keterangan" rows="3" required></textarea>
+                        <textarea class="form-control" id="description" name="keterangan[]" rows="3" required></textarea>
                     </div>
+
+                    <!-- Input Nilai -->
                     <div class="mb-3">
-                        <label for="debit" class="form-label">Jumlah</label>
-                        <input type="number" class="form-control" id="debit" name="nilai" required>
+                        <label for="nilai" class="form-label">Jumlah</label>
+                        <input type="number" class="form-control" id="debit" name="nilai[]" required>
                     </div>
                 </div>
+
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Save</button>
@@ -316,7 +321,6 @@
     editModal.addEventListener('show.bs.modal', function(event) {
         const button = event.relatedTarget; // Tombol yang diklik
         const id = button.getAttribute('data-id');
-        const date = button.getAttribute('data-date');
         const account = button.getAttribute('data-account');
         const name = button.getAttribute('data-name');
         const description = button.getAttribute('data-description');
@@ -324,7 +328,6 @@
 
         // Isi form di modal
         document.getElementById('id_report').value = id;
-        document.getElementById('date').value = date;
         document.getElementById('account').value = account;
         document.getElementById('name').value = name;
         document.getElementById('description').value = description;

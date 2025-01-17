@@ -26,13 +26,13 @@
 
         .header-info {
             text-align: right;
-            font-size: 12px;
+            font-size: 10px;
         }
 
         .title {
             text-align: center;
             margin: 20px 0;
-            font-size: 18px;
+            font-size: 12px;
             font-weight: bold;
         }
 
@@ -40,7 +40,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            font-size: 12px;
+            font-size: 10px;
         }
 
         th,
@@ -69,7 +69,7 @@
 
         .footer {
             margin-top: 40px;
-            font-size: 12px;
+            font-size: 10px;
         }
     </style>
 </head>
@@ -77,11 +77,11 @@
 <body>
     <header>
         <div class="logo" style="text-align: left;">
-            <img src="<?= base_url('dist/assets/img/kop.png') ?>" alt="Logo Perusahaan" style="width: 250px; height: auto;">
+            <img src="<?= base_url('dist/assets/img/kop.png') ?>" alt="Logo Perusahaan" style="width: 200px; height: auto;">
         </div>
 
 
-        <div class="header-info">
+        <div class="header-info" style="line-height: 0.25;">
             <p><strong>TITANIUM AUTO BODY REPAIR</strong></p>
             <p>Jl. Puspowarno Tengah No. 3, Semarang</p>
             <p>Telp: 024-7318330 / 08121574152</p>
@@ -92,7 +92,7 @@
     <div class="title">ESTIMASI PERBAIKAN KENDARAAN</div>
 
     <section>
-        <table style="border: none; width: 100%;">
+        <table style="border: none; width: 100%; line-height: 0.1;">
             <tr>
                 <td style="border: none; width: 15%;">Kepada</td>
                 <td style="border: none; width: 1%;">:</td>
@@ -139,7 +139,7 @@
 
 
     <h4 class="section-title">A. Jasa</h4>
-    <table>
+    <table style="border: none; width: 100%; line-height: 0.1;">
         <thead>
             <tr>
                 <th style="text-align: center;">No</th>
@@ -163,7 +163,7 @@
     </table>
 
     <h4 class="section-title">B. Sparepart</h4>
-    <table>
+    <table style="border: none; width: 100%; line-height: 0.1;">
         <thead>
             <tr>
                 <th style="text-align: center;"">No</th>
@@ -187,7 +187,7 @@
     </table>
 
     <div class="subtotal-section">
-        <table class="subtotal-table">
+        <table class="subtotal-table" style="border: none; width: 100%; line-height: 0.1;">
             <thead>
                 <tr>
                     <th colspan="2">Rincian Total Biaya</th>

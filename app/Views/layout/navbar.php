@@ -1,12 +1,12 @@
-<?php 
+<?php
 $foto = session()->get('foto') ?: 'default.jpg';
-$fiturrole = session()->get("fitur_role");?><script src="../dist/assets/static/js/initTheme.js"></script>
+$fiturrole = session()->get("fitur_role"); ?><script src="../dist/assets/static/js/initTheme.js"></script>
 <div id="app">
     <div id="sidebar">
         <div class="sidebar-wrapper active">
             <div class="sidebar-header position-relative">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div class="logo" style="font-size: 24px; font-weight: bold; color: #fff;"><a href="/index"
+                    <div class="logo" style="font-size: 24px; font-weight: bold; color: #fff;"><a href="dashboard/index"
                             style="text-decoration: none; color: inherit;">TITANIUM</a></div>
                     <div class="theme-toggle d-flex gap-2  align-items-center mt-2"><svg
                             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -42,33 +42,33 @@ $fiturrole = session()->get("fitur_role");?><script src="../dist/assets/static/j
             <div class="sidebar-menu">
                 <ul class="menu">
                     <li class="sidebar-title">Menu</li><?php foreach ($fiturrole as $ind_f => $f) { ?><li
-                        class="sidebar-item <?= isset($f["children"]) ? 'has-sub' : '' ?>"><a
-                            <?= isset($f["url"] )? 'href="'.$f["url"]. '"':'' ?> class="sidebar-link"><i
-                                class="<?= $f["icon"] ?>"></i><span><?= $f["nama"] ?></span></a><?php if (isset($f["children"])) { ?>
-                        <ul class="submenu"><?php foreach ($f["children"] as $ind_fc => $fc) { ?><li
-                                class="submenu-item <?= isset($fc["children"]) ? 'has-sub' : '' ?>"><a
-                                    <?= isset($fc["url"] ) ? 'href="'.$fc["url"]. '"' : 'onclick="toggleDropdown(event)"' ?>
-                                    class="submenu-link"><?= $fc["nama"] ?></a><?php if(isset($fc["children"])){ ?><ul
-                                    class="submenu-dropdown" style="display: none;">
-                                    <?php foreach ($fc["children"] as $ind_fcc => $fcc) { ?><li class="submenu-item"><a
-                                            <?= isset($fcc["url"] )? 'href="'.$fcc["url"]. '"':'' ?>
-                                            class="submenu-link"><?= $fcc["nama"] ?></a></li><?php } ?></ul><?php } ?>
-                            </li><?php } ?></ul><?php } ?>
-                    </li><?php } ?>
+                            class="sidebar-item <?= isset($f["children"]) ? 'has-sub' : '' ?>"><a
+                                <?= isset($f["url"]) ? 'href="' . $f["url"] . '"' : '' ?> class="sidebar-link"><i
+                                    class="<?= $f["icon"] ?>"></i><span><?= $f["nama"] ?></span></a><?php if (isset($f["children"])) { ?>
+                                <ul class="submenu"><?php foreach ($f["children"] as $ind_fc => $fc) { ?><li
+                                            class="submenu-item <?= isset($fc["children"]) ? 'has-sub' : '' ?>"><a
+                                                <?= isset($fc["url"]) ? 'href="' . $fc["url"] . '"' : 'onclick="toggleDropdown(event)"' ?>
+                                                class="submenu-link"><?= $fc["nama"] ?></a><?php if (isset($fc["children"])) { ?><ul
+                                                    class="submenu-dropdown" style="display: none;">
+                                                    <?php foreach ($fc["children"] as $ind_fcc => $fcc) { ?><li class="submenu-item"><a
+                                                                <?= isset($fcc["url"]) ? 'href="' . $fcc["url"] . '"' : '' ?>
+                                                                class="submenu-link"><?= $fcc["nama"] ?></a></li><?php } ?></ul><?php } ?>
+                                        </li><?php } ?></ul><?php } ?>
+                        </li><?php } ?>
                 </ul>
             </div>
         </div>
     </div>
     <script>
-    function toggleDropdown(event) {
-        event.preventDefault();
-        const submenuDropdown = event.target.nextElementSibling;
-        if (submenuDropdown.style.display === "none" || submenuDropdown.style.display === "") {
-            submenuDropdown.style.display = "block";
-        } else {
-            submenuDropdown.style.display = "none";
+        function toggleDropdown(event) {
+            event.preventDefault();
+            const submenuDropdown = event.target.nextElementSibling;
+            if (submenuDropdown.style.display === "none" || submenuDropdown.style.display === "") {
+                submenuDropdown.style.display = "block";
+            } else {
+                submenuDropdown.style.display = "none";
+            }
         }
-    }
     </script>
     <div id="main" class='layout-navbar navbar-fixed'>
         <header>

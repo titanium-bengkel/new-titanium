@@ -8,7 +8,7 @@
             <div class="card">
                 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                        <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                        <a href="<?= base_url('dashboard/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
                         <span class="breadcrumb-current text-muted">Supply Asuransi</span>
                     </div>

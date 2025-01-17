@@ -7,7 +7,7 @@ use to test your application. Those details can be found in the documentation.
 
 ## Resources
 
-* [CodeIgniter 4 User Guide on Testing](https://codeigniter.com/user_guide/testing/index.html)
+* [CodeIgniter 4 User Guide on Testing](https://codeigniter.com/user_guide/testingdashboard/index.html)
 * [PHPUnit docs](https://phpunit.de/documentation.html)
 * [Any tutorials on Unit testing in CI4?](https://forum.codeigniter.com/showthread.php?tid=81830)
 
@@ -76,7 +76,7 @@ It is collected in two formats: a simple text file that provides an overview as 
 as a comprehensive collection of HTML files that show the status of every line of code in the project.
 
 The text file can be found at **tests/coverage.txt**.
-The HTML files can be viewed by opening **tests/coverage/index.html** in your favorite browser.
+The HTML files can be viewed by opening **tests/coveragedashboard/index.html** in your favorite browser.
 
 ## PHPUnit XML Configuration
 

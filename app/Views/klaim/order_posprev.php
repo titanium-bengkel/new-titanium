@@ -25,6 +25,7 @@
         });
     <?php endif; ?>
 </script>
+
 <!-- Horizontal Input start -->
 <section id="horizontal-input">
     <div class="row">
@@ -34,14 +35,14 @@
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
                         <a href="<?= base_url('/klaim/preorder') ?>" class="breadcrumb-link text-primary fw-bold">Pre Order</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
-                        <span class="breadcrumb-current text-muted">Update Pre Order</span>
+                        <span class="breadcrumb-current text-muted">Data Pre Order</span>
                     </div>
-                    <h5 class="page-title mb-0 fw-bold">Update Pre Order</h5>
+                    <h5 class="page-title mb-0 fw-bold">Data Pre Order</h5>
                 </header>
                 <div class="card-body">
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-1 ">
-                            <label class="col-form-label">Cabang</label>
+                            <label class="col-form-label">Bengkel</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-1 d-flex align-items-center">
                             <div class="form-check me-3">
@@ -417,12 +418,12 @@
         </form>
 
         <!-- Form Input Pengerjaan -->
-        <div class="col-md-5">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
                     <!-- Button Accordion -->
-                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="collapse" data-bs-target="#collapsePengerjaan" id="togglePengerjaanButton">
-                        Add
+                    <button type="button" class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePengerjaan" id="togglePengerjaanButton">
+                        Add Pengerjaan
                     </button>
                     <!-- Form Pengerjaan -->
                     <div id="collapsePengerjaan" class="collapse mt-2">
@@ -460,21 +461,21 @@
 
                             <div class="row mb-2">
                                 <div>
-                                    <button type="submit" class="btn btn-success btn-sm">Submit</button>
-                                    <button type="button" class="btn btn-danger btn-sm" id="cancelPengerjaanButton">Batal</button>
+                                    <button type="submit" class="btn btn-success">Submit</button>
+                                    <button type="button" class="btn btn-danger" id="cancelPengerjaanButton">Batal</button>
                                 </div>
                             </div>
                         </form>
                     </div>
                     <!-- Tabel Pengerjaan -->
                     <div class="table-responsive mt-2">
-                        <table class="table table-bordered text-center">
+                        <table class="table table-bordered table-hover table-striped text-center">
                             <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Kode</th>
-                                    <th>Jasa</th>
-                                    <th>Harga</th>
+                                    <th>Pengerjaan</th>
+                                    <th style="text-align: right;">Harga</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -486,25 +487,27 @@
                                         $totalHarga += $p['harga'];
                                 ?>
                                         <tr>
-                                            <td><?= $index + 1 ?></td>
-                                            <td><?= esc($p['kode_pengerjaan']) ?></td>
-                                            <td><?= esc($p['nama_pengerjaan']) ?></td>
-                                            <td><?= number_format((float)$p['harga'], 0, ',', '.') ?></td>
-                                            <td class="d-flex">
-                                                <a href="#" class="btn btn-sm me-2 btn-edit" data-kode-pengerjaan="<?= esc($p['id_pengerjaan_po']) ?>">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="#"
-                                                    class="btn btn-sm btn-delete"
-                                                    data-url="<?= base_url('deletePengerjaanPo/' . esc($p['id_pengerjaan_po'])) ?>">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </a>
+                                            <td style="text-align: left;"><?= $index + 1 ?></td>
+                                            <td style="text-align: left;"><?= esc($p['kode_pengerjaan']) ?></td>
+                                            <td style="text-align: left;"><?= esc($p['nama_pengerjaan']) ?></td>
+                                            <td style="text-align: right;"><?= number_format((float)$p['harga'], 0, ',', '.') ?></td>
+                                            <td class="text-center align-middle">
+                                                <div class="d-flex justify-content-center">
+                                                    <a href="#" class="btn me-2 btn-edit" data-kode-pengerjaan="<?= esc($p['id_pengerjaan_po']) ?>">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a href="#"
+                                                        class="btn btn-delete"
+                                                        data-url="<?= base_url('deletePengerjaanPo/' . esc($p['id_pengerjaan_po'])) ?>">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
                                     <tr>
-                                        <td colspan="3"><strong>Total Harga</strong></td>
-                                        <td><strong id="total-harga"><?= number_format($totalHarga, 0, ',', '.') ?></strong></td>
+                                        <td colspan="3" style="text-align: right;"><strong>Total Harga:</strong></td>
+                                        <td style="text-align: right;"><strong id="total-harga"><?= number_format($totalHarga, 0, ',', '.') ?></strong></td>
                                         <td></td>
                                     </tr>
                                 <?php else : ?>
@@ -513,18 +516,17 @@
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
-
                         </table>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Sparepart -->
-        <div class="col-md-7">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="collapse" data-bs-target="#collapseSparepart" id="toggleSparepartButton">
-                        Add
+                    <button type="button" class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#collapseSparepart" id="toggleSparepartButton">
+                        Add Sparepart
                     </button>
                     <div id="collapseSparepart" class="collapse mt-2">
                         <form id="sparepartForm" action="<?= base_url('/createSparepart/' . esc($id_terima_po)) ?>" method="post">
@@ -598,8 +600,8 @@
                         </form>
                     </div>
                     <!-- Tabel Sparepart -->
-                    <div class="table-responsive text-center" style="font-size: 14px;">
-                        <table class="table table-bordered mt-2">
+                    <div class="table-responsive text-center">
+                        <table class="table table-bordered table-hover table-striped mt-2">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -617,55 +619,80 @@
                             </thead>
                             <tbody>
                                 <?php if (!empty($daftarSparepart)) : ?>
-                                    <?php $index = 1; ?>
-                                    <?php $totalQty = 0; ?>
-                                    <?php $totalHarga = 0; ?>
+                                    <?php
+                                    $index = 1;
+                                    $totalQty = 0;
+                                    $totalHarga = 0;
+                                    $totalQtyPesan = 0;
+                                    $totalQtyBeli = 0;
+                                    ?>
+
                                     <?php foreach ($daftarSparepart as $sparepart) : ?>
                                         <?php
                                         $qty = $sparepart['qty'];
                                         $harga = $sparepart['harga'];
-                                        // Hitung total harga per item
                                         $totalHargaPerItem = $harga * $qty;
+
+                                        $qtyPesan = isset($sparepart['qty_pesan']) && is_numeric($sparepart['qty_pesan']) ? $sparepart['qty_pesan'] : '-';
+                                        $qtyBeli = isset($sparepart['qty_beli']) && is_numeric($sparepart['qty_beli']) ? $sparepart['qty_beli'] : '-';
+                                        $tglPesan = isset($sparepart['tgl_pesan']) && $sparepart['tgl_pesan'] ? date('Y-m-d', strtotime($sparepart['tgl_pesan'])) : '-';
+                                        $tglBeli = isset($sparepart['tgl_beli']) && $sparepart['tgl_beli'] ? date('Y-m-d', strtotime($sparepart['tgl_beli'])) : '-';
                                         ?>
                                         <tr>
                                             <td><?= $index++ ?></td>
-                                            <td><?= $sparepart['kode_sparepart'] ?></td>
-                                            <td><?= esc($sparepart['nama_sparepart']) ?></td>
+                                            <td style="text-align: left;"><?= esc($sparepart['kode_sparepart']) ?></td>
+                                            <td style="text-align: left;"><?= esc($sparepart['nama_sparepart']) ?></td>
                                             <td><?= esc($sparepart['jenis_part']) ?></td>
                                             <td><?= esc($qty) ?></td>
-                                            <td><?= number_format($totalHargaPerItem, 0, ',', '.') ?></td>
-                                            <td><?= esc($qty) ?></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="d-flex">
-                                                <a href="#" class="btn btn-sm me-2 btn-edit-sparepart" data-id-sparepart="<?= esc($sparepart['id_sparepart_po']) ?>">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="<?= base_url('deleteSparepartPo/' . esc($sparepart['id_sparepart_po'])) ?>" class="btn btn-sm" onclick="return confirm('Are you sure you want to delete this item?')">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </a>
+                                            <td style="text-align: right;"><?= number_format($totalHargaPerItem, 0, ',', '.') ?></td>
+                                            <td><?= $qtyPesan ?></td>
+                                            <td><?= $tglPesan ?></td>
+                                            <td><?= $qtyBeli ?></td>
+                                            <td><?= $tglBeli ?></td>
+                                            <td class="text-center align-middle">
+                                                <div class="d-flex justify-content-center">
+                                                    <a href="#" class="btn btn-sm me-2 btn-edit-sparepart" data-id-sparepart="<?= esc($sparepart['id_sparepart_po']) ?>">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a href="<?= base_url('deleteSparepartPo/' . esc($sparepart['id_sparepart_po'])) ?>" class="btn btn-sm" onclick="return confirm('Are you sure you want to delete this item?')">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                         <?php
                                         $totalQty += $qty;
                                         $totalHarga += $totalHargaPerItem;
+
+                                        // Menambahkan qty_pesan dan qty_beli jika berupa angka
+                                        if (is_numeric($qtyPesan)) {
+                                            $totalQtyPesan += $qtyPesan;
+                                        }
+                                        if (is_numeric($qtyBeli)) {
+                                            $totalQtyBeli += $qtyBeli;
+                                        }
                                         ?>
                                     <?php endforeach; ?>
+
+                                    <!-- Total Row -->
                                     <tr>
-                                        <td colspan="4" class="text-right"><strong>Total:</strong></td>
+                                        <td colspan="4" style="text-align: right;"><strong>Total:</strong></td>
                                         <td><strong><?= $totalQty ?></strong></td>
-                                        <td id="total-harga-sparepart"><strong><?= number_format($totalHarga, 0, ',', '.') ?></strong></td>
-                                        <td colspan="9"></td>
+                                        <td id="total-harga-sparepart" style="text-align: right;"><strong><?= number_format($totalHarga, 0, ',', '.') ?></strong></td>
+                                        <td><strong><?= $totalQtyPesan ?></strong></td>
+                                        <td>-</td>
+                                        <td><strong><?= $totalQtyBeli ?></strong></td>
+                                        <td>-</td>
                                     </tr>
                                 <?php else : ?>
                                     <tr>
-                                        <td colspan="13" class="text-center">Tidak ada data sparepart</td>
+                                        <td colspan="11" class="text-center">Tidak ada data sparepart</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -686,16 +713,14 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#gambar">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#gambar">
                         Upload foto
                     </button>
-                    <a href="<?= base_url('downloadAllGambar/' . $id_terima_po) ?>" class="btn btn-info btn-sm float-end">
+                    <a href="<?= base_url('downloadAllGambar/' . $id_terima_po) ?>" class="btn btn-info float-end">
                         Download ZIP<i class="fa-solid fa-file-zipper"></i>
                     </a>
-
-
                     <div class="table-responsive text-center">
-                        <table class="table table-bordered mt-2">
+                        <table class="table table-bordered table-striped table-hover mt-2">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -720,7 +745,6 @@
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </td>
-
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else : ?>
@@ -1102,7 +1126,7 @@
                         <div class="row mb-3">
                             <label for="tgl_masuk" class="col-sm-3 col-form-label" style="font-weight: 500;">Tgl. Masuk</label>
                             <div class="col-sm-9">
-                                <input type="date" id="tgl_masuk" class="form-control" name="tgl_masuk" onclick="this.showPicker()" value="<?= isset($po['tgl_klaim']) ? esc($po['tgl_klaim']) : '' ?>" readonly>
+                                <input type="date" id="tgl_masuk" class="form-control" name="tgl_masuk" onclick="this.showPicker()">
                             </div>
                         </div>
                         <div class="row mb-3">

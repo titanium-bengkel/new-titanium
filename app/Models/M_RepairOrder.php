@@ -20,6 +20,8 @@ class M_RepairOrder extends Model
         'status_bayar',
         'status',
         'progres_pengerjaan',
+        'progres_dokumen',
+        'progres_sparepart',
         'user_id',
         'harga_estimasi',
         'harga_acc',

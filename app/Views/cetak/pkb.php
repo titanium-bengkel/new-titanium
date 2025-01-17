@@ -10,6 +10,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            font-size: 12px;
         }
 
         header {
@@ -32,7 +33,7 @@
         .title {
             text-align: center;
             margin: 20px 0;
-            font-size: 18px;
+            font-size: 14px;
             font-weight: bold;
         }
 
@@ -75,24 +76,11 @@
 </head>
 
 <body>
-    <!-- <header>
-        <div class="logo" style="text-align: left;">
-            <img src="<?= base_url('dist/assets/img/kop.png') ?>" alt="Logo Perusahaan" style="width: 250px; height: auto;">
-        </div>
-        <div class="header-info">
-            <p><strong>TITANIUM AUTO BODY REPAIR</strong></p>
-            <p>Jl. Puspowarno Tengah No. 3, Semarang</p>
-            <p>Telp: 024-7318330 / 08121574152</p>
-            <p>Email: titanium_autobodyrepair@yahoo.com</p>
-        </div>
-    </header> -->
-
     <div class="title">PERINTAH KERJA BENGKEL</div>
-
     <section>
-        <table style="border: none; width: 100%;">
+        <table style="border: none; width: 100%; line-height: 0.1;">
             <tr>
-                <td style="border: none; width: 15%;">No. RO</td>
+                <td style="border: none; width: 15%;">No. Order</td>
                 <td style="border: none; width: 1%;">:</td>
                 <td style="border: none; width: 34%;"><?= $ro['id_terima_po'] ?? '-' ?></td>
                 <td style="border: none; width: 15%;">Nopol</td>
@@ -100,91 +88,103 @@
                 <td style="border: none; width: 34%;"><?= $ro['no_kendaraan'] ?? '-' ?></td>
             </tr>
             <tr>
-                <td style="border: none;">Asuransi</td>
+                <td style="border: none;">Tgl. Order</td>
                 <td style="border: none;">:</td>
-                <td style="border: none;"><?= $ro['asuransi'] ?? '-' ?></td>
+                <td style="border: none;"><?= $ro['tgl_masuk'] ?? '-' ?></td>
                 <td style="border: none;">Merk/Type</td>
                 <td style="border: none;">:</td>
                 <td style="border: none;"><?= $ro['jenis_mobil'] ?? '-' ?></td>
             </tr>
             <tr>
-                <td style="border: none;">Tgl. SPK</td>
+                <td style="border: none;">SA</td>
                 <td style="border: none;">:</td>
-                <td style="border: none;"><?= date('d-m-Y') ?></td>
-                <td style="border: none;">Nopol</td>
+                <td style="border: none;"><?= $ro['user_id'] ?? '-' ?></td>
+                <td style="border: none;">No. Rangka</td>
                 <td style="border: none;">:</td>
-                <td style="border: none;"><?= $ro['no_kendaraan'] ?? '-' ?></td>
+                <td style="border: none;"><?= $ro['no_rangka'] ?? '-' ?></td>
             </tr>
             <tr>
-                <td style="border: none;">Warna</td>
+                <td style="border: none;">Est. Produksi</td>
                 <td style="border: none;">:</td>
-                <td style="border: none;"><?= $ro['warna'] ?? '-' ?></td>
-                <td style="border: none;">Service Advisor</td>
+                <td style="border: none;"><?= $ro['tgl_masuk'] ?? '-' ?></td>
+                <td style="border: none;">Customer</td>
                 <td style="border: none;">:</td>
-                <td style="border: none;"><?= $ro['username'] ?? '-' ?></td>
+                <td style="border: none;"><?= $ro['customer_name'] ?? '-' ?></td>
             </tr>
             <tr>
-
+                <td style="border: none;">Est. Selesai</td>
+                <td style="border: none;">:</td>
+                <td style="border: none;"><?= $ro['tgl_keluar'] ?? '-' ?></td>
+                <td style="border: none;">Alamat</td>
+                <td style="border: none;">:</td>
+                <td style="border: none;"><?= $ro['alamat'] ?? '-' ?></td>
+            </tr>
+            <tr>
+                <td style="border: none;">Asuransi</td>
+                <td style="border: none;">:</td>
+                <td style="border: none;"><?= $ro['asuransi'] ?? '-' ?></td>
+                <td style="border: none;">Telp.</td>
+                <td style="border: none;">:</td>
+                <td style="border: none;"><?= $ro['no_contact'] ?? '-' ?></td>
             </tr>
         </table>
     </section>
 
-    <h4 class="section-title">A. Jasa</h4>
-    <table>
-        <thead>
-            <tr>
-                <th style="text-align: center;">No</th>
-                <th style="text-align: center;">Jasa</th>
-                <th style="text-align: center;">K</th>
-                <th style="text-align: center;">C</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($pengerjaan as $index => $p): ?>
-                <tr>
-                    <td><?= $index + 1 ?></td>
-                    <td><?= $p['nama_pengerjaan'] ?? '-' ?></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-
-    <h4 class="section-title">B. Sparepart</h4>
-    <table>
-        <thead>
-            <tr>
-                <th style="text-align: center;">No</th>
-                <th style="text-align: center;">Sparepart</th>
-                <th style="text-align: center;">Tgl Part Keluar</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($sparepartPesanan as $index => $sp): ?>
-                <tr>
-                    <td><?= $index + 1 ?></td>
-                    <td><?= $sp['nama_sparepart'] ?? '-' ?></td>
-                    <td></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-
-    <div class="signature-section" style="margin-top: 50px; display: flex; justify-content: space-between;">
-        <div class="left-signature" style="text-align: center; width: 40%;">
-            <p>Kepala Bengkel</p>
-            <div style="height: 80px;"></div> <!-- Space untuk tanda tangan -->
-            <p><strong>(__________________)</strong></p>
+    <div style="border: none; width: 100%; line-height: 0.1;">
+        <!-- Tabel pertama (Order Pekerjaan) -->
+        <div class="row">
+            <div class="col-6">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center; border: 1px solid #000;">No.</th>
+                            <th style="text-align: center; border: 1px solid #000;">Pekerjaan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($pengerjaan as $index => $p): ?>
+                            <tr>
+                                <td style="text-align: center; border: 1px solid #000;"><?= $index + 1 ?></td>
+                                <td style="border: 1px solid #000;"><?= $p['nama_pengerjaan'] ?? '-' ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="right-signature" style="text-align: center; width: 40%;">
-            <p>Service Advisor</p>
-            <div style="height: 80px;"></div> <!-- Space untuk tanda tangan -->
-            <p><strong>(__________________)</strong></p>
+
+        <!-- Tabel tambahan -->
+        <div style="margin-top: 20px;">
+            <table style="width: 100%; border-collapse: collapse; border-spacing: 0;">
+                <!-- Baris Keluhan dan Permintaan -->
+                <tr>
+                    <td style="width: 50%; border: 1px solid #000; padding: 20px; height: 50px; vertical-align: top;">
+                        <u>Keluhan Customer:</u><br><br><br>
+                    </td>
+                    <td style="width: 50%; border: 1px solid #000; padding: 20px; height: 50px; vertical-align: top;">
+                        <u>Permintaan Customer:</u><br><br><br>
+                    </td>
+                </tr>
+
+                <!-- Baris Catatan -->
+                <tr>
+                    <td colspan="2" style="border: 1px solid #000; padding: 20px; height: 20px; vertical-align: top;">
+                        Catatan:<br><br><br>
+                    </td>
+                </tr>
+
+                <!-- Baris Tanda Tangan -->
+                <tr>
+                    <td style="border: 1px solid #000; text-align: center; height: 80px; vertical-align: bottom;">
+                        <?= $ro['customer_name'] ?? '-' ?><br><br><br><br><br>
+                    </td>
+                    <td style="border: 1px solid #000; text-align: center; height: 80px; vertical-align: bottom;">
+                        <?= $ro['user_id'] ?? '-' ?><br><br><br><br><br>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
-
-
 
     <script>
         window.print();

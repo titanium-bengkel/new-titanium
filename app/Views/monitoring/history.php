@@ -1,69 +1,114 @@
 <!-- File: app/Views/sparepart/permintaan_part.php -->
 <?= $this->extend('layout/template'); ?>
-
 <?= $this->section('content') ?>
-<h3>History Edit User</h3>
 
 <!-- Table Pre-order -->
 <section class="section">
     <div class="row" id="table-head">
         <div class="col-12">
             <div class="card">
-                <div class="card-content">
-                    <div class="card-header d-flex align-items-center" style="width: fit-content;">
-                        <div class="buttons d-flex align-items-center">
-                            <a href="#" class="btn btn-secondary mt-2 mr-2" style="width: 150px;">Export</a>
-                            <input type="text" id="helperText" class="form-control mt-2" placeholder="Cari Preorder" style="margin-right:5px;">
-                            <input type="text" id="helperText" class="form-control mt-2" placeholder="SA" style="margin-left:5px;">
-                            <input type="date" class="form-control flatpickr-range mt-2" placeholder="Select date.." style="margin-left:10px;">
-                        </div>
-                        <h6 class="mt-2" style="margin-left:10px;">Sort by</h6>
+                <header class="d-flex justify-content-between align-items-center border-bottom" style="border-color: #6c757d; padding: 15px 20px;">
+                    <div class="breadcrumb-wrapper" style="font-size: 14px;">
+                        <a href="<?= base_url('/dashboard') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                        <span class="breadcrumb-divider text-muted mx-3">/</span>
+                        <span class="breadcrumb-current text-muted">Jurnal Kas & Bank</span>
                     </div>
-                    <!-- table head dark -->
-                    <div class="table-responsive" style="margin:20px" ;>
-                        <table class="table table-bordered mb-0">
-                            <thead class="thead-dark">
+                    <h5 class="page-title mb-0 fw-bold">Jurnal Kas & Bank</h5>
+                </header>
+                <div class="card-header py-3 px-4">
+                    <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                        <!-- Tombol Add dan Export -->
+                        <div class="d-flex align-items-center gap-3">
+                            <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">
+                                <i class="fas fa-file-excel"></i> Export to Excel
+                            </a>
+                        </div>
+
+                        <!-- Filter dan Tampilkan Semua -->
+                        <form method="get" action="<?= base_url('filter/kas_bank') ?>" class="d-flex align-items-center gap-3 flex-wrap">
+                            <!-- Input Cari -->
+                            <div class="d-flex align-items-center">
+                                <label for="search_keyword" class="form-label fw-bold text-primary me-2 mb-0">Cari:</label>
+                                <input
+                                    type="text"
+                                    name="search_keyword"
+                                    id="search_keyword"
+                                    class="form-control form-control-sm"
+                                    placeholder="No. Document/Deskripsi"
+                                    value="<?= $searchKeyword ?? '' ?>">
+                            </div>
+
+                            <!-- Input Tanggal Mulai -->
+                            <div class="d-flex align-items-center">
+                                <label for="start_date" class="form-label fw-bold text-primary me-2 mb-0">Mulai:</label>
+                                <input
+                                    type="date"
+                                    name="start_date"
+                                    id="start_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $startDate ?? date('Y-m-01') ?>">
+                            </div>
+
+                            <!-- Input Tanggal Akhir -->
+                            <div class="d-flex align-items-center">
+                                <label for="end_date" class="form-label fw-bold text-primary me-2 mb-0">Akhir:</label>
+                                <input
+                                    type="date"
+                                    name="end_date"
+                                    id="end_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $endDate ?? date('Y-m-d') ?>">
+                            </div>
+
+                            <!-- Tombol Filter -->
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-sm fw-bold">Filter</button>
+                            </div>
+
+                            <!-- Tombol Tampilkan Semua -->
+                            <div>
+                                <button type="submit" name="show_all" value="1" class="btn btn-secondary btn-sm fw-bold">Tampilkan Semua</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="table-responsive" style="margin:20px; font-size: 14px;">
+                        <table class="table table-bordered table-striped table-hover mb-0">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th style="text-align: center;">#</th>
-                                    <th style="text-align: center;">User</th>
+                                    <th style="text-align: center;">User ID</th>
                                     <th style="text-align: center;">Nama Progres</th>
                                     <th style="text-align: center;">Nomor RO/No Jurnal/PO/Pembelian</th>
                                     <th style="text-align: center;">Tanggal Edit</th>
-                                    <th style="text-align: center;">Di Edit Oleh</th>
                                     <th style="text-align: center;">Nilai Sebelum Edit</th>
                                     <th style="text-align: center;">Nilai Sesudah Edit</th>
-                                    <th style="text-align: center;">Keterangan Sebelum Edit</th>
-                                    <th style="text-align: center;">Keterangan Sesudah Edit</th>
-                                    <th style="text-align: center;">Analisis</th>
+                                    <th style="text-align: center;">Deskripsi</th>
                                 </tr>
                             </thead>
-                            
+
                             <tbody class="text-center">
-                                <tr>
-                                    <td>1</td>
-                                    <td>ina</td>
-                                    <td>Edit pengeluaran kas kecil</td>
-                                    <td>01.01.07.CJ24000711</td>
-                                    <td>2024-07-12 06:15:31</td>
-                                    <td>ina</td>
-                                    <td>120,500</td>
-                                    <td>99,500</td>
-                                    <td>RING PLAT, 5 LBR AMPLAS NORTON (GALIH), KARET U/ MOULDING (ALDI)</td>
-                                    <td>RING PLAT, 5 LBR AMPLAS NORTON (GALIH), KARET U/ MOULDING (ALDI)</td>
-                                    <td>User Mengedit nominal</td>
+                                <?php if (!empty($logs)): ?>
+                                    <?php foreach ($logs as $index => $log): ?>
+                                        <tr>
+                                            <td><?= $index + 1; ?></td>
+                                            <td><?= esc($log['username']); ?></td>
+                                            <td><?= esc($log['table_name']); ?></td>
+                                            <td><?= esc($log['record_id']); ?></td>
+                                            <td><?= esc($log['updated_at'] ?? $log['created_at']); ?></td>
+                                            <td><?= esc($log['old_value']); ?></td>
+                                            <td><?= esc($log['new_value']); ?></td>
+                                            <td><?= esc($log['description']); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="10">Tidak ada data log yang tersedia.</td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
-                        <div class="card-body">
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination pagination-primary">
-                                    <li class="page-item"><a class="page-link" href="#">Prev</a></li>
-                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                                </ul>
-                            </nav>
-                        </div>
                     </div>
                 </div>
             </div>

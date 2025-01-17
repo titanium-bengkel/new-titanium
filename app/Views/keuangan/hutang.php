@@ -23,84 +23,74 @@
                                     <th style="text-align: center;">Tanggal</th>
                                     <th style="text-align: center;">Term</th>
                                     <th style="text-align: center;">Jatuh Tempo</th>
-                                    <th style="text-align: center;">Nilai</th>
+                                    <th style="text-align: center;">Nilai (Netto)</th>
                                     <th style="text-align: center;">Pembayaran</th>
                                     <th style="text-align: center;">Saldo</th>
                                 </tr>
                             </thead>
-
-                            <?php
-                            $current_supplier = null;
-                            $subtotal_hutang = 0;
-                            $subtotal_pembayaran = 0;
-                            $subtotal_saldo = 0;
-
-                            foreach ($supplier as $sup):
-                                // Jika supplier baru, tampilkan header untuk supplier
-                                if ($current_supplier !== $sup['kode_supplier']):
-                                    // Jika sudah ada supplier sebelumnya, tampilkan subtotal sebelumnya
-                                    if ($current_supplier !== null):
-                            ?>
-                                        <tr>
-                                            <th colspan="4"></th>
-                                            <th><?= number_format($subtotal_hutang, 0, ',', '.'); ?></th>
-                                            <th><?= number_format($subtotal_pembayaran, 0, ',', '.'); ?></th>
-                                            <th><?= number_format($subtotal_saldo, 0, ',', '.'); ?></th>
-                                        </tr>
-                                    <?php
-                                    endif;
-
-                                    // Update current_supplier dan reset subtotal
-                                    $current_supplier = $sup['kode_supplier'];
-                                    $subtotal_hutang = 0;
-                                    $subtotal_pembayaran = 0;
-                                    $subtotal_saldo = 0;
-                                    ?>
-                                    <tbody>
-                                        <tr>
-                                            <td colspan="7"><b><?= $sup['kode_supplier'] . ' - ' . $sup['supplier']; ?></b></td>
-                                        </tr>
-                                    </tbody>
+                            <tbody>
                                 <?php
-                                endif;
+                                $current_supplier = null;
+                                $subtotal_hutang = 0;
+                                $subtotal_pembayaran = 0;
+                                $subtotal_saldo = 0;
 
-                                // Hitung nilai total dan saldo
-                                $nilai_total = $sup['total_jumlah'];
-                                $pembayaran = $sup['total_jumlah'];
-                                $saldo = $pembayaran - $nilai_total;
+                                foreach ($supplier as $sup) {
+                                    if ($current_supplier !== $sup['kode_supplier']) {
+                                        if ($current_supplier !== null) {
+                                            echo "<tr>
+                                                    <th colspan='4' class='text-end'>Subtotal</th>
+                                                    <th class='text-center'>" . number_format($subtotal_hutang, 0, ',', '.') . "</th>
+                                                    <th class='text-center'>" . number_format($subtotal_pembayaran, 0, ',', '.') . "</th>
+                                                    <th class='text-center'>" . number_format($subtotal_saldo, 0, ',', '.') . "</th>
+                                                  </tr>";
+                                        }
 
-                                // Tambahkan ke subtotal
-                                $subtotal_hutang += $nilai_total;
-                                $subtotal_pembayaran += $pembayaran;
-                                $subtotal_saldo += $saldo;
+                                        $current_supplier = $sup['kode_supplier'];
+                                        $subtotal_hutang = 0;
+                                        $subtotal_pembayaran = 0;
+                                        $subtotal_saldo = 0;
+
+                                        echo "<tr>
+                                                    <td colspan='7'><b>{$sup['kode_supplier']} - {$sup['supplier']}</b></td>
+                                                </tr>";
+                                    }
+
+                                    $netto = $sup['netto'];
+                                    $pembayaran = $sup['debit'];
+                                    $saldo = $netto - $pembayaran;
+
+                                    $subtotal_hutang += $netto;
+                                    $subtotal_pembayaran += $pembayaran;
+                                    $subtotal_saldo += $saldo;
+
+                                    echo "<tr>
+                                            <td class='text-center'>{$sup['id_penerimaan']}</td>
+                                            <td class='text-center'>" . date('Y-m-d', strtotime($sup['tanggal'])) . "</td>
+                                            <td class='text-center'>{$sup['term']}</td>
+                                            <td class='text-center'>" . date('Y-m-d', strtotime($sup['jatuh_tempo'])) . "</td>
+                                            <td class='text-center'>" . number_format($netto, 0, ',', '.') . "</td>
+                                            <td class='text-center'>" . number_format($pembayaran, 0, ',', '.') . "</td>
+                                            <td class='text-center'>" . number_format($saldo, 0, ',', '.') . "</td>
+                                        </tr>";
+                                }
+
+                                echo "<tr>
+                                        <th colspan='4' class='text-end'>Subtotal</th>
+                                        <th class='text-center'>" . number_format($subtotal_hutang, 0, ',', '.') . "</th>
+                                        <th class='text-center'>" . number_format($subtotal_pembayaran, 0, ',', '.') . "</th>
+                                        <th class='text-center'>" . number_format($subtotal_saldo, 0, ',', '.') . "</th>
+                                    </tr>";
                                 ?>
-
-                                <tbody>
-                                    <tr>
-                                        <td><?= $sup['no_faktur']; ?></td>
-                                        <td class="text-center"><?= date('Y-m-d', strtotime($sup['tanggal'])); ?></td>
-                                        <td class="text-center"><?= $sup['term']; ?></td>
-                                        <td class="text-center"><?= date('Y-m-d', strtotime($sup['jatuh_tempo'])); ?></td>
-                                        <td class="text-center"><?= number_format($nilai_total, 0, ',', '.'); ?></td>
-                                        <td class="text-center"><?= number_format($pembayaran, 0, ',', '.'); ?></td>
-                                        <td class="text-center"><?= number_format($saldo, 0, ',', '.'); ?></td>
-                                    </tr>
-                                </tbody>
-                            <?php endforeach; ?>
-                            <tr>
-                                <th colspan="4"></th>
-                                <th><?= number_format($subtotal_hutang, 0, ',', '.'); ?></th>
-                                <th><?= number_format($subtotal_pembayaran, 0, ',', '.'); ?></th>
-                                <th><?= number_format($subtotal_saldo, 0, ',', '.'); ?></th>
-                            </tr>
-                            <thead style="font-size: 14px;">
+                            </tbody>
+                            <tfoot>
                                 <tr>
-                                    <th colspan="4"></th>
-                                    <th style="text-align: center;">Total Hutang: <?= number_format(array_sum(array_column($supplier, 'nilai_total')), 0, ',', '.'); ?></th>
-                                    <th style="text-align: center;">Total Pembayaran: <?= number_format(array_sum(array_column($supplier, 'pembayaran')), 0, ',', '.'); ?></th>
-                                    <th style="text-align: center;">Total Saldo: <?= number_format(array_sum(array_column($supplier, 'pembayaran')) - array_sum(array_column($supplier, 'nilai_total')), 0, ',', '.'); ?></th>
+                                    <th colspan="4" class="text-end">Grand Total</th>
+                                    <th class="text-center"><?= number_format(array_sum(array_column($supplier, 'netto')), 0, ',', '.'); ?></th>
+                                    <th class="text-center"><?= number_format(array_sum(array_column($supplier, 'debit')), 0, ',', '.'); ?></th>
+                                    <th class="text-center"><?= number_format(array_sum(array_column($supplier, 'netto')) - array_sum(array_column($supplier, 'debit')), 0, ',', '.'); ?></th>
                                 </tr>
-                            </thead>
+                            </tfoot>
                         </table>
                     </div>
                 </div>

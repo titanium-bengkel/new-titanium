@@ -31,13 +31,10 @@ class SparepartController extends BaseController
         $Pomodel = new M_Po();
         $SparepartPoModel = new M_SparepartPo();
         $supplierModel = new M_Supplier();
-        $repairOrderModel = new M_RepairOrder();
 
         $poData = $Pomodel->getFilteredDataSparepartNotSent();
 
-        $repairOrderData = $repairOrderModel->findAll();
-
-        $combinedData = array_merge($poData, $repairOrderData);
+        $combinedData = $poData;
 
         $sparepart = [];
         $detailPO = [];

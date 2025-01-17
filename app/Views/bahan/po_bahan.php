@@ -27,7 +27,7 @@
                                     <input type="date" id="start-date" name="start_date" class="form-control form-control-sm rounded-2 w-auto" onclick="this.showPicker()"
                                         value="<?= isset($startDate) ? $startDate : '' ?>" />
                                     <span class="mx-1 text-muted fw-bold">to</span>
-                                    <input type="date" id="end-date" name="end_date" class="form-control form-control-sm rounded-2 w-auto"onclick="this.showPicker()"
+                                    <input type="date" id="end-date" name="end_date" class="form-control form-control-sm rounded-2 w-auto" onclick="this.showPicker()"
                                         value="<?= isset($endDate) ? $endDate : '' ?>" />
                                     <button type="submit" class="btn btn-primary btn-sm rounded-2">
                                         <i class="fas fa-filter"></i> Filter

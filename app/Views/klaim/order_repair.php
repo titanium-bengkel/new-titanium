@@ -35,9 +35,9 @@
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
                         <a href="<?= base_url('/repair_order') ?>" class="breadcrumb-link text-primary fw-bold">Repair Order</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
-                        <span class="breadcrumb-current text-muted">Data Repair Orders</span>
+                        <span class="breadcrumb-current text-muted">Data Order</span>
                     </div>
-                    <h5 class="page-title mb-0 fw-bold">Data Repair Orders</h5>
+                    <h5 class="page-title mb-0 fw-bold">Data Order</h5>
                 </header>
                 <div class="card-body">
                     <div class="form-group row align-items-center">
@@ -66,76 +66,38 @@
                                 <label class="form-check-label" for="bengkel-vortex">Vortex</label>
                             </div>
                             <div class="d-flex ms-auto">
-                                <input type="date" id="tanggal-estimasi" class="form-control me-2" name="tgl_keluar" style=" max-width: 180px;" value="<?= isset($ro['tgl_keluar']) ? esc($ro['tgl_keluar']) : '' ?>">
-                                <input type="time" id="jam" name="jam_keluar" class="form-control me-2" style="max-width: 120px;" value="<?= isset($ro['jam_keluar']) ? esc($ro['jam_keluar']) : '' ?>">
+                                <input type="hidden" id="tgl-masuk" class="form-control me-2" name="tgl_masuk" value="<?= isset($ro['tgl_masuk']) ? esc($ro['tgl_masuk']) : '' ?>">
+                                <input type="date" id="tanggal-estimasi" class="form-control me-2" name="tgl_keluar" style=" max-width: 180px;" value="<?= isset($tgl_estimasi) ? esc($tgl_estimasi) : '' ?>">
+                                <input type="time" id="jam" name="jam_keluar" class="form-control me-2" style="max-width: 120px;" value="" />
+
+                                <script>
+                                    // Fungsi untuk mendapatkan waktu saat ini dan mengupdate input jika belum ada value
+                                    window.onload = function() {
+                                        var jamInput = document.getElementById('jam');
+
+                                        // Jika tidak ada value di input, set jam saat ini
+                                        if (!jamInput.value) {
+                                            var now = new Date();
+                                            var hours = now.getHours().toString().padStart(2, '0'); // Format dua digit jam
+                                            var minutes = now.getMinutes().toString().padStart(2, '0'); // Format dua digit menit
+                                            jamInput.value = hours + ':' + minutes;
+                                        }
+
+                                        // Update setiap detik untuk memastikan waktu berjalan otomatis
+                                        setInterval(function() {
+                                            var now = new Date();
+                                            var hours = now.getHours().toString().padStart(2, '0');
+                                            var minutes = now.getMinutes().toString().padStart(2, '0');
+                                            if (!jamInput.value) {
+                                                jamInput.value = hours + ':' + minutes;
+                                            }
+                                        }, 1000);
+                                    };
+                                </script>
                                 <div class="ms-auto">
                                     <button type="button" class="btn btn-primary" id="mobilKeluarBtn"
                                         data-id_terima_po="<?= isset($ro['id_terima_po']) ? esc($ro['id_terima_po']) : '' ?>"><i class="fas fa-sign-out"></i></button>
                                 </div>
-
-
-                                <script>
-                                    // Ambil elemen tombol berdasarkan ID
-                                    document.getElementById('mobilKeluarBtn').addEventListener('click', function() {
-                                        // Ambil nilai id_terima_po dari atribut data-id_terima_po
-                                        const id_terima_po = this.getAttribute('data-id_terima_po');
-
-                                        // Menampilkan SweetAlert2 dengan pilihan Iya dan Batal
-                                        Swal.fire({
-                                            title: 'Apakah Anda yakin?',
-                                            text: "Tindakan ini tidak bisa dibatalkan. Mobil akan keluar dan data tidak dapat kembali setelah dikonfirmasi.",
-                                            icon: 'warning',
-                                            showCancelButton: true,
-                                            confirmButtonText: 'Iya, Lanjutkan',
-                                            cancelButtonText: 'Batal',
-                                            reverseButtons: true // Agar tombol Batal di kiri dan Iya di kanan
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                // Jika klik Iya, kirim request POST ke route dengan id_terima_po
-                                                const url = '/buttonExit/' + encodeURIComponent(id_terima_po); // Ganti 'yourData' dengan id_terima_po
-
-                                                fetch(url, {
-                                                        method: 'POST', // Menggunakan POST
-                                                        headers: {
-                                                            'Content-Type': 'application/json',
-                                                            'X-Requested-With': 'XMLHttpRequest' // Biasanya digunakan untuk AJAX request
-                                                        },
-                                                        body: JSON.stringify({
-                                                            // Kirim data tambahan jika diperlukan
-                                                            mobilId: 123 // Ganti dengan data lain jika diperlukan
-                                                        })
-                                                    })
-                                                    .then(response => response.json()) // Mengambil response JSON
-                                                    .then(data => {
-                                                        if (data.success) {
-                                                            Swal.fire(
-                                                                'Mobil Keluar!',
-                                                                data.message,
-                                                                'success'
-                                                            );
-                                                        } else {
-                                                            Swal.fire(
-                                                                'Gagal!',
-                                                                data.message,
-                                                                'error'
-                                                            );
-                                                        }
-                                                    })
-                                                    .catch(error => {
-                                                        console.error('Error:', error);
-                                                        Swal.fire('Terjadi Kesalahan', 'Gagal mengirim data ke server', 'error');
-                                                    });
-                                            } else if (result.isDismissed) {
-                                                // Jika klik Batal
-                                                Swal.fire(
-                                                    'Aksi Dibatalkan!',
-                                                    'Tidak ada perubahan yang dilakukan.',
-                                                    'error'
-                                                );
-                                            }
-                                        });
-                                    });
-                                </script>
                             </div>
 
                             <!-- Countdown Timer Card -->
@@ -170,7 +132,7 @@
                             <label class="col-form-label" for="pre-order-id">No. Order</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
-                            <input type="text" class="form-control" value="<?= isset($ro['id_terima_po']) ? esc($ro['id_terima_po']) : '' ?>" readonly>
+                            <input type="text" class="form-control" name="no_order" value="<?= isset($ro['id_terima_po']) ? esc($ro['id_terima_po']) : '' ?>" readonly>
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
@@ -368,56 +330,70 @@
                 <div class="card-body">
                     <h5>Checklist Proses Klaim</h5>
                     <div class="form-group" id="repairOrderForm">
-                        <!-- Ketok -->
-                        <?php if (!in_array($ro['progres_pengerjaan'], ['Beres Pengerjaan', 'Menunggu Sparepart Tambahan', 'Menunggu Comment User', 'Data Completed'])): ?>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="ketok" name="progres_pengerjaan" value="Ketok"
-                                    <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Ketok') ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="ketok">Ketok</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="dempul" name="progres_pengerjaan" value="Dempul"
-                                    <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Dempul') ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="dempul">Dempul</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="epoxy" name="progres_pengerjaan" value="Epoxy"
-                                    <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Epoxy') ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="epoxy">Epoxy</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="cat" name="progres_pengerjaan" value="Cat"
-                                    <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Cat') ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="cat">Cat</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="poles" name="progres_pengerjaan" value="Poles"
-                                    <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Poles') ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="poles">Poles</label>
+                        <?php
+                        // Daftar value yang menyebabkan langkah pengerjaan (Ketok, Dempul, dll.) disembunyikan
+                        $hide_steps = ['Beres Pengerjaan', 'Menunggu Comment User', 'Kurang Dokumen', 'Sparepart', 'Data Completed'];
+                        $hide_progress_steps = in_array($ro['progres_pengerjaan'], $hide_steps);
+                        ?>
+
+                        <!-- Ketok, Dempul, Epoxy, Cat, Poles -->
+                        <?php if (!$hide_progress_steps): ?>
+                            <div id="progress-steps">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="ketok" name="progres_pengerjaan" value="Ketok"
+                                        <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Ketok') ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="ketok">Ketok</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="dempul" name="progres_pengerjaan" value="Dempul"
+                                        <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Dempul') ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="dempul">Dempul</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="epoxy" name="progres_pengerjaan" value="Epoxy"
+                                        <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Epoxy') ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="epoxy">Epoxy</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="cat" name="progres_pengerjaan" value="Cat"
+                                        <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Cat') ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="cat">Cat</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="poles" name="progres_pengerjaan" value="Poles"
+                                        <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Poles') ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="poles">Poles</label>
+                                </div>
                             </div>
                         <?php endif; ?>
 
-                        <?php if (!in_array($ro['progres_pengerjaan'], ['Data Completed'])): ?>
-                            <!-- Beres Pengerjaan -->
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="beres-pengerjaan" name="progres_pengerjaan" value="Beres Pengerjaan"
-                                    <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Beres Pengerjaan') ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="beres-pengerjaan">Beres Pengerjaan</label>
-                            </div>
-                            <!-- Menunggu Sparepart Tambahan -->
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="menunggu-sparepart" name="progres_pengerjaan" value="Menunggu Sparepart Tambahan"
-                                    <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Menunggu Sparepart Tambahan') ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="menunggu-sparepart">Menunggu Sparepart Tambahan</label>
-                            </div>
+                        <!-- Beres Pengerjaan -->
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="beres-pengerjaan" name="progres_pengerjaan" value="Beres Pengerjaan"
+                                <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Beres Pengerjaan') ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="beres-pengerjaan">Beres Pengerjaan</label>
+                        </div>
 
-                            <!-- Menunggu Comment User -->
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="comment-user" name="progres_pengerjaan" value="Menunggu Comment User"
-                                    <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Menunggu Comment User') ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="comment-user">Menunggu Comment User</label>
-                            </div>
-                        <?php endif; ?>
+                        <!-- Menunggu Comment User -->
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="comment-user" name="progres_pengerjaan" value="Menunggu Comment User"
+                                <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Menunggu Comment User') ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="comment-user">Menunggu Comment User</label>
+                        </div>
+
+                        <!-- Kurang Dokumen -->
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="kurang-dokumen" name="progres_pengerjaan" value="Kurang Dokumen"
+                                <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Kurang Dokumen') ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="kurang-dokumen">Kurang Dokumen</label>
+                        </div>
+
+                        <!-- Sparepart -->
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="sparepart" name="progres_pengerjaan" value="Sparepart"
+                                <?= (isset($ro['progres_pengerjaan']) && $ro['progres_pengerjaan'] == 'Sparepart') ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="sparepart">Sparepart</label>
+                        </div>
 
                         <!-- Data Completed -->
                         <div class="form-check form-check-inline">
@@ -426,6 +402,89 @@
                             <label class="form-check-label" for="data-completed">Data Completed</label>
                         </div>
                     </div>
+
+                    <!-- Pilihan untuk Kurang Dokumen -->
+                    <div id="dokumen-options" style="display:none; margin-top: 15px;">
+                        <label>Pilihan Kurang Dokumen:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="foto-epoxy" name="dokumen_detail[]" value="Kurang Foto Epoxy">
+                            <label class="form-check-label" for="foto-epoxy">Kurang Foto Epoxy</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="foto-finishing" name="dokumen_detail[]" value="Kurang Foto Finishing">
+                            <label class="form-check-label" for="foto-finishing">Kurang Foto Finishing</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="tt-salvage" name="dokumen_detail[]" value="Menunggu TT Salvage">
+                            <label class="form-check-label" for="tt-salvage">Menunggu TT Salvage</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="stample-puas" name="dokumen_detail[]" value="Menunggu Stample Puas">
+                            <label class="form-check-label" for="stample-puas">Menunggu Stample Puas</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="gesek-rangka" name="dokumen_detail[]" value="Gesek Rangka">
+                            <label class="form-check-label" for="gesek-rangka">Gesek Rangka</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="problem-asuransi" name="dokumen_detail[]" value="Problem Asuransi">
+                            <label class="form-check-label" for="problem-asuransi">Problem Asuransi</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="kurang-no-mesin" name="dokumen_detail[]" value="Kurang No Mesin/Rangka">
+                            <label class="form-check-label" for="kurang-no-mesin">Kurang No Mesin/Rangka</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="banding-jasa" name="dokumen_detail[]" value="Banding Tambahan Jasa">
+                            <label class="form-check-label" for="banding-jasa">Banding Tambahan Jasa</label>
+                        </div>
+                    </div>
+
+                    <!-- Pilihan untuk Sparepart -->
+                    <div id="sparepart-options" style="display:none; margin-top: 15px;">
+                        <label>Pilihan Sparepart:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="menunggu-sparepart" name="sparepart_detail[]" value="Menunggu Sparepart Tambahan">
+                            <label class="form-check-label" for="menunggu-sparepart">Menunggu Sparepart Tambahan</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="banding-sparepart" name="sparepart_detail[]" value="Banding Sparepart">
+                            <label class="form-check-label" for="banding-sparepart">Banding Sparepart</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="menunggu-cust-pasang" name="sparepart_detail[]" value="Menunggu Cust Pasang Sparepart">
+                            <label class="form-check-label" for="menunggu-cust-pasang">Menunggu Cust Pasang Sparepart</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="sparepart-retur" name="sparepart_detail[]" value="Sparepart Retur">
+                            <label class="form-check-label" for="sparepart-retur">Sparepart Retur</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="sparepart-supply-lama" name="sparepart_detail[]" value="Sparepart Supply Lama Datang">
+                            <label class="form-check-label" for="sparepart-supply-lama">Sparepart Supply Lama Datang</label>
+                        </div>
+                    </div>
+
+                    <script>
+                        // Fungsi untuk menampilkan atau menyembunyikan opsi berdasarkan status yang dipilih
+                        document.querySelectorAll('input[name="progres_pengerjaan"]').forEach(input => {
+                            input.addEventListener('change', function() {
+                                // Menyembunyikan semua pilihan Kurang Dokumen dan Sparepart
+                                document.getElementById('dokumen-options').style.display = 'none';
+                                document.getElementById('sparepart-options').style.display = 'none';
+
+                                // Menampilkan sesuai pilihan yang dipilih
+                                if (this.value === 'Kurang Dokumen') {
+                                    document.getElementById('dokumen-options').style.display = 'block';
+                                }
+                                if (this.value === 'Sparepart') {
+                                    document.getElementById('sparepart-options').style.display = 'block';
+                                }
+                            });
+                        });
+                    </script>
+
+
                     <div class="mt-3" style="position: relative;">
                         <button type="submit" class="btn btn-primary">Simpan</button>
                         <button type="button" class="btn btn-danger">Batal</button>
@@ -475,16 +534,45 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                         <form action="<?= base_url('cetakKwitansi/' . $ro['id_terima_po']) ?>" method="POST">
+                            <!-- Hidden field untuk is_sent -->
                             <input type="hidden" name="is_sent" value="1">
+
+                            <!-- Input fields untuk data -->
+                            <input type="hidden" class="form-control" name="noOrder" value="<?= isset($ro['id_terima_po']) ? esc($ro['id_terima_po']) : '' ?>">
+                            <input type="hidden" class="form-control" name="noRangka" value="<?= isset($ro['no_rangka']) ? esc($ro['no_rangka']) : '' ?>">
+                            <input type="hidden" class="form-control" name="asuransi" value="<?= isset($ro['asuransi']) ? esc($ro['asuransi']) : '' ?>">
+                            <input type="hidden" class="form-control" name="customerName" value="<?= isset($ro['customer_name']) ? esc($ro['customer_name']) : '' ?>">
+                            <input type="hidden" class="form-control" name="jenisMobil" value="<?= isset($ro['jenis_mobil']) ? esc($ro['jenis_mobil']) : '' ?>">
+                            <input type="hidden" class="form-control" name="noKendaraan" value="<?= isset($ro['no_kendaraan']) ? esc($ro['no_kendaraan']) : '' ?>">
+                            <input type="hidden" class="form-control" name="warna" value="<?= isset($ro['warna']) ? esc($ro['warna']) : '' ?>">
+                            <input type="hidden" class="form-control" name="tahunKendaraan" value="<?= isset($ro['tahun_kendaraan']) ? esc($ro['tahun_kendaraan']) : '' ?>">
+                            <input type="hidden" class="form-control" name="noContact" value="<?= isset($ro['no_contact']) ? esc($ro['no_contact']) : '' ?>">
+                            <input type="hidden" class="form-control" name="keterangan" value="<?= isset($ro['keterangan']) ? esc($ro['keterangan']) : '' ?>">
+
+                            <!-- Tanggal Masuk dan Tanggal Keluar -->
+                            <input type="hidden" class="form-control" name="tglMasuk" value="<?= isset($ro['tgl_masuk']) ? esc($ro['tgl_masuk']) : '' ?>">
+                            <input type="hidden" class="form-control" name="tglKeluar" value="<?= isset($ro['tgl_keluar']) ? esc($ro['tgl_keluar']) : '' ?>">
+
+                            <!-- Nilai OR dan Qty OR -->
+                            <input type="hidden" class="form-control" name="nilaiOr" value="<?= isset($nilai_or) ? number_format($nilai_or, 0, ',', '.') : '0' ?>">
+                            <input type="hidden" class="form-control" name="qtyOr" value="<?= isset($qty_or) ? esc($qty_or) : '0' ?>">
+
+                            <!-- Biaya Jasa, Sparepart, dan Harga Total -->
+                            <input type="hidden" class="form-control" name="nilaiJasa" value="<?= isset($nilai_jasa) ? esc($nilai_jasa) : '' ?>">
+                            <input type="hidden" class="form-control" name="nilaiSparepart" value="<?= isset($nilai_sparepart) ? esc($nilai_sparepart) : '' ?>">
+                            <input type="hidden" class="form-control" name="hargaAcc" value="<?= isset($harga_total) ? esc($harga_total) : '' ?>">
+
+                            <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary">Sudah</button>
                         </form>
+
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Form Input Pengerjaan -->
-        <div class="col-md-5">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Pengerjaan</h5>
@@ -499,36 +587,36 @@
                         <form id="pengerjaanForm" method="post" action="<?= base_url('createPengerjaanPo') ?>">
                             <input type="hidden" name="id_terima_po" value="<?= esc($ro['id_terima_po']) ?>">
                             <div class="row mb-2">
-                                <div class="col-sm-5">
+                                <div class="col-md-3 col-sm-5">
                                     <label for="kodePengerjaan" class="col-form-label">Kode Pengerjaan</label>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-md-6 col-sm-4">
                                     <input type="text" class="form-control form-control-sm" id="kodePengerjaan" name="kodePengerjaan" readonly>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-md-3 col-sm-2">
                                     <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#pengerjaanModal">
                                         <i class="fas fa-search"></i>
                                     </button>
                                 </div>
                             </div>
                             <div class="row mb-2">
-                                <div class="col-sm-5">
+                                <div class="col-md-3 col-sm-5">
                                     <label for="pengerjaan" class="col-form-label">Pengerjaan</label>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-md-6 col-sm-6">
                                     <input type="text" class="form-control form-control-sm" id="pengerjaan" name="pengerjaan">
                                 </div>
                             </div>
                             <div class="row mb-2">
-                                <div class="col-sm-5">
+                                <div class="col-md-3 col-sm-5">
                                     <label for="harga" class="col-form-label">Harga</label>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-md-6 col-sm-6">
                                     <input type="text" class="form-control form-control-sm" id="harga" name="harga">
                                 </div>
                             </div>
                             <div class="row mb-2">
-                                <div>
+                                <div class="col-md-12">
                                     <button type="submit" class="btn btn-success btn-sm">Submit</button>
                                     <button type="button" class="btn btn-danger btn-sm" id="cancelPengerjaanButton">Batal</button>
                                 </div>
@@ -557,18 +645,15 @@
                                         <tr>
                                             <td><?= $index + 1 ?></td>
                                             <td><?= esc($p['kode_pengerjaan']) ?></td>
-                                            <td><?= esc($p['nama_pengerjaan']) ?></td>
+                                            <td style="text-align: left;"><?= esc($p['nama_pengerjaan']) ?></td>
                                             <td><?= number_format((float)$p['harga'], 0, ',', '.') ?></td>
                                             <td class="d-flex">
                                                 <a href="#" class="btn btn-sm me-2 btn-edit" data-kode-pengerjaan="<?= esc($p['id_pengerjaan_po']) ?>">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="#"
-                                                    class="btn btn-sm btn-delete"
-                                                    data-url="<?= base_url('deletePengerjaanPo/' . esc($p['id_pengerjaan_po'])) ?>">
+                                                <a href="#" class="btn btn-sm btn-delete" data-url="<?= base_url('deletePengerjaanPo/' . esc($p['id_pengerjaan_po'])) ?>">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </a>
-
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -592,30 +677,18 @@
         </div>
 
 
+
         <!-- Sparepart -->
-        <div class="col-md-7">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <!-- Judul Card -->
                     <h5 class="mb-0">Sparepart</h5>
-                    <!-- Tabs -->
-                    <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="sparepart-tab" data-bs-toggle="tab" href="#sparepartTable" role="tab" aria-controls="sparepartTable" aria-selected="true">Sparepart</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="dalam-pemesanan-tab" data-bs-toggle="tab" href="#dalamPemesananTable" role="tab" aria-controls="dalamPemesananTable" aria-selected="false">Dalam Pemesanan</a>
-                        </li>
-                    </ul>
                 </div>
-
                 <div class="card-body">
-                    <!-- Button to toggle the sparepart form -->
-                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="collapse" data-bs-target="#collapseSparepart" id="toggleSparepartButton">
-                        Add
+                    <button type="button" class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#collapseSparepart" id="toggleSparepartButton">
+                        Add Sparepart
                     </button>
                     <div id="collapseSparepart" class="collapse mt-2">
-                        <!-- Form Sparepart -->
                         <form id="sparepartForm" action="<?= base_url('/createSparepart/' . esc($id_terima_po)) ?>" method="post">
                             <input type="hidden" name="id_terima_po" value="<?= esc($id_terima_po) ?>">
 
@@ -716,25 +789,29 @@
                                     <tbody>
                                         <?php
                                         $totalHargaSparepart = 0;
-                                        if (!empty($daftarSparepart)) :
-                                            foreach ($daftarSparepart as $index => $sparepart) :
+                                        if (!empty($sparepartPesanan)) :
+                                            foreach ($sparepartPesanan as $index => $sparepart) :
+                                                // Hitung total harga
                                                 $totalHargaSparepart += $sparepart['harga'] * $sparepart['qty'];
+
+                                                // Hitung qty_sisa
+                                                $qty_sisa = ($sparepart['qty_repair'] > 0) ? max($sparepart['qty'] - $sparepart['qty_repair'], 0) : 0;
                                         ?>
                                                 <tr>
                                                     <td><?= $index + 1 ?></td>
-                                                    <td><?= esc($sparepart['id_kode_barang']) ?></td>
-                                                    <td><?= esc($sparepart['nama_barang']) ?></td>
+                                                    <td><?= esc($sparepart['kode_sparepart']) ?></td>
+                                                    <td><?= esc($sparepart['nama_sparepart']) ?></td>
                                                     <td><?= esc($sparepart['qty']) ?></td>
                                                     <td><?= number_format($sparepart['harga'], 0, ',', '.') ?></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
+                                                    <td><?= esc($sparepart['qty_pesan']) ?></td>
+                                                    <td><?= esc($sparepart['qty_beli']) ?></td>
+                                                    <td><?= esc($sparepart['qty_repair']) ?></td>
+                                                    <td><?= esc($qty_sisa) ?></td>
                                                     <td>
-                                                        <a href="#" class="btn btn-sm me-2 btn-edit-sparepart" data-id-sparepart="<?= esc($sparepart['id']) ?>">
+                                                        <a href="#" class="btn btn-sm me-2 btn-edit-sparepart" data-id-sparepart="<?= esc($sparepart['id_sparepart_po']) ?>">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <a href="<?= base_url('deleteSparepartPo/' . esc($sparepart['id'])) ?>" class="btn btn-sm" onclick="return confirm('Are you sure you want to delete this item?')">
+                                                        <a href="<?= base_url('deleteSparepartPo/' . esc($sparepart['id_sparepart_po'])) ?>" class="btn btn-sm" onclick="return confirm('Are you sure you want to delete this item?')">
                                                             <i class="fas fa-trash-alt"></i>
                                                         </a>
                                                     </td>
@@ -746,6 +823,7 @@
                                             </tr>
                                         <?php endif; ?>
                                     </tbody>
+
                                     <tfoot>
                                         <tr>
                                             <td colspan="4"><strong>Total Harga Sparepart</strong></td>
@@ -776,138 +854,74 @@
                                 </table>
                             </div>
                         </div>
-
-                        <!-- Tabel Dalam Pemesanan -->
-                        <div class="tab-pane fade" id="dalamPemesananTable" role="tabpanel" aria-labelledby="dalam-pemesanan-tab">
-                            <div class="table-responsive text-center" style="font-size: 14px;">
-                                <table class="table table-bordered mt-2">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Kode</th>
-                                            <th>Nama</th>
-                                            <th>Jenis</th>
-                                            <th>Qty</th>
-                                            <th>Harga</th>
-                                            <th>Status Pemesanan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $totalQty = 0;
-                                        $totalHarga = 0;
-                                        ?>
-
-                                        <?php if (!empty($sparepartPesanan)) : ?>
-                                            <?php
-                                            $index = 1;
-                                            ?>
-                                            <?php foreach ($sparepartPesanan as $pesanan) : ?>
-                                                <tr>
-                                                    <td><?= $index++ ?></td>
-                                                    <td><?= esc($pesanan['kode_sparepart']) ?></td>
-                                                    <td><?= esc($pesanan['nama_sparepart']) ?></td>
-                                                    <td><?= esc($pesanan['jenis_part']) ?></td>
-                                                    <td><?= esc($pesanan['qty']) ?></td>
-                                                    <td><?= number_format($pesanan['harga'], 0, ',', '.') ?></td>
-                                                    <td>
-                                                        <?php if ($pesanan['is_sent'] == 0): ?>
-                                                            <i class="fas fa-clock text-warning"></i>
-                                                        <?php elseif ($pesanan['is_sent'] == 1): ?>
-                                                            <i class="fas fa-check-circle text-success"></i>
-                                                        <?php endif; ?>
-                                                    </td>
-                                                </tr>
-                                                <?php
-                                                $totalQty += $pesanan['qty'];
-                                                $totalHarga += $pesanan['harga'] * $pesanan['qty'];
-                                                ?>
-                                            <?php endforeach; ?>
-                                        <?php else : ?>
-                                            <tr>
-                                                <td colspan="8" class="text-center">Belum ada pemesanan.</td>
-                                            </tr>
-                                        <?php endif; ?>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="4" class="text-end"><strong>Total</strong></td>
-                                            <td><?= $totalQty ?></td>
-                                            <td><?= number_format($totalHarga, 0, ',', '.') ?></td>
-                                            <td colspan="2"></td>
-                                        </tr>
-                                    </tfoot>
-
-                                </table>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <script>
-            document.getElementById('jenisPart').addEventListener('change', function() {
-                const hargaSparepart = document.getElementById('hargaSparepart');
-                if (this.value === 'SUPPLY') {
-                    hargaSparepart.value = '0';
-                    hargaSparepart.setAttribute('readonly', 'readonly');
-                } else {
-                    hargaSparepart.removeAttribute('readonly');
-                }
-            });
-        </script>
-        <!-- Upload Foto -->
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#gambar">
-                        Upload foto
-                    </button>
+    </div>
+    <script>
+        document.getElementById('jenisPart').addEventListener('change', function() {
+            const hargaSparepart = document.getElementById('hargaSparepart');
+            if (this.value === 'SUPPLY') {
+                hargaSparepart.value = '0';
+                hargaSparepart.setAttribute('readonly', 'readonly');
+            } else {
+                hargaSparepart.removeAttribute('readonly');
+            }
+        });
+    </script>
+    <!-- Upload Foto -->
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#gambar">
+                    Upload foto
+                </button>
 
-                    <div class="table-responsive text-center">
-                        <table class="table table-bordered mt-2">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Keterangan</th>
-                                    <th>Foto</th>
-                                    <th>Deskripsi</th>
-                                    <th>Act</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($gambarData)) : ?>
-                                    <?php foreach ($gambarData as $index => $gambar) : ?>
-                                        <tr>
-                                            <td><?= $index + 1 ?></td>
-                                            <td><?= htmlspecialchars($gambar['keterangan']) ?></td>
-                                            <td>
-                                                <img src="<?= base_url('uploads/' . htmlspecialchars($gambar['gambar'])) ?>" alt="<?= htmlspecialchars($gambar['keterangan']) ?>" style="max-width: 200px;">
-                                            </td>
-                                            <td><?= htmlspecialchars($gambar['deskripsi']) ?></td>
-                                            <td>
-                                                <form action="<?= base_url('deleteGambarPo/' . $gambar['id_gambar_po']) ?>" method="post" style="display:inline;">
-                                                    <?= csrf_field() ?> <!-- Jika menggunakan CSRF protection -->
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <button type="submit" class="btn btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus gambar ini?');">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php else : ?>
+                <div class="table-responsive text-center">
+                    <table class="table table-bordered mt-2">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Keterangan</th>
+                                <th>Foto</th>
+                                <th>Deskripsi</th>
+                                <th>Act</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($gambarData)) : ?>
+                                <?php foreach ($gambarData as $index => $gambar) : ?>
                                     <tr>
-                                        <td colspan="5">Tidak ada gambar yang di-upload.</td>
+                                        <td><?= $index + 1 ?></td>
+                                        <td><?= htmlspecialchars($gambar['keterangan']) ?></td>
+                                        <td>
+                                            <img src="<?= base_url('uploads/' . htmlspecialchars($gambar['gambar'])) ?>" alt="<?= htmlspecialchars($gambar['keterangan']) ?>" style="max-width: 200px;">
+                                        </td>
+                                        <td><?= htmlspecialchars($gambar['deskripsi']) ?></td>
+                                        <td>
+                                            <form action="<?= base_url('deleteGambarPo/' . $gambar['id_gambar_po']) ?>" method="post" style="display:inline;">
+                                                <?= csrf_field() ?> <!-- Jika menggunakan CSRF protection -->
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <button type="submit" class="btn btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus gambar ini?');">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+
                                     </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td colspan="5">Tidak ada gambar yang di-upload.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </section>
 <!-- Horizontal Input end -->
@@ -1639,6 +1653,70 @@
         // Jika tanggal sudah lewat
         document.getElementById('countdown-timer').innerHTML = 'Tanggal estimasi telah lewat!';
     }
+</script>
+
+<!-- Script Countdown -->
+<script>
+    // Ambil elemen tombol berdasarkan ID
+    document.getElementById('mobilKeluarBtn').addEventListener('click', function() {
+        // Ambil nilai id_terima_po dari atribut data-id_terima_po
+        const id_terima_po = this.getAttribute('data-id_terima_po');
+
+        // Menampilkan SweetAlert2 dengan pilihan Iya dan Batal
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Tindakan ini tidak bisa dibatalkan. Mobil akan keluar dan data tidak dapat kembali setelah dikonfirmasi.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Iya, Lanjutkan',
+            cancelButtonText: 'Batal',
+            reverseButtons: true // Agar tombol Batal di kiri dan Iya di kanan
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Jika klik Iya, kirim request POST ke route dengan id_terima_po
+                const url = '/buttonExit/' + encodeURIComponent(id_terima_po); // Ganti 'yourData' dengan id_terima_po
+
+                fetch(url, {
+                        method: 'POST', // Menggunakan POST
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest' // Biasanya digunakan untuk AJAX request
+                        },
+                        body: JSON.stringify({
+                            // Kirim data tambahan jika diperlukan
+                            mobilId: 123 // Ganti dengan data lain jika diperlukan
+                        })
+                    })
+                    .then(response => response.json()) // Mengambil response JSON
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Mobil Keluar!',
+                                data.message,
+                                'success'
+                            );
+                        } else {
+                            Swal.fire(
+                                'Gagal!',
+                                data.message,
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Terjadi Kesalahan', 'Gagal mengirim data ke server', 'error');
+                    });
+            } else if (result.isDismissed) {
+                // Jika klik Batal
+                Swal.fire(
+                    'Aksi Dibatalkan!',
+                    'Tidak ada perubahan yang dilakukan.',
+                    'error'
+                );
+            }
+        });
+    });
 </script>
 
 <?= $this->endSection() ?>

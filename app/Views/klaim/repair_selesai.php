@@ -6,7 +6,7 @@
 <section id="horizontal-input">
     <div style=" margin-top: 15px; margin-bottom: 10px; font-size: 12px; padding: 10px 20px; border-radius: 8px; display: inline-block;">
         <div style="font-size: 14px; font-weight: bold;">
-            <a href="<?= base_url('/index') ?>" style="text-decoration: none; color: #007bff;">Dashboard</a>
+            <a href="<?= base_url('dashboard/index') ?>" style="text-decoration: none; color: #007bff;">Dashboard</a>
             <span style="color: #6c757d; margin: 0 8px;">/</span>
             <span style="color: #6c757d; font-weight: 500;">Repair Selesai</span>
         </div>

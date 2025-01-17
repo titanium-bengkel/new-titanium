@@ -39,10 +39,41 @@
                     </div>
                     <h5 class="page-title mb-0 fw-bold">Kas Kecil</h5>
                 </header>
+                <style>
+                    .filter-form {
+                        margin-top: 0;
+                        /* Mengurangi jarak margin atas */
+                    }
+                </style>
+
                 <div class="card-header py-3 px-4">
-                    <div class="d-flex justify-content-end align-items-center gap-3 flex-wrap">
-                        <!-- Filter dan Tampilkan Semua -->
-                        <form method="get" action="<?= base_url('filter/kaskecil') ?>" class="d-flex align-items-center gap-3 flex-wrap">
+                    <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap"> <!-- Ubah align-items-center menjadi align-items-start -->
+                        <!-- Table Section -->
+                        <div class="col-md-3">
+                            <div class="table-responsive" style="max-height: 800px; overflow-y: auto;">
+                                <table class="table table-bordered table-hover table-striped text-center">
+                                    <thead class="thead-dark table-secondary">
+                                        <tr>
+                                            <th>Total Debit</th>
+                                            <th>Total Kredit</th>
+                                            <th>Saldo Akhir</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="text-align: right;"><?= number_format($totalDebit, 0, ',', '.') ?></td>
+                                            <td style="text-align: right;"><?= number_format($totalKredit, 0, ',', '.') ?></td>
+                                            <td style="text-align: right;">
+                                                <?= number_format($totalDebit - $totalKredit, 0, ',', '.') ?>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Filter Section -->
+                        <form method="get" action="<?= base_url('filter/kaskecil') ?>" class="filter-form d-flex align-items-center gap-3 flex-wrap justify-content-end">
                             <!-- Input Cari -->
                             <div class="d-flex align-items-center">
                                 <label for="search_keyword" class="form-label fw-bold text-primary me-2 mb-0">Cari:</label>
@@ -89,8 +120,10 @@
                         </form>
                     </div>
                 </div>
+
                 <div class="card-content">
                     <div class="row" style="margin: 20px;" style="font-size: 14px;">
+
                         <div class="col-md-3">
                             <h5>Jumlah Pengeluaran</h5>
                             <div class="table-responsive" style="max-height: 800px; overflow-y: auto;">
@@ -192,7 +225,7 @@
                                                                 <td><?= esc($item['tgl_input']) ?></td>
                                                                 <td>
                                                                     <div class="d-flex">
-                                                                        <button type="button" class="btn btn-primary btn-sm"
+                                                                        <button type="button" class="btn btn-sm"
                                                                             data-bs-toggle="modal"
                                                                             data-bs-target="#editModal"
                                                                             data-id-kc="<?= $item['id_kc']; ?>"

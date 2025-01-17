@@ -17,10 +17,60 @@
                     </div>
                     <h5 class="page-title mb-0 fw-bold">Report Jurnal</h5>
                 </header>
+                <div class="card-header py-3 px-4">
+                    <div class="d-flex justify-content-end align-items-center gap-3 flex-wrap">
+                        <!-- Filter dan Tampilkan Semua -->
+                        <form method="get" action="<?= base_url('filter/reportjurnal') ?>" class="d-flex align-items-center gap-3 flex-wrap">
+                            <!-- Input Cari -->
+                            <div class="d-flex align-items-center">
+                                <label for="search_keyword" class="form-label fw-bold text-primary me-2 mb-0">Cari:</label>
+                                <input
+                                    type="text"
+                                    name="search_keyword"
+                                    id="search_keyword"
+                                    class="form-control form-control-sm"
+                                    placeholder="No. Document/Deskripsi"
+                                    value="<?= $searchKeyword ?? '' ?>">
+                            </div>
+
+                            <!-- Input Tanggal Mulai -->
+                            <div class="d-flex align-items-center">
+                                <label for="start_date" class="form-label fw-bold text-primary me-2 mb-0">Mulai:</label>
+                                <input
+                                    type="date"
+                                    name="start_date"
+                                    id="start_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $startDate ?? date('Y-m-01') ?>">
+                            </div>
+
+                            <!-- Input Tanggal Akhir -->
+                            <div class="d-flex align-items-center">
+                                <label for="end_date" class="form-label fw-bold text-primary me-2 mb-0">Akhir:</label>
+                                <input
+                                    type="date"
+                                    name="end_date"
+                                    id="end_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $endDate ?? date('Y-m-d') ?>">
+                            </div>
+
+                            <!-- Tombol Filter -->
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-sm fw-bold">Filter</button>
+                            </div>
+
+                            <!-- Tombol Tampilkan Semua -->
+                            <div>
+                                <button type="submit" name="show_all" value="1" class="btn btn-secondary btn-sm fw-bold">Tampilkan Semua</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 <div class="card-content">
                     <div class="table-responsive" style="margin:20px; font-size: 12px;" ;>
-                        <table id="reportTable" class="table table-bordered mb-0 text-center">
-                            <thead class="thead-dark">
+                        <table id="reportTable" class="table table-bordered table-striped tabel-hover mb-0 text-center">
+                            <thead class="thead-dark table-secondary">
                                 <tr>
                                     <th class="text-center">No</th>
                                     <th class="text-center">Tanggal</th>
@@ -48,8 +98,8 @@
                                         <td><?= esc($report['account']); ?></td>
                                         <td style="text-align: left;"><?= esc($report['name']); ?></td>
                                         <td style="text-align: left;"><?= esc($report['description']); ?></td>
-                                        <td><?= number_format($report['debit'], 0, ',', '.'); ?></td>
-                                        <td><?= number_format($report['kredit'], 0, ',', '.'); ?></td>
+                                        <td style="text-align: right;"><?= number_format($report['debit'], 0, ',', '.'); ?></td>
+                                        <td style="text-align: right;"><?= number_format($report['kredit'], 0, ',', '.'); ?></td>
                                         <td><?= esc($report['aksi']); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -58,15 +108,9 @@
 
                             <tfoot>
                                 <tr>
-                                    <td colspan="6" class="text-right"><strong>Total Per Page:</strong></td>
-                                    <td id="totalDebitPage" class="text-center">0</td>
-                                    <td id="totalKreditPage" class="text-center">0</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
                                     <td colspan="6" class="text-right"><strong>Total All:</strong></td>
-                                    <td id="totalDebitFooter" class="text-center">0</td>
-                                    <td id="totalKreditFooter" class="text-center">0</td>
+                                    <td id="totalDebitFooter" style="text-align: right;">0</td>
+                                    <td id="totalKreditFooter" style="text-align: right;">0</td>
                                     <td></td>
                                 </tr>
                             </tfoot>
@@ -139,31 +183,6 @@
 
         // Panggil fungsi calculateTotals setelah data dimuat
         calculateTotals();
-
-        // Inisialisasi DataTable
-        $('#reportTable').DataTable({
-            "paging": true,
-            "pageLength": 20,
-            "lengthMenu": [
-                [20, 50, 100, -1],
-                [20, 50, 100, "All"]
-            ],
-            "ordering": false,
-            "language": {
-                "lengthMenu": "Show _MENU_ entries",
-                "paginate": {
-                    "first": "First",
-                    "last": "Last",
-                    "next": "Next",
-                    "previous": "Previous"
-                },
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries"
-            },
-            "pagingType": "full_numbers",
-            "drawCallback": function(settings) {
-                calculatePageTotals(); // Hitung total per halaman setiap kali tabel di-refresh
-            }
-        });
     });
 </script>
 

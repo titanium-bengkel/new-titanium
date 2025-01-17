@@ -66,7 +66,7 @@ class Home extends BaseController
         $bengkelTandameCount = $poModel->where('bengkel', 'TANDEM')->countAllResults();
         $repairOrderCount = $repairModel->where('status', 'Repair Order')->countAllResults();
         $repairasuransiCount = $repairModel->repairasuransi();
-        $repairumumCount = $repairModel->repairumum ();
+        $repairumumCount = $repairModel->repairumum();
         $unitkeluarCount = $repairModel->where('status', 'Mobil Keluar')->countAllResults();
         $mobilKeluarasuransi = $repairModel->mobilkeluarasuransi();
         $mobilkeluarumum = $repairModel->mobilkeluarumum();

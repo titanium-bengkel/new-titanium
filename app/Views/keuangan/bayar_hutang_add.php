@@ -1,7 +1,6 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content') ?>
 
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     <?php
@@ -35,7 +34,7 @@
             <div class="card">
                 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                        <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">Pembayaran Hutang</a>
+                        <a href="<?= base_url('dashboard/index') ?>" class="breadcrumb-link text-primary fw-bold">Pembayaran Hutang</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
                         <span class="breadcrumb-current text-muted">Add Pembayaran</span>
                     </div>
@@ -48,27 +47,23 @@
                                 <div class="col-lg-4 col-4 mb-3">
                                     <label class="col-form-label" for="id-bayar">ID Pembayaran</label>
                                 </div>
+
                                 <div class="col-lg-8 col-8 mb-3">
                                     <input type="text" id="id-bayar" class="form-control" name="id-bayar" readonly>
                                 </div>
-                                <div class=" col-lg-4 col-4 mb-3">
+
+                                <div class="col-lg-4 col-4 mb-3">
                                     <label class="col-form-label" for="tgl">Tanggal</label>
                                 </div>
+
                                 <div class="col-lg-8 col-8 mb-3">
-                                    <input type="date" id="tgl" class="form-control" name="tgl" readonly>
+                                    <input type="date" id="tgl" class="form-control" name="tgl">
                                 </div>
-                                <script>
-                                    // Set Tanggal otomatis ke hari ini jika tidak ada tanggal
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        var today = new Date().toISOString().split('T')[0];
-                                        if (!document.getElementById('tgl').value) {
-                                            document.getElementById('tgl').value = today;
-                                        }
-                                    });
-                                </script>
+
                                 <div class="col-lg-4 col-4">
                                     <label class="col-form-label" for="keterangan">Keterangan</label>
                                 </div>
+
                                 <div class="col-lg-8 col-8">
                                     <textarea class="form-control" id="keterangan" name="keterangan" rows="1"><?= isset($pembayaran['keterangan']) ? htmlspecialchars($pembayaran['keterangan']) : ''; ?></textarea>
                                 </div>

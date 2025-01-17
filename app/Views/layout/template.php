@@ -5,10 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> <?= $title ?> | TITANIUM</title>
-<<<<<<< HEAD
     <link rel="stylesheet" href="<?= base_url('../dist/assets/extensions/flatpickr/flatpickr.min.css'); ?>">
-=======
->>>>>>> 7065e5e7448dcd23878161cb9da8e4bc021d0663
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dripicons@1.0.0/webfont/css/dripicons.min.css">
     <link rel="shortcut icon" href="<?= base_url('../dist/assets/compiled/svg/favicon.svg'); ?>" type="image/x-icon">
     <link rel="shortcut icon"

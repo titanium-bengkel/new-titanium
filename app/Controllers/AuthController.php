@@ -29,20 +29,20 @@ class AuthController extends Controller
         $password = $this->request->getPost('password');
 
         $user = $userModel->where('username', $username)->first();
-        
+
         if ($user && password_verify($password, $user['password'])) {
             if (empty($user['foto'])) {
                 $userModel->update($user['id'], ['foto' => 'default.jpg']);
                 $user['foto'] = 'default.jpg';
-            }        
+            }
             $role = $this->roleModel->where('id', $user['id_role'])->first();
             session()->set([
                 'user_id'     => $user['id'],
                 'username'    => $user['username'],
-                'role'        => $user['role'], 
+                'role'        => $user['role'],
                 'role_label'  => $role['label'],
                 'foto' => $user['foto'] ?: 'default.jpg',
-                'fitur_role'  => json_decode($role['fitur'], true), 
+                'fitur_role'  => json_decode($role['fitur'], true),
                 'isLoggedIn'  => true
             ]);
             return redirect()->to('/dashboard/index')->with('success', 'Login berhasil!');
@@ -70,7 +70,8 @@ class AuthController extends Controller
         return view('auth/profile', $data);
     }
 
-    public function updateProfile() {
+    public function updateProfile()
+    {
         $session = session();
         $userId = $session->get('user_id');
         $data = [];
@@ -160,10 +161,10 @@ class AuthController extends Controller
                 return redirect()->back()->with('error', 'Gagal memperbarui profil.');
             }
         }
-    
+
         return redirect()->to('/profile')->with('info', 'Tidak ada perubahan yang dilakukan.');
     }
-    
+
 
     public function register()
     {
@@ -216,7 +217,7 @@ class AuthController extends Controller
             'kontak'    => $this->request->getPost('kontak'),
             'status'    => 'aktif',
             'role'      => 'admin',
-            'role_label'=> 4, 
+            'role_label' => 4,
             'foto'      => 'default.jpg',
         ];
 
@@ -232,7 +233,7 @@ class AuthController extends Controller
         $data = [
             'title' => 'TITANIUM'
         ];
-        return view('auth/forgot_password',$data);
+        return view('auth/forgot_password', $data);
     }
     public function forgotPasswordSubmit()
     {
@@ -281,7 +282,7 @@ class AuthController extends Controller
                     <p>Copyright © " . date('Y') . " TITANIUM. All rights reserved.</p>
                 </div>
             </div>
-        "); 
+        ");
         if (!$emailService->send()) {
             log_message('error', $emailService->printDebugger(['headers', 'subject', 'body']));
             return false;
@@ -300,7 +301,7 @@ class AuthController extends Controller
         } else {
             return redirect()->to('/forgot-password')->with('error', 'Token tidak valid.');
         }
-    } 
+    }
 
 
     public function resetPasswordSubmit()

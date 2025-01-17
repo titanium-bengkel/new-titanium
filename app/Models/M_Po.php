@@ -49,10 +49,16 @@ class M_Po extends Model
     public function getFilteredDataSparepartNotSent($id_terima_po = null)
     {
         $builder = $this->db->table('po')
-            ->select('po.*, auth_user.username, sparepart_po.jenis_part')
-            ->join('auth_user', 'auth_user.id = po.user_id', 'left')
-            ->join('sparepart_po', 'sparepart_po.id_terima_po = po.id_terima_po', 'left') // Join dengan sparepart_po
-            ->where('po.is_sent', 0);
+            ->select('po.id_po, po.id_terima_po, po.tgl_klaim, po.tgl_acc, po.jenis_mobil, po.no_kendaraan, po.warna, po.tahun_kendaraan, po.asuransi, po.customer_name, po.no_rangka, auth_user.username as user_id, sparepart_po.jenis_part')
+            ->join('auth_user', 'auth_user.id = po.user_id', 'left')  // Join dengan auth_user untuk mendapatkan username
+            ->join('sparepart_po', 'sparepart_po.id_terima_po = po.id_terima_po', 'left')  // Join dengan sparepart_po
+            ->whereIn('po.id_terima_po', function ($builder) {
+                // Subquery untuk memilih id_terima_po yang unik berdasarkan kriteria tertentu (misalnya, yang paling baru)
+                $builder->select('id_terima_po')
+                    ->from('po')
+                    ->groupBy('id_terima_po')
+                    ->having('MAX(tgl_klaim)'); // Anda bisa menyesuaikan dengan kriteria yang diinginkan
+            });
 
         // Jika id_terima_po diberikan, tambahkan kondisi where
         if (!empty($id_terima_po)) {
@@ -61,6 +67,9 @@ class M_Po extends Model
 
         return $builder->get()->getResultArray();
     }
+
+
+
     public function getFilteredDataSparepartNotSentSupply($id_terima_po = null)
     {
         $builder = $this->db->table('po')
@@ -206,9 +215,11 @@ class M_Po extends Model
         $builder = $this->db->table($this->table);
         $builder->select('po.*, auth_user.username');
         $builder->join('auth_user', 'po.user_id = auth_user.id', 'left');
+        $builder->orderBy('po.tgl_klaim', 'DESC');
         $query = $builder->get();
         return $query->getResultArray();
     }
+
 
     public function getPoWithAsuransi()
     {

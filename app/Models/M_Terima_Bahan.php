@@ -30,7 +30,17 @@ class M_Terima_Bahan extends Model
         'user_id'
     ];
 
-    // Method to generate a unique ID for 'terima_bahan'
+    public function getHutangWithAll()
+    {
+        $builder = $this->db->table($this->table);
+        $builder->select('terima_bahan.*, part_terima.supplier as supplier_part, part_terima.keterangan as keterangan_part, k_pembayaran.debit');
+        $builder->join('part_terima', 'terima_bahan.id_penerimaan = part_terima.id_penerimaan', 'left');
+        $builder->join('k_pembayaran', 'terima_bahan.id_penerimaan = k_pembayaran.no_faktur', 'left');
+        $builder->orderBy('terima_bahan.tanggal', 'DESC');
+
+        return $builder->get()->getResultArray();
+    }
+
     public function generateIdTerima()
     {
         $builder = $this->db->table($this->table);

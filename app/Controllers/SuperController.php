@@ -212,7 +212,7 @@ class SuperController extends Controller
 
     public function updateRole()
     {
-        $id = $this->request->getPost('id'); 
+        $id = $this->request->getPost('id');
         if (!$this->validate([
             'label' => 'required',
         ])) {
@@ -245,7 +245,7 @@ class SuperController extends Controller
         return redirect()->to('superadmin/kel_role')->with('success', 'Role berhasil dihapus');
     }
 
-    
+
     public function pengaturan_role()
     {
         $role = $this->roleModel->findAll();
@@ -1009,7 +1009,7 @@ class SuperController extends Controller
 
 
 
-        
+
 
         $this->roleModel->update($roleId, ['fitur' => json_encode($features)]);
         return redirect()->to('/pengaturan_role')->with('message', 'Perubahan Telah di Simpan. Silahkan Logout dan Login kembali');

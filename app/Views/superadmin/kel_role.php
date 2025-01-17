@@ -4,27 +4,27 @@
 <!-- SweetAlert2 for success/error notifications -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-<?php if (session()->getFlashdata('success')) : ?>
-Swal.fire({
-    toast: true,
-    position: 'top-end',
-    icon: 'success',
-    title: '<?= session()->getFlashdata('success') ?>',
-    showConfirmButton: false,
-    timer: 3000
-});
-<?php endif; ?>
+    <?php if (session()->getFlashdata('success')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '<?= session()->getFlashdata('success') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
 
-<?php if (session()->getFlashdata('error')) : ?>
-Swal.fire({
-    toast: true,
-    position: 'top-end',
-    icon: 'error',
-    title: '<?= session()->getFlashdata('error') ?>',
-    showConfirmButton: false,
-    timer: 3000
-});
-<?php endif; ?>
+    <?php if (session()->getFlashdata('error')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: '<?= session()->getFlashdata('error') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
 </script>
 
 <section class="section">
@@ -34,7 +34,7 @@ Swal.fire({
                 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3"
                     style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                        <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                        <a href="<?= base_url('dashboard/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
                         <span class="breadcrumb-current text-muted">Kelola Role</span>
                     </div>
@@ -58,24 +58,25 @@ Swal.fire({
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php $no = 1; foreach ($label as $role): ?>
-                                <tr>
-                                    <td><?= $no++ ?></td>
-                                    <td><?= esc($role['label']) ?></td>
-                                    <td class="d-flex gap-2 justify-content-center">
-                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                                            data-bs-target="#editRoleModal" data-id="<?= $role['id'] ?>"
-                                            data-label="<?= $role['label'] ?>"
-                                            data-fitur="<?= htmlspecialchars($role['fitur']) ?>">
-                                            Edit
-                                        </button>
-                                        <a href="<?= base_url('/superadmin/deleteRole/'.$role['id']) ?>"
-                                            class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Yakin ingin menghapus role ini?');">
-                                            Hapus
-                                        </a>
-                                    </td>
-                                </tr>
+                                <?php $no = 1;
+                                foreach ($label as $role): ?>
+                                    <tr>
+                                        <td><?= $no++ ?></td>
+                                        <td><?= esc($role['label']) ?></td>
+                                        <td class="d-flex gap-2 justify-content-center">
+                                            <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                                data-bs-target="#editRoleModal" data-id="<?= $role['id'] ?>"
+                                                data-label="<?= $role['label'] ?>"
+                                                data-fitur="<?= htmlspecialchars($role['fitur']) ?>">
+                                                Edit
+                                            </button>
+                                            <a href="<?= base_url('/superadmin/deleteRole/' . $role['id']) ?>"
+                                                class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Yakin ingin menghapus role ini?');">
+                                                Hapus
+                                            </a>
+                                        </td>
+                                    </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
@@ -135,15 +136,15 @@ Swal.fire({
 </div>
 
 <script>
-document.getElementById('editRoleModal').addEventListener('show.bs.modal', function(event) {
-    const button = event.relatedTarget;
-    const id = button.getAttribute('data-id');
-    const label = button.getAttribute('data-label');
-    const fitur = button.getAttribute('data-fitur');
-    document.getElementById('edit_role_id').value = id;
-    document.getElementById('edit_label').value = label;
-    document.getElementById('edit_fitur').value = fitur;
-});
+    document.getElementById('editRoleModal').addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const label = button.getAttribute('data-label');
+        const fitur = button.getAttribute('data-fitur');
+        document.getElementById('edit_role_id').value = id;
+        document.getElementById('edit_label').value = label;
+        document.getElementById('edit_fitur').value = fitur;
+    });
 </script>
 
 

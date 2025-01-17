@@ -35,7 +35,7 @@
                 <!-- Header -->
                 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3 px-4 mt-2">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                        <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                        <a href="<?= base_url('dashboard/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
                         <span class="breadcrumb-current text-muted">List Kwitansi</span>
                     </div>

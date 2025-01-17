@@ -4,27 +4,27 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-<?php if (session()->getFlashdata('success')) : ?>
-Swal.fire({
-    toast: true,
-    position: 'top-end',
-    icon: 'success',
-    title: '<?= session()->getFlashdata('success') ?>',
-    showConfirmButton: false,
-    timer: 3000
-});
-<?php endif; ?>
+    <?php if (session()->getFlashdata('success')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '<?= session()->getFlashdata('success') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
 
-<?php if (session()->getFlashdata('error')) : ?>
-Swal.fire({
-    toast: true,
-    position: 'top-end',
-    icon: 'error',
-    title: '<?= session()->getFlashdata('error') ?>',
-    showConfirmButton: false,
-    timer: 3000
-});
-<?php endif; ?>
+    <?php if (session()->getFlashdata('error')) : ?>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: '<?= session()->getFlashdata('error') ?>',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    <?php endif; ?>
 </script>
 <section class="section">
     <div class="row">
@@ -33,7 +33,7 @@ Swal.fire({
                 <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3"
                     style="border-color: #6c757d; padding: 15px 20px;">
                     <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                        <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                        <a href="<?= base_url('dashboard/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
                         <span class="breadcrumb-divider text-muted mx-3">/</span>
                         <span class="breadcrumb-current text-muted">Kelola User</span>
                     </div>
@@ -61,30 +61,31 @@ Swal.fire({
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php $no = 1; foreach ($users as $user): ?>
-                                <tr>
-                                    <td><?= $no++ ?></td>
-                                    <td><?= esc($user['username']) ?></td>
-                                    <td><?= esc($user['nama_user']) ?></td>
-                                    <td><?= esc($user['email']) ?></td>
-                                    <td><?= esc($user['status']) ?></td>
-                                    <td><?= esc($user['role_label']) ?></td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#editUserModal" data-id="<?= $user['id'] ?>"
-                                            data-username="<?= esc($user['username']) ?>"
-                                            data-password="<?= esc($user['password']) ?>"
-                                            data-nama-user="<?= esc($user['nama_user']) ?>"
-                                            data-alamat="<?= esc($user['alamat']) ?>"
-                                            data-kontak="<?= esc($user['kontak']) ?>"
-                                            data-email="<?= esc($user['email']) ?>"
-                                            data-status="<?= esc($user['status']) ?>"
-                                            data-level="<?= esc($user['level']) ?>"
-                                            data-role="<?= esc($user['id_role']) ?>">
-                                            Edit
-                                        </button>
-                                    </td>
-                                </tr>
+                                <?php $no = 1;
+                                foreach ($users as $user): ?>
+                                    <tr>
+                                        <td><?= $no++ ?></td>
+                                        <td><?= esc($user['username']) ?></td>
+                                        <td><?= esc($user['nama_user']) ?></td>
+                                        <td><?= esc($user['email']) ?></td>
+                                        <td><?= esc($user['status']) ?></td>
+                                        <td><?= esc($user['role_label']) ?></td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#editUserModal" data-id="<?= $user['id'] ?>"
+                                                data-username="<?= esc($user['username']) ?>"
+                                                data-password="<?= esc($user['password']) ?>"
+                                                data-nama-user="<?= esc($user['nama_user']) ?>"
+                                                data-alamat="<?= esc($user['alamat']) ?>"
+                                                data-kontak="<?= esc($user['kontak']) ?>"
+                                                data-email="<?= esc($user['email']) ?>"
+                                                data-status="<?= esc($user['status']) ?>"
+                                                data-level="<?= esc($user['level']) ?>"
+                                                data-role="<?= esc($user['id_role']) ?>">
+                                                Edit
+                                            </button>
+                                        </td>
+                                    </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
@@ -147,7 +148,7 @@ Swal.fire({
                     <select class="form-select" name="id_role" required>
                         <option value="">- Pilih Role -</option>
                         <?php foreach ($roles as $role): ?>
-                        <option value="<?= esc($role['id']) ?>"><?= esc($role['label']) ?></option>
+                            <option value="<?= esc($role['id']) ?>"><?= esc($role['label']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -211,7 +212,7 @@ Swal.fire({
                     <select class="form-select" id="edit_role" name="id_role" required>
                         <option value="">- Pilih Role -</option>
                         <?php foreach ($roles as $role): ?>
-                        <option value="<?= esc($role['id']) ?>"><?= esc($role['label']) ?></option>
+                            <option value="<?= esc($role['id']) ?>"><?= esc($role['label']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -227,62 +228,62 @@ Swal.fire({
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script>
-document.getElementById('editUserModal').addEventListener('show.bs.modal', function(event) {
-    const button = event.relatedTarget;
-    const id = button.getAttribute('data-id');
-    const username = button.getAttribute('data-username');
-    // const password = button.getAttribute('data-password');
-    const namaUser = button.getAttribute('data-nama-user');
-    const alamat = button.getAttribute('data-alamat');
-    const kontak = button.getAttribute('data-kontak');
-    const email = button.getAttribute('data-email');
-    const status = button.getAttribute('data-status');
-    const level = button.getAttribute('data-level');
-    const idRole = button.getAttribute('data-role');
-    document.getElementById('edit_user_id').value = id;
-    document.getElementById('edit_username').value = username;
-    document.getElementById('edit_password').value = '';
-    document.getElementById('edit_nama_user').value = namaUser;
-    document.getElementById('edit_alamat').value = alamat;
-    document.getElementById('edit_kontak').value = kontak;
-    document.getElementById('edit_email').value = email;
-    const statusDropdown = document.getElementById('edit_status');
-    for (let option of statusDropdown.options) {
-        if (option.value === status) {
-            option.selected = true;
-        }
-    }
-    const levelDropdown = document.getElementById('edit_level');
-    for (let option of levelDropdown.options) {
-        if (option.value === level) {
-            option.selected = true;
-        }
-    }
-    document.getElementById('edit_role').value = idRole;
-});
-
-
-$(document).ready(function() {
-    $('#userTable').DataTable({
-        "pagingType": "full_numbers",
-        "lengthMenu": [10, 25, 50, -1],
-        "ordering": false,
-        "language": {
-            "lengthMenu": "Tampilkan _MENU_ entri",
-            "search": "Search:",
-            "zeroRecords": "Tidak ada hasil ditemukan",
-            "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
-            "infoEmpty": "Tidak ada data tersedia",
-            "infoFiltered": "(disaring dari _MAX_ total entri)",
-            "paginate": {
-                "first": "First",
-                "last": "Last",
-                "next": "Next",
-                "previous": "Previous"
+    document.getElementById('editUserModal').addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const username = button.getAttribute('data-username');
+        // const password = button.getAttribute('data-password');
+        const namaUser = button.getAttribute('data-nama-user');
+        const alamat = button.getAttribute('data-alamat');
+        const kontak = button.getAttribute('data-kontak');
+        const email = button.getAttribute('data-email');
+        const status = button.getAttribute('data-status');
+        const level = button.getAttribute('data-level');
+        const idRole = button.getAttribute('data-role');
+        document.getElementById('edit_user_id').value = id;
+        document.getElementById('edit_username').value = username;
+        document.getElementById('edit_password').value = '';
+        document.getElementById('edit_nama_user').value = namaUser;
+        document.getElementById('edit_alamat').value = alamat;
+        document.getElementById('edit_kontak').value = kontak;
+        document.getElementById('edit_email').value = email;
+        const statusDropdown = document.getElementById('edit_status');
+        for (let option of statusDropdown.options) {
+            if (option.value === status) {
+                option.selected = true;
             }
         }
+        const levelDropdown = document.getElementById('edit_level');
+        for (let option of levelDropdown.options) {
+            if (option.value === level) {
+                option.selected = true;
+            }
+        }
+        document.getElementById('edit_role').value = idRole;
     });
-});
+
+
+    $(document).ready(function() {
+        $('#userTable').DataTable({
+            "pagingType": "full_numbers",
+            "lengthMenu": [10, 25, 50, -1],
+            "ordering": false,
+            "language": {
+                "lengthMenu": "Tampilkan _MENU_ entri",
+                "search": "Search:",
+                "zeroRecords": "Tidak ada hasil ditemukan",
+                "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
+                "infoEmpty": "Tidak ada data tersedia",
+                "infoFiltered": "(disaring dari _MAX_ total entri)",
+                "paginate": {
+                    "first": "First",
+                    "last": "Last",
+                    "next": "Next",
+                    "previous": "Previous"
+                }
+            }
+        });
+    });
 </script>
 
 <?= $this->endSection() ?>

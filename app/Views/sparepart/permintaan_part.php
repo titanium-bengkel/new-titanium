@@ -53,7 +53,7 @@
         <div class="card">
             <header class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3" style="border-color: #6c757d; padding: 15px 20px;">
                 <div class="breadcrumb-wrapper" style="font-size: 14px;">
-                    <a href="<?= base_url('/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
+                    <a href="<?= base_url('dashboard/index') ?>" class="breadcrumb-link text-primary fw-bold">Dashboard</a>
                     <span class="breadcrumb-divider text-muted mx-3">/</span>
                     <span class="breadcrumb-current text-muted">Permintaan Sparepart</span>
                 </div>
@@ -62,42 +62,48 @@
             <div class="card-content">
                 <div class="table-responsive" style="font-size: 12px; margin:20px;">
                     <table class="table table-bordered table-striped table-hover mb-0" id="partTable">
-                        <thead class="thead-dark table-secondary">
+                        <thead class="thead-dark table-secondary text-center">
                             <tr>
                                 <th>#</th>
-                                <th class="text-center">No. Order</th>
-                                <th class="text-center">Tgl. Klaim</th>
-                                <th class="text-center">Tgl. Acc</th>
-                                <th class="text-center">Jenis Mobil</th>
-                                <th class="text-center">Nopol</th>
-                                <th class="text-center">Warna</th>
-                                <th class="text-center">Tahun</th>
-                                <th class="text-center">Asuransi</th>
-                                <th class="text-center">User ID</th>
-                                <th class="text-center">Action</th>
+                                <th>No. Order</th>
+                                <th>Tgl. Klaim</th>
+                                <th>Tgl. Acc</th>
+                                <th>Jenis Mobil</th>
+                                <th>Nopol</th>
+                                <th>Warna</th>
+                                <th>Tahun</th>
+                                <th>Asuransi</th>
+                                <th>User ID</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody class="text-center">
                             <?php if (!empty($poData)): ?>
                                 <?php
                                 $hasData = false;
-                                $displayedIds = [];
                                 $displayedCount = 0;
+                                $displayedIds = [];  // Inisialisasi array untuk menyimpan ID yang sudah ditampilkan
 
                                 foreach ($poData as $data):
-                                    $showData = true;
+                                    // Cek apakah id_terima_po sudah ditampilkan sebelumnya
+                                    if (in_array($data['id_terima_po'], $displayedIds)) {
+                                        continue;  // Skip jika id_terima_po sudah pernah ditampilkan
+                                    }
 
+                                    // Tambahkan id_terima_po ke array supaya tidak ditampilkan lagi
+                                    $displayedIds[] = $data['id_terima_po'];
+
+                                    // Cek kondisi berdasarkan asuransi dan status
+                                    $showData = true;
                                     if (isset($data['status'])) {
-                                        if ($data['asuransi'] === 'UMUM/PRIBADI' || $data['status'] === 'Acc Asuransi') {
-                                            $showData = true;
-                                        } else {
-                                            $showData = false;
+                                        if ($data['asuransi'] !== 'UMUM/PRIBADI' && $data['status'] !== 'Acc Asuransi') {
+                                            $showData = false;  // Jika kondisi tidak memenuhi, set showData menjadi false
                                         }
                                     }
 
-                                    if ($showData && !in_array($data['id_terima_po'], $displayedIds)) {
+                                    // Jika data memenuhi kondisi, tampilkan data tersebut
+                                    if ($showData) {
                                         $hasData = true;
-                                        $displayedIds[] = $data['id_terima_po'];
                                         $displayedCount++;
                                 ?>
                                         <tr data-id="<?= esc($data['id_terima_po']) ?>">
@@ -217,7 +223,7 @@
                                                     <option value="NON-SUPPLY" <?= $sparepart['jenis_part'] == 'NON-SUPPLY' ? 'selected' : '' ?>>NON-SUPPLY</option>
                                                     <option value="AMBIL STOK" <?= $sparepart['jenis_part'] == 'AMBIL STOK' ? 'selected' : '' ?>>AMBIL STOK</option>
                                                     <option value="SUPPLY" <?= $sparepart['jenis_part'] == 'SUPPLY' ? 'selected' : '' ?>>SUPPLY</option>
-                                                    <option value="TIDAK JADI GANTI" <?= $sparepart['jenis_part'] == 'TIDAK JADI GANTI' ? 'selected' : '' ?>>TIDAK JADI GANNTI</option>
+                                                    <option value="TIDAK JADI GANTI" <?= $sparepart['jenis_part'] == 'TIDAK JADI GANTI' ? 'selected' : '' ?>>TIDAK JADI GANTI</option>
                                                 </select>
                                             </td>
                                         </tr>

@@ -89,11 +89,9 @@ class KlaimController extends BaseController
             }
         }
 
-        // Generate ID untuk Pre-Order dan PO
         $preOrderId = $poModel->generateIdTerimaPo();
         $idPo = $poModel->generateIdPo();
 
-        // Kirim data ke view
         $data = [
             'title' => 'Pre-Order',
             'preOrderId' => $preOrderId,
@@ -1473,9 +1471,17 @@ class KlaimController extends BaseController
             // Ambil biaya asuransi jika ada
             if (!empty($order['id_terima_po'])) {
                 $asuransi = $accAsuransiModel->where('id_terima_po', $order['id_terima_po'])->first();
+
+                // Ambil biaya asuransi
                 $order['harga_acc'] = $asuransi ? $asuransi['biaya_total'] : null;
+
+                // Ambil tgl_masuk dan tgl_estimasi
+                $order['tgl_masuk'] = $asuransi ? $asuransi['tgl_masuk'] : null;
+                $order['tgl_estimasi'] = $asuransi ? $asuransi['tgl_estimasi'] : null;
             } else {
                 $order['harga_acc'] = null;
+                $order['tgl_masuk'] = null;
+                $order['tgl_estimasi'] = null;
             }
         }
 
@@ -1718,6 +1724,10 @@ class KlaimController extends BaseController
         $dataPO = new M_RepairOrder();
         $accAsuransiModel = new M_AccAsuransi();
 
+        // Inisialisasi variabel nilaiOR dan qtyOR dengan nilai default
+        $nilaiOR = null;
+        $qtyOR = null;
+
         // Ambil data Repair Order berdasarkan id_terima_po
         if ($id_terima_po) {
             $po = $dataPO->where('id_terima_po', $id_terima_po)->first();
@@ -1742,18 +1752,40 @@ class KlaimController extends BaseController
                 $daftarSparepart = array_merge($daftarSparepart, $spareparts);
             }
 
-            // Ambil harga_acc dari M_AccAsuransi berdasarkan id_terima_po
-            $accAsuransi = $accAsuransiModel->where('id_terima_po', $id_terima_po)->first();
-            $hargaAcc = $accAsuransi['harga_acc'] ?? null;
+            // Periksa apakah asuransi adalah "UMUM/PRIBADI"
+            if (strpos($po['asuransi'], 'UMUM/PRIBADI') !== false) {
+                // Jika "UMUM/PRIBADI", ambil data dari M_RepairOrder
+                $nilai_jasa = $po['biaya_pengerjaan'];
+                $nilai_sparepart = $po['biaya_sparepart'];
+                $harga_total = $po['total_biaya'];
+                // Ambil tanggal masuk dan estimasi dari M_RepairOrder
+                $tglMasuk = $po['tgl_masuk'];
+                $tglEstimasi = $po['tgl_keluar'];
+            } else {
+                // Jika selain itu, ambil data dari M_AccAsuransi
+                $accAsuransi = $accAsuransiModel->where('id_terima_po', $id_terima_po)->first();
+                $nilai_jasa = $accAsuransi['biaya_jasa'];
+                $nilai_sparepart = $accAsuransi['biaya_sparepart'];
+                $harga_total = $accAsuransi['biaya_total'];
+                // Ambil tanggal masuk dan estimasi dari M_AccAsuransi
+                $tglMasuk = $accAsuransi['tgl_masuk'];
+                $tglEstimasi = $accAsuransi['tgl_estimasi'];
+                $nilaiOR = $accAsuransi['nilai_or'];
+                $qtyOR = $accAsuransi['qty_or'];
+            }
         } else {
             $po = $dataPO->findAll();
             $pengerjaan = $pengerjaanModel->findAll();
             $gambar = $gambarModel->findAll();
             $daftarSparepart = $sparepartModel->findAll();
-            $hargaAcc = null; // Jika tidak ada id_terima_po
+            $nilai_jasa = null; // Jika tidak ada id_terima_po
+            $nilai_sparepart = null;
+            $harga_total = null;
+            $tglMasuk = null; // Default
+            $tglEstimasi = null; // Default
         }
 
-        $partPesanan = $sparepartModel->getSparepartRepair($id_terima_po);
+        $partPesanan = $sparepartModel->getSparepartByRepair($id_terima_po);
 
         // Siapkan data untuk tampilan
         $data = [
@@ -1766,14 +1798,18 @@ class KlaimController extends BaseController
             'addsparepart' => $addsparepart->findAll(),
             'gambarData' => $gambar,
             'id_terima_po' => $id_terima_po,
-            'harga_acc' => $hargaAcc,
-            'is_sent' => $po['is_sent'] ?? 0
+            'nilai_jasa' => $nilai_jasa,
+            'nilai_sparepart' => $nilai_sparepart,
+            'harga_total' => $harga_total,
+            'is_sent' => $po['is_sent'] ?? 0,
+            'tgl_masuk' => $tglMasuk,
+            'tgl_estimasi' => $tglEstimasi,
+            'nilai_or' => $nilaiOR,
+            'qty_or' => $qtyOR
         ];
 
         return view('klaim/order_repair', $data);
     }
-
-
 
 
     public function update_ro($id_terima_po)
@@ -1806,6 +1842,8 @@ class KlaimController extends BaseController
             'harga_estimasi'   => str_replace(['.', ','], ['', '.'], $this->request->getPost('harga-estimasi')),
             'keterangan'       => strtoupper($this->request->getPost('keterangan')),
             'progres_pengerjaan' => strtoupper(implode(',', (array) $this->request->getPost('progres_pengerjaan'))),
+            'progres_dokumen'    => strtoupper(implode(',', (array) $this->request->getPost('dokumen_detail'))),
+            'progres_sparepart'  => strtoupper(implode(',', (array) $this->request->getPost('sparepart_detail'))),
             'user_id' => $user_id
         ];
 
@@ -1902,38 +1940,59 @@ class KlaimController extends BaseController
 
 
 
-    public function cetakKwitansi($id_terima_po)
+    public function cetakKwitansi()
     {
+        // Inisialisasi model
+        $kwitansiM = new M_Kwitansi();
         $dataPO = new M_RepairOrder();
         $auditLogModel = new M_AuditLog();
-        $user_id = session()->get('user_id');
-        $repairOrder = $dataPO->where('id_terima_po', $id_terima_po)->first();
+        $user_id = session()->get('username');
 
-        if (!$repairOrder) {
-            return redirect()->back()->with('error', 'Data tidak ditemukan untuk id terima po: ' . $id_terima_po);
-        }
+        // Generate nomor kwitansi baru
+        $nomorData = $kwitansiM->generateNomor();
 
-        $id_repair_order = $repairOrder['id_repair_order'];
+        // Ambil nilai dari form, sesuaikan dengan nama field yang sudah ditentukan
+        $qty_or = (int) str_replace('.', '', $this->request->getPost('qtyOr'));
+        $nilai_or = str_replace([',', '.'], '', $this->request->getPost('nilaiOr'));
 
-        $updateData = [
-            'status_bayar' => 'Belum Bayar',
-            'is_sent' => 1
+        // Data untuk kwitansi
+        $dataKwitansi = [
+            'nomor' => $nomorData,
+            'tanggal' => date('Y-m-d'),
+            'no_order' => strtoupper($this->request->getPost('noOrder')),
+            'no_rangka' => strtoupper($this->request->getPost('noRangka')),
+            'asuransi' => strtoupper($this->request->getPost('asuransi')),
+            'customer_name' => strtoupper($this->request->getPost('customerName')),
+            'jenis_mobil' => strtoupper($this->request->getPost('jenisMobil')),
+            'no_kendaraan' => strtoupper($this->request->getPost('noKendaraan')),
+            'warna' => strtoupper($this->request->getPost('warna')),
+            'tahun_mobil' => strtoupper($this->request->getPost('tahunKendaraan')),
+            'no_contact' => strtoupper($this->request->getPost('noContact')),
+            'jasa' => str_replace([',', '.'], '', $this->request->getPost('nilaiJasa')),
+            'sparepart' => str_replace([',', '.'], '', $this->request->getPost('nilaiSparepart')),
+            'nilai_total' => str_replace([',', '.'], '', $this->request->getPost('hargaAcc')),
+            'nilai_bayar' => str_replace([',', '.'], '', $this->request->getPost('hargaAcc')),  // Sama dengan nilai_total
+            'nilai_or' => $nilai_or,
+            'qty_or' => $qty_or,
+            'keterangan' => strtoupper($this->request->getPost('keterangan')),
+            'tanggal_masuk' => $this->request->getPost('tglMasuk'),
+            'tanggal_selesai' => $this->request->getPost('tglKeluar'),
+            'tanggal_kirim_kwitansi' => date('Y-m-d'),
+            'user_id' => $user_id
         ];
 
-        if ($dataPO->update($id_repair_order, $updateData)) {
-            $description = "$user_id berhasil mencetak kwitansi untuk No. Order: " . $repairOrder['id_terima_po'];
-
-            $auditLogModel->logCreate(
-                'Repair Order',
-                $user_id,
-                $description
-            );
-
-            return redirect()->to('/repair_order')->with('success', 'Kwitansi telah berhasil dicetak dan status diperbarui.');
-        } else {
-            return redirect()->back()->with('error', 'Gagal memperbarui data Kwitansi.');
+        // Insert kwitansi
+        $insertResult = $kwitansiM->insert($dataKwitansi);
+        if ($insertResult === false) {
+            log_message('error', 'Insert Kwitansi gagal: ' . print_r($kwitansiM->errors(), true));
+            return redirect()->back()->with('error', 'Gagal menyimpan kwitansi.');
         }
+
+        return redirect()->to('/repair_order')->with('success', 'Kwitansi berhasil disimpan.');
     }
+
+
+
 
     public function add_invoice()
     {
@@ -3046,18 +3105,16 @@ class KlaimController extends BaseController
         // Ambil data invoice berdasarkan ID Pembayaran
         $invoice = $invoiceModel->where('id_pembayaran', $data['id_pembayaran'])->first();
         if ($invoice) {
-            $nilai_total = $invoice['total']; // Nilai total dari M_Invoice
+            $nilai_total = $invoice['total'] - $invoice['sparepart'] - $invoice['nilai_or'];
         } else {
             return redirect()->back()->withInput()->with('error', 'Invoice tidak ditemukan.');
         }
 
-        // Perhitungan baru
-        $nilai_sparepart = 0.12 * $invoice['total']; // 12% dari nilai_total
-        $nilai_setelah_sparepart = $invoice['total'] - $nilai_sparepart; // Kurangi nilai_total dengan nilai_sparepart
-        $nilai_jasa = $nilai_setelah_sparepart * 0.20; // 20% dari sisa nilai setelah sparepart untuk jasa
-        $nilai_sisa = $nilai_setelah_sparepart * 0.80; // 80% dari sisa nilai setelah sparepart
-        $nilai_cat = $nilai_sisa * 0.60; // 60% dari 80% untuk cat
-        $nilai_non_cat = $nilai_sisa * 0.40; // 40% dari 80% untuk non-cat
+        // Perhitungan distribusi total invoice
+        $total_invoice = $invoice['total'] - $invoice['sparepart'] - $invoice['nilai_or'];
+        $nilai_jasa = $total_invoice * 0.60; // 60% untuk Man Power
+        $nilai_cat = $total_invoice * 0.25;    // 25% untuk Paint
+        $nilai_non_cat = $total_invoice * 0.15; // 15% untuk Non Paint
 
 
 
@@ -3089,7 +3146,7 @@ class KlaimController extends BaseController
                 'account' => '11113',
                 'name' => 'REK BCA',
                 'description' => 'PENDAPATAN REPAIR ' . $noKendaraan . ' ' . $jenisMobil . ' ' . $customerName,
-                'debit' => $nilai_total,
+                'debit' => $total_invoice,
                 'kredit' => 0,
                 'aksi' => 'Posted',
                 'user_id' => session()->get('user_id'),
@@ -3106,7 +3163,7 @@ class KlaimController extends BaseController
                 'name' => 'PENDAPATAN JASA PENGECATAN',
                 'description' => 'JASA ' . $noKendaraan . ' ' . $jenisMobil . ' ' . $customerName,
                 'debit' => 0,
-                'kredit' => $nilai_jasa, // 20% dari nilai total
+                'kredit' => $nilai_jasa,
                 'user_id' => session()->get('user_id'),
             ];
 
@@ -3139,20 +3196,6 @@ class KlaimController extends BaseController
             ];
 
             $modelJurnal->insert($dataNonCat);
-
-            // Entry untuk Sparepart
-            $dataSparepart = [
-                'date' => $tanggal,
-                'doc_no' => $doc_no,
-                'account' => '41120',
-                'name' => 'PENDAPATAN PENJUALAN SPAREPART',
-                'description' => 'PENJUALAN SPAREPART ' . $noKendaraan . ' ' . $jenisMobil . ' ' . $customerName,
-                'debit' => 0,
-                'kredit' => $nilai_sparepart, // Nilai total untuk sparepart
-                'user_id' => session()->get('user_id'),
-            ];
-
-            $modelJurnal->insert($dataSparepart);
         }
 
         // Kondisi untuk Pembayaran Asuransi KAS BESAR
@@ -3214,20 +3257,6 @@ class KlaimController extends BaseController
             ];
 
             $modelJurnal->insert($dataNonCat);
-
-            // Entry untuk Sparepart
-            $dataSparepart = [
-                'date' => $tanggal,
-                'doc_no' => $doc_no,
-                'account' => '41120',
-                'name' => 'PENDAPATAN PENJUALAN SPAREPART',
-                'description' => 'PENJUALAN SPAREPART ' . $noKendaraan . ' ' . $jenisMobil . ' ' . $customerName,
-                'debit' => 0,
-                'kredit' => $nilai_sparepart, // Nilai total untuk sparepart
-                'user_id' => session()->get('user_id'),
-            ];
-
-            $modelJurnal->insert($dataSparepart);
         }
 
         // Kondisi untuk Pembayaran OR

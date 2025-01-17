@@ -487,4 +487,7 @@ $routes->get('filter/kwitansi', 'KlaimController::kwitansi');
 $routes->get('filter/kas_bank', 'KeuanganController::jurnal_kasbank');
 $routes->get('filter/kaskecil', 'KeuanganController::kaskecil');
 $routes->get('filter/kaskeluar', 'KeuanganController::jurnal_kaskeluar');
+$routes->get('filter/kasmasuk', 'KeuanganController::jurnal_kasmasuk');
 $routes->get('filter/keluar_kasbesar', 'KeuanganController::keluarkasbesar');
+$routes->get('filter/reportjurnal', 'ReportController::jurnal_keuangan');
+$routes->get('filter/bukubesar', 'ReportController::bukubesar_generalledger');

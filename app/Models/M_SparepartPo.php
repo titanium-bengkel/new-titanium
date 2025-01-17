@@ -71,12 +71,99 @@ class M_SparepartPo extends Model
 
     public function getSparepartByIdTerimaPo($id_terima_po)
     {
-        return $this->where('id_terima_po', $id_terima_po)->findAll();
+        $builder = $this->db->table($this->table);
+
+        // Pilih kolom spesifik untuk menghindari ambiguitas
+        $builder->select('
+            sparepart_po.id_sparepart_po,
+            sparepart_po.kode_sparepart, 
+            sparepart_po.nama_sparepart, 
+            sparepart_po.qty,
+            sparepart_po.harga,
+            sparepart_po.jenis_part,
+            SUM(pdetail_pesan.qty) as qty_pesan, 
+            MAX(part_po.tanggal) as tgl_pesan, 
+            SUM(pdetail_terima.qty) as qty_beli, 
+            MAX(pdetail_terima.tgl_terima) as tgl_beli
+        ');
+
+        // Join tabel terkait
+        $builder->join('part_po', 'part_po.wo = sparepart_po.id_terima_po', 'left');
+        $builder->join('pdetail_pesan', 'pdetail_pesan.wo = sparepart_po.id_terima_po AND pdetail_pesan.id_kode_barang = sparepart_po.kode_sparepart', 'left');
+        $builder->join('pdetail_terima', 'pdetail_terima.no_repair_order = sparepart_po.id_terima_po AND pdetail_terima.id_kode_barang = sparepart_po.kode_sparepart', 'left');
+
+        // Filter berdasarkan id_terima_po
+        $builder->where('sparepart_po.id_terima_po', $id_terima_po);
+
+        // Kelompokkan berdasarkan kode_sparepart dan nama sparepart
+        $builder->groupBy('sparepart_po.id_sparepart_po, sparepart_po.kode_sparepart, sparepart_po.nama_sparepart, sparepart_po.qty, sparepart_po.harga, sparepart_po.jenis_part');
+
+        // Eksekusi query
+        $query = $builder->get();
+
+        // Ambil hasil dalam bentuk array
+        $results = $query->getResultArray();
+
+        return $results;
     }
+    public function getSparepartByRepair($id_terima_po)
+    {
+        $builder = $this->db->table($this->table);
+
+        // Pilih kolom spesifik untuk menghindari ambiguitas
+        $builder->select('
+            sparepart_po.id_sparepart_po,
+            sparepart_po.kode_sparepart, 
+            sparepart_po.nama_sparepart, 
+            sparepart_po.qty,
+            sparepart_po.harga,
+            sparepart_po.jenis_part,
+            SUM(pdetail_pesan.qty) as qty_pesan, 
+            MAX(part_po.tanggal) as tgl_pesan, 
+            SUM(pdetail_terima.qty) as qty_beli, 
+            MAX(pdetail_terima.tgl_terima) as tgl_beli,
+            SUM(pdetail_repair.qty_B) as qty_repair
+        ');
+
+        // Join tabel terkait
+        $builder->join('part_po', 'part_po.wo = sparepart_po.id_terima_po', 'left');
+        $builder->join('pdetail_pesan', 'pdetail_pesan.wo = sparepart_po.id_terima_po AND pdetail_pesan.id_kode_barang = sparepart_po.kode_sparepart', 'left');
+        $builder->join('pdetail_terima', 'pdetail_terima.no_repair_order = sparepart_po.id_terima_po AND pdetail_terima.id_kode_barang = sparepart_po.kode_sparepart', 'left');
+        $builder->join('pdetail_repair', 'pdetail_repair.no_repair_order = sparepart_po.id_terima_po AND pdetail_repair.id_kode_barang = sparepart_po.kode_sparepart', 'left');
+
+        // Filter berdasarkan id_terima_po
+        $builder->where('sparepart_po.id_terima_po', $id_terima_po);
+
+        // Kelompokkan berdasarkan kode_sparepart dan nama sparepart
+        $builder->groupBy('sparepart_po.id_sparepart_po, sparepart_po.kode_sparepart, sparepart_po.nama_sparepart, sparepart_po.qty, sparepart_po.harga, sparepart_po.jenis_part');
+
+        // Eksekusi query
+        $query = $builder->get();
+
+        // Ambil hasil dalam bentuk array
+        $results = $query->getResultArray();
+
+        return $results;
+    }
+
+
+
+
+
+
     public function getSparepartRepair($id_terima_po)
     {
-        return $this->where('id_terima_po', $id_terima_po)->findAll();
+        $builder = $this->db->table($this->table);
+        // Specify all columns needed or use '*' to select all columns
+        $builder->select('sparepart_po.*, pdetail_pesan.qty as qty_po, pdetail_repair.*');
+        $builder->join('pdetail_pesan', 'pdetail_pesan.wo = sparepart_po.id_terima_po', 'left');
+        $builder->join('pdetail_repair', 'pdetail_repair.no_repair_order = sparepart_po.id_terima_po', 'left');
+        $builder->where('sparepart_po.id_terima_po', $id_terima_po);
+        $query = $builder->get();
+
+        return $query->getResultArray();
     }
+
 
     public function getDetailByIdTerimaPo($id_terima_po)
     {

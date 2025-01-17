@@ -7,12 +7,13 @@ use CodeIgniter\Model;
 class M_Kwitansi extends Model
 {
     protected $table      = 'kwitansi';
-    protected $primaryKey = 'nomor';
+    protected $primaryKey = 'id_kwitansi';
 
     protected $allowedFields = [
         'nomor',
         'tanggal',
         'no_order',
+        'no_rangka',
         'no_kendaraan',
         'jenis_mobil',
         'warna',

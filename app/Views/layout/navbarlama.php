@@ -5,7 +5,7 @@
             <div class="sidebar-header position-relative">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="logo" style="font-size: 24px; font-weight: bold; color: #fff;">
-                        <a href="/index" style="text-decoration: none; color: inherit;">TITANIUM</a>
+                        <a href="dashboard/index" style="text-decoration: none; color: inherit;">TITANIUM</a>
                     </div>
                     <div class="theme-toggle d-flex gap-2  align-items-center mt-2">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--system-uicons" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 21 21">
@@ -36,7 +36,7 @@
                 <ul class="menu">
                     <li class="sidebar-title">Menu</li>
                     <li class="sidebar-item ">
-                        <a href="/index" class='sidebar-link'>
+                        <a href="dashboard/index" class='sidebar-link'>
                             <i class="bi bi-grid-fill"></i>
                             <span>Dashboard</span>
                         </a>
