@@ -1509,24 +1509,59 @@ class KlaimController extends BaseController
     public function orderlist_pending()
     {
         $pending = new M_RepairOrder();
-        $userModel = new UserModel();
 
-        $pendingData = $pending->groupStart()
+        // Ambil filter dari request
+        $filterName = $this->request->getGet('filter_name');
+        $searchKeyword = $this->request->getGet('search_keyword');
+        $startDate = $this->request->getGet('start_date') ?? date('Y-m-01');
+        $endDate = $this->request->getGet('end_date') ?? date('Y-m-d');
+        $showAll = $this->request->getGet('show_all');
+
+        // Mulai membangun query
+        $pending->groupStart()
             ->where('status_bayar', 'Belum Bayar')
             ->orGroupStart()
-            ->where('progres_pengerjaan', 'Menunggu Sparepart Tambahan')
+            ->where('progres_pengerjaan', 'Kurang Dokumen')
             ->orWhere('progres_pengerjaan', 'Menunggu Comment User')
+            ->orWhere('progres_pengerjaan', 'Sparepart')
             ->groupEnd()
-            ->groupEnd()
-            ->findAll();
+            ->groupEnd();
 
+        // Tambahkan filter bengkel jika dipilih
+        if (!empty($filterName)) {
+            $pending->where('bengkel', $filterName);
+        }
+
+        // Tambahkan filter pencarian jika ada keyword
+        if (!empty($searchKeyword)) {
+            $pending->groupStart()
+                ->like('id_terima_po', $searchKeyword)
+                ->orLike('no_kendaraan', $searchKeyword)
+                ->groupEnd();
+        }
+
+        // Filter berdasarkan tanggal jika tidak meminta semua data
+        if (empty($showAll)) {
+            $pending->where('tgl_masuk >=', $startDate)
+                ->where('tgl_masuk <=', $endDate);
+        }
+
+        // Ambil data hasil query
+        $pendingData = $pending->findAll();
+
+        // Data untuk view
         $data = [
             'title' => 'Pending Invoice',
-            'pending' => $pendingData
+            'pending' => $pendingData,
+            'filterName' => $filterName,
+            'searchKeyword' => $searchKeyword,
+            'startDate' => $startDate,
+            'endDate' => $endDate
         ];
 
         return view('klaim/orderlist_pending', $data);
     }
+
 
 
 

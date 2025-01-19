@@ -13,135 +13,146 @@
                     </div>
                     <h5 class="page-title mb-0 fw-bold">Pending Invoice</h5>
                 </header>
+                <div class="card-header py-3 px-4 border-muted" style="font-size: 12px;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex gap-3 align-items-center">
+                            <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">
+                                <i class="fas fa-file-excel"></i> Export to Excel
+                            </a>
+                        </div>
+
+                        <!-- Form Filter -->
+                        <form method="get" action="<?= base_url('filter/pendinginvoice') ?>" class="d-flex gap-3 align-items-center">
+                            <!-- Nama Bengkel -->
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="filter_name" class="form-label fw-bold text-primary mb-0">Bengkel:</label>
+                                <select name="filter_name" id="filter_name" class="form-select form-select-sm">
+                                    <option value="" <?= empty($filterName) ? 'selected' : '' ?>>Semua</option>
+                                    <option value="Titanium" <?= ($filterName == 'Titanium') ? 'selected' : '' ?>>Titanium</option>
+                                    <option value="K3 Karoseri" <?= ($filterName == 'K3 Karoseri') ? 'selected' : '' ?>>K3 Karoseri</option>
+                                    <option value="Tandem" <?= ($filterName == 'Tandem') ? 'selected' : '' ?>>Tandem</option>
+                                    <option value="Vortex" <?= ($filterName == 'Vortex') ? 'selected' : '' ?>>Vortex</option>
+                                </select>
+                            </div>
+
+                            <!-- Pencarian -->
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="search_keyword" class="form-label fw-bold text-primary mb-0">Cari:</label>
+                                <input
+                                    type="text"
+                                    name="search_keyword"
+                                    id="search_keyword"
+                                    class="form-control form-control-sm"
+                                    placeholder="No. Order/Nopol"
+                                    value="<?= $searchKeyword ?? '' ?>">
+                            </div>
+
+                            <!-- Input Tanggal Mulai -->
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="start_date" class="form-label fw-bold text-primary mb-0">Mulai:</label>
+                                <input
+                                    type="date"
+                                    name="start_date"
+                                    id="start_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $startDate ?? date('Y-m-01') ?>">
+                            </div>
+
+                            <!-- Input Tanggal Akhir -->
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="end_date" class="form-label fw-bold text-primary mb-0">Akhir:</label>
+                                <input
+                                    type="date"
+                                    name="end_date"
+                                    id="end_date"
+                                    class="form-control form-control-sm"
+                                    value="<?= $endDate ?? date('Y-m-d') ?>">
+                            </div>
+
+                            <!-- Tombol Filter -->
+                            <button type="submit" class="btn btn-primary btn-sm fw-bold">Filter</button>
+
+                            <!-- Tombol Tampilkan Semua -->
+                            <button type="submit" name="show_all" value="1" class="btn btn-secondary btn-sm fw-bold">Tampilkan Semua</button>
+                        </form>
+                    </div>
+                </div>
                 <div class="card-content">
                     <div class="table-responsive" style="margin: 20px; font-size: 12px;">
-                        <table class="table table-bordered table-hover table-striped mb-0 text-center">
-                            <thead class="thead-dark table-secondary">
+                        <table class="table table-bordered table-hover table-striped mb-0">
+                            <thead class="thead-dark table-secondary text-center">
                                 <tr>
-                                    <th class="text-center">#</th>
-                                    <th class="text-center">Nomor</th>
-                                    <th class="text-center">Tgl. Masuk</th>
-                                    <th class="text-center">Progres Pengerjaan</th>
-                                    <th class="text-center">User ID</th>
-                                    <th class="text-center">Est. Keluar</th>
-                                    <th class="text-center">Harga Acc</th>
-                                    <th class="text-center">Nopol</th>
-                                    <th class="text-center">Car Model</th>
-                                    <th class="text-center">Pelanggan</th>
-                                    <th class="text-center">Asuransi</th>
-                                    <th class="text-center">Tgl. Acc</th>
+                                    <th>#</th>
+                                    <th>Nomor</th>
+                                    <th>Tgl. Masuk</th>
+                                    <th>Tgl. Acc</th>
+                                    <th>Progres Pengerjaan</th>
+                                    <th>Est. Keluar</th>
+                                    <th>Harga Acc</th>
+                                    <th>Nopol</th>
+                                    <th>Car Model</th>
+                                    <th>Pelanggan</th>
+                                    <th>Asuransi</th>
+                                    <th>Keterangan</th>
+                                    <th>User ID</th>
                                 </tr>
                             </thead>
                             <tbody class="text-center">
-                                <?php foreach ($pending as $key => $order): ?>
+                                <?php
+                                $grandTotal = 0; // Inisialisasi total
+                                foreach ($pending as $key => $order):
+                                    // Tambahkan total_biaya dari setiap baris ke grandTotal
+                                    $grandTotal += $order['total_biaya'];
+                                ?>
                                     <tr>
-                                        <th style=" font-weight: normal;"><?= $key + 1 ?></th>
-                                        <td style=" font-weight: normal;"><a href="<?= base_url('order_pospending/' . $order['id_terima_po']) ?>"><?= esc($order['id_terima_po']) ?></a></td>
-                                        <th style=" font-weight: normal;"><?= $order['tgl_masuk'] ?></th>
-                                        <th style=" font-weight: normal;"><?= $order['progres_pengerjaan'] ?></th>
-                                        <th style=" font-weight: normal;"><?= $order['user_id'] ?></th>
-                                        <th style=" font-weight: normal;"><?= $order['tgl_keluar'] ?></th>
+                                        <th><?= $key + 1 ?></th>
+                                        <td><a href="<?= base_url('order_pospending/' . $order['id_terima_po']) ?>"><?= esc($order['id_terima_po']) ?></a></td>
+                                        <th><?= $order['tgl_masuk'] ?></th>
+                                        <th><?= $order['tgl_acc'] ?></th>
+                                        <th><?= $order['progres_pengerjaan'] ?></th>
+                                        <th><?= $order['tgl_keluar'] ?></th>
 
-                                        <!-- Logika untuk menampilkan harga estimasi atau harga acc -->
-                                        <th style=" font-weight: normal;" class="harga-acc">
-                                            <?php if ($order['asuransi'] == 'UMUM/PRIBADI'): ?>
-                                                <?= number_format($order['harga_estimasi'], 0, ',', '.') ?>
-                                            <?php else: ?>
-                                                <?= number_format($order['harga_acc'], 0, ',', '.') ?>
-                                            <?php endif; ?>
+                                        <th>
+                                            <?= number_format($order['total_biaya'], 0, ',', '.') ?>
                                         </th>
 
-                                        <th style=" font-weight: normal;"><?= $order['no_kendaraan'] ?></th>
-                                        <th style=" font-weight: normal;"><?= $order['jenis_mobil'] ?></th>
-                                        <th style=" font-weight: normal;"><?= $order['customer_name'] ?></th>
-                                        <th style=" font-weight: normal;"><?= $order['asuransi'] ?></th>
-                                        <th style=" font-weight: normal;"><?= $order['tgl_acc'] ?></th>
+                                        <th><?= $order['no_kendaraan'] ?></th>
+                                        <th><?= $order['jenis_mobil'] ?></th>
+                                        <th><?= $order['customer_name'] ?></th>
+                                        <th><?= $order['asuransi'] ?></th>
+                                        <th>
+                                            <?php
+                                            if ($order['progres_pengerjaan'] == 'Beres Pengerjaan') {
+                                                echo 'Status: ' . $order['status_bayar'];
+                                            } elseif ($order['progres_pengerjaan'] == 'Kurang Dokumen') {
+                                                echo $order['progres_dokumen'];
+                                            } elseif ($order['progres_pengerjaan'] == 'Sparepart') {
+                                                echo $order['progres_sparepart'];
+                                            } else {
+                                                echo '-';
+                                            }
+                                            ?>
+                                        </th>
+                                        <th><?= $order['user_id'] ?></th>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="8" class="text-center"><strong>Total Harga per Halaman:</strong></td>
-                                    <td id="totalHarga" class="text-center"></td>
-                                    <td colspan="5"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="8" class="text-center"><strong>Grand Total:</strong></td>
-                                    <td id="grandTotal" class="text-center"></td>
-                                    <td colspan="5"></td>
+                                    <td colspan="6" class="text-center"><strong>Grand Total:</strong></td>
+                                    <td class="text-center"><strong><?= number_format($grandTotal, 0, ',', '.') ?></strong></td>
+                                    <td colspan="6"></td>
                                 </tr>
                             </tfoot>
-
                         </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
 </section>
 <!-- Table Pending Invoice end -->
 
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('.table').DataTable({
-            "paging": true,
-            "pageLength": 20,
-            "lengthMenu": [20, 50, 100],
-            "ordering": true,
-            "language": {
-                "lengthMenu": "Show _MENU_ entries",
-                "paginate": {
-                    "first": "First",
-                    "last": "Last",
-                    "next": "Next",
-                    "previous": "Previous"
-                },
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries"
-            },
-            "pagingType": "full_numbers"
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        function calculateTotals() {
-            // Selecting the rows that have class `harga-acc` where the prices are displayed
-            const rows = document.querySelectorAll('tbody tr');
-            let totalHargaPerHalaman = 0;
-            let grandTotal = 0;
-
-            rows.forEach(row => {
-                const hargaCell = row.querySelector('.harga-acc');
-                if (hargaCell && hargaCell.textContent.trim() !== '') {
-                    // Convert text content to number after removing any formatting (thousand separators, etc.)
-                    const harga = parseFloat(hargaCell.textContent.replace(/\./g, '').replace(',', '.'));
-                    if (!isNaN(harga)) {
-                        totalHargaPerHalaman += harga;
-                    }
-                }
-            });
-
-            // Update the total per page cell
-            const totalHargaElement = document.getElementById('totalHarga');
-            totalHargaElement.textContent = new Intl.NumberFormat('id-ID').format(totalHargaPerHalaman);
-
-            // In this example, grand total is assumed to be the same as total per page
-            // If you have multiple pages, you would adjust this logic
-            grandTotal = totalHargaPerHalaman; // Adjust if there is more logic for multiple pages
-
-            // Update the grand total cell
-            const grandTotalElement = document.getElementById('grandTotal');
-            grandTotalElement.textContent = new Intl.NumberFormat('id-ID').format(grandTotal);
-        }
-
-        // Call the function to calculate totals on page load
-        calculateTotals();
-    });
-</script>
 
 
 <?= $this->endSection() ?>

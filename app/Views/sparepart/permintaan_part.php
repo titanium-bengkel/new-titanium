@@ -70,6 +70,7 @@
                                 <th>Tgl. Acc</th>
                                 <th>Jenis Mobil</th>
                                 <th>Nopol</th>
+                                <th>No. Rangka</th>
                                 <th>Warna</th>
                                 <th>Tahun</th>
                                 <th>Asuransi</th>
@@ -121,6 +122,7 @@
                                             </td>
                                             <td><?= esc($data['jenis_mobil'] ?? '-') ?></td>
                                             <td><?= esc($data['no_kendaraan'] ?? '-') ?></td>
+                                            <td><?= esc($data['no_rangka'] ?? '-') ?></td>
                                             <td><?= esc($data['warna'] ?? '-') ?></td>
                                             <td><?= esc($data['tahun_kendaraan'] ?? '-') ?></td>
                                             <td><?= esc($data['asuransi'] ?? '-') ?></td>

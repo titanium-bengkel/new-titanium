@@ -18,16 +18,15 @@ class ProduksiController extends Controller
 
     public function headproduksi()
     {
-        $repairOrders = $this->repairOrderModel->getAllRepairOrders();
-        $filteredRepairOrders = array_filter($repairOrders, function ($order) {
-            return $order['bengkel'] === 'TITANIUM';
-        });
+        $statuses = ['Ketok', 'Epoxy', 'Dempul', 'Cat', 'Beres Pengerjaan'];
+        $repairOrders = $this->repairOrderModel->whereIn('progres_pengerjaan', $statuses)->findAll();
         $data = [
             'title' => 'Head Produksi',
-            'repairOrders' => $filteredRepairOrders,
+            'repairOrders' => $repairOrders,
         ];
         return view('produksi/headproduksi', $data);
     }
+
 
     // Method untuk mengupdate progress dari Head Produksi
     public function updateProgressHead()
@@ -43,8 +42,9 @@ class ProduksiController extends Controller
             'Cat',
             'Poles',
             'Beres Pengerjaan',
-            'Menunggu Sparepart Tambahan',
             'Menunggu Comment User',
+            'Kurang Dokumen',
+            'Sparepart',
             'Data Completed'
         ];
 
@@ -71,13 +71,12 @@ class ProduksiController extends Controller
 
     public function kelolaproduksi()
     {
-        $repairOrders = $this->repairOrderModel->getAllRepairOrders();
-        $filteredRepairOrders = array_filter($repairOrders, function ($order) {
-            return $order['bengkel'] === 'TITANIUM';
-        });
+        $statuses = ['Ketok', 'Epoxy', 'Dempul', 'Cat', 'Beres Pengerjaan'];
+
+        $repairOrders = $this->repairOrderModel->whereIn('progres_pengerjaan', $statuses)->findAll();
         $data = [
             'title' => 'Kelola Produksi',
-            'repairOrders' => $filteredRepairOrders,
+            'repairOrders' => $repairOrders,
         ];
         return view('produksi/kelolaproduksi', $data);
     }
@@ -93,8 +92,9 @@ class ProduksiController extends Controller
             'Cat',
             'Poles',
             'Beres Pengerjaan',
-            'Menunggu Sparepart Tambahan',
             'Menunggu Comment User',
+            'Kurang Dokumen',
+            'Sparepart',
             'Data Completed'
         ];
 
@@ -115,5 +115,17 @@ class ProduksiController extends Controller
         $this->repairOrderModel->update($id, ['progres_pengerjaan' => $newProgress]);
 
         return redirect()->to('/produksi/kelolaproduksi')->with('success', 'Progress berhasil diupdate.');
+    }
+
+    public function getRepairOrderDetail($id)
+    {
+        // Ambil detail repair order berdasarkan ID
+        $repairOrder = $this->repairOrderModel->find($id);
+
+        if ($repairOrder) {
+            return $this->response->setJSON($repairOrder);
+        } else {
+            return $this->response->setJSON(['error' => 'Data tidak ditemukan']);
+        }
     }
 }

@@ -483,6 +483,7 @@ $routes->post('generate-doc', 'KeuanganController::generateDoc');
 $routes->get('filter/preorder', 'KlaimController::preorder');
 $routes->get('filter/asuransi', 'KlaimController::orderlist_asuransi');
 $routes->get('filter/repairorder', 'KlaimController::repair_order');
+$routes->get('filter/pendinginvoice', 'KlaimController::orderlist_pending');
 $routes->get('filter/kwitansi', 'KlaimController::kwitansi');
 $routes->get('filter/kas_bank', 'KeuanganController::jurnal_kasbank');
 $routes->get('filter/kaskecil', 'KeuanganController::kaskecil');
