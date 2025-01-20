@@ -1047,6 +1047,7 @@ class MasterController extends BaseController
     {
         // Load the model
         $m_Barang_Bahan = new M_Barang_Bahan();
+        $m_Gd_Bahan = new M_Gd_Bahan();
 
         // // Validasi data jika diperlukan
         // if (!$this->validate([
@@ -1073,13 +1074,27 @@ class MasterController extends BaseController
             'satuan'         => strtoupper($this->request->getPost('satuan')),
             'stok'         => $this->request->getPost('stok'),
             'harga_beli'    => $this->request->getPost('harga_beli'),
-            'harga_jual' => $this->request->getPost('harga_jualawal'),
+            'harga_jual' => $this->request->getPost('harga_jual'),
             'stok_minimal'  => $this->request->getPost('stok_minimal'),
             'tanggal'       => $this->request->getPost('tanggal'),
         ];
 
         // Update data di tabel barang_bahan berdasarkan ID
         $m_Barang_Bahan->update($id_bahan, $data);
+
+        // Ambil stok yang dimasukkan dari form
+        $stok = $this->request->getPost('stok');
+
+        // Menyiapkan data untuk tabel gd_bahan
+        $gd_bahan_data = [
+            'kode_bahan'    => $data['kode_bahan'],
+            'nama_bahan'    => $data['nama_bahan'],
+            'stok_awal'     => $stok,  // Menggunakan stok awal dari form
+            'stok'          => $stok,
+            'gudang'        => 'GUDANG BAHAN',  // Format Gudang
+        ];
+        // Simpan data ke dalam tabel kartustok
+        $m_Gd_Bahan->insert($gd_bahan_data);
 
         // Redirect ke halaman yang diinginkan setelah update
         return redirect()->to('master/masterbahan')->with('message', 'Data berhasil diupdate');

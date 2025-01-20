@@ -141,7 +141,8 @@
                                 <td><?= $total_qty ?></td>
                                 <td></td>
                                 <td><?= number_format($total_hpp, 2, ',', '.'); ?></td>
-                                <td colspan="3"></td>
+                                <td><?= number_format($total_nilai, 2, ',', '.'); ?></td>
+                                <td colspan="2"></td>
                             </tr>
                         </tfoot>
                     </table>

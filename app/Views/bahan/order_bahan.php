@@ -47,12 +47,12 @@
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
-                            <div class="col-lg-2 col-3 mb-3">
+                            <!-- <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="jatuh_tempo">Jatuh Tempo</label>
                             </div>
                             <div class="col-lg-10 col-9 mb-3">
                                 <input type="date" id="jatuh_tempo" class="form-control" name="jatuh_tempo" onkeydown="return false" onclick="this.showPicker()">
-                            </div>
+                            </div> -->
                             <div class="col-lg-2 col-3 mb-3">
                                 <label class="col-form-label" for="keterangan">Keterangan</label>
                             </div>

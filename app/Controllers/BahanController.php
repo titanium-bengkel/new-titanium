@@ -408,7 +408,7 @@ class BahanController extends BaseController
                 $dataBahan['total_qty'] += $qty_clean;
                 $dataBahan['total_jumlah'] += $jumlah;
                 // Kurangkan diskon dari total jumlah
-                
+
                 // Update data stok atau masukkan data baru ke tabel gd_bahan
                 $existingBahan = $gdBahanModel->where(['kode_bahan' => $kode, 'nama_bahan' => $nama_barang[$index]])->first();
 
@@ -856,6 +856,7 @@ class BahanController extends BaseController
         $detailRepairModel = new M_Detail_Repair();
         $gdBahanModel = new M_Gd_Bahan(); // Model untuk tabel bahan_data
         $kartuStokModel = new M_Kartu_Stok();
+        $barangBahantModel = new M_Barang_Bahan(); // Model untuk
 
         // Generate unique ID for 'id_material'
         $generateId = $bahanRepairModel->generateId();
@@ -898,6 +899,7 @@ class BahanController extends BaseController
         $id_kode_barang = $this->request->getPost('id_kode_barang');
         $nama_barang = $this->request->getPost('nama_barang');
         $satuan = $this->request->getPost('satuan');
+        $total_nilai = 0; // Inisialisasi total nilai
 
         if ($id_kode_barang) {
             foreach ($id_kode_barang as $index => $kode) {
@@ -908,7 +910,7 @@ class BahanController extends BaseController
                 ])->first();
 
                 if ($existingBahan) {
-                    // Mengurangi stok jika qty_B tidak kosong atau > 0
+                    // Mengurangi stok jika qty tidak kosong atau > 0
                     $newStok = $existingBahan['stok'] - $qty[$index];
                     $newCredit = $existingBahan['credit'] + $qty[$index];
 
@@ -923,6 +925,9 @@ class BahanController extends BaseController
                     return redirect()->back()->with('error', 'Barang dengan kode ' . $kode . ' dan nama ' . $nama_barang[$index] . ' tidak ditemukan di stok.');
                 }
 
+                $nilai = $qty[$index] * $hpp[$index];
+                $total_nilai += $nilai; // Tambahkan ke total nilai
+
                 // Menyiapkan data detail repair untuk tabel detail_repair
                 $detailData = [
                     'id_kode_barang' => $kode,
@@ -930,9 +935,9 @@ class BahanController extends BaseController
                     'qty' => $qty[$index],
                     'satuan' => $satuan[$index],
                     'hpp' => $hpp[$index],
-                    'nilai' => $qty[$index] * $hpp[$index],  // Perhitungan qty * hpp dan simpan sebagai nilai
+                    'nilai' => $nilai,  // Perhitungan qty * hpp dan simpan sebagai nilai
                     'id_material' => $data['id_material'],
-                    'wo' => strtoupper($this->request->getPost('no_ro')),
+                    'no_repair_order' => strtoupper($this->request->getPost('no_ro')),
                     'nopol' => strtoupper($this->request->getPost('no_kendaraan')),
                     'jenis_mobil' => strtoupper($this->request->getPost('jenis_mobil')),
                     'asuransi' => strtoupper($this->request->getPost('asuransi')),
@@ -955,6 +960,20 @@ class BahanController extends BaseController
                 // Simpan data ke M_Kartu_Stok
                 $kartuStokModel->insert($kartuStokData);
             }
+            foreach ($id_kode_barang as $index => $kode) {
+                $barangbahantList = $barangBahantModel->where('kode_bahan', $kode)->findAll();
+
+                foreach ($barangbahantList as $barangbahan) {
+                    $barangBahantModel->update($barangbahan['id_bahan'], [
+                        'stok' => $barangbahan['stok'] - $qty[$index],
+                    ]);
+                }
+            }
+            
+            // Update total nilai ke bahanRepairModel
+            $bahanRepairModel->update($data['id_material'], [
+                'total_nilai' => $total_nilai
+            ]);
         }
 
 
@@ -978,10 +997,12 @@ class BahanController extends BaseController
             // Calculate total quantities and HPP
             $totalQty = 0;
             $totalHpp = 0;
+            $totalNilai = 0;
 
             foreach ($detailData as $detail) {
                 $totalQty += $detail['qty'];
                 $totalHpp += $detail['hpp'];
+                $totalNilai += $detail['nilai'];
             }
 
             $data = [
@@ -990,6 +1011,7 @@ class BahanController extends BaseController
                 'detail_repair' => $detailData,
                 'total_qty' => $totalQty,
                 'total_hpp' => $totalHpp,
+                'total_nilai' => $totalNilai,
             ];
 
             return view('bahan/order_repair_bahanprev', $data);

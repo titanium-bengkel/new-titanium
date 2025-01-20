@@ -1,6 +1,28 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content') ?>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    if (sessionStorage.getItem('alertShown')) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'info',
+            title: 'PEMBERITAHUAN STOK',
+            html: `
+                <p>JIKA STOK BERWARNA MERAH SEGERA LAKUKAN PEMBELIAN BAHAN.</p>
+                <p>SAMAKAN HARGA JUAL DENGAN HARGA BELI.</p>
+            `,
+            showConfirmButton: false,
+            timer: 5000,
+            width: '550px',
+            padding: '20px',
+        });
+
+        // Tandai bahwa alert telah ditampilkan
+        sessionStorage.setItem('alertShown', 'true');
+    }
+</script>
 
 <section class="section">
     <div class="">
@@ -32,9 +54,9 @@
                                                 <th>Aksi</th>
                                                 <th>Kode</th>
                                                 <th>Nama Bahan</th>
-                                                <th>Kode Group</th>
+                                                <!-- <th>Kode Group</th> -->
                                                 <th>Nama Group</th>
-                                                <th>Kode Kategori</th>
+                                                <!-- <th>Kode Kategori</th> -->
                                                 <th>Stok</th>
                                                 <th>Satuan Pakai</th>
                                                 <th>Harga Beli</th>
@@ -60,10 +82,13 @@
                                                     </td>
                                                     <td class="text-start"><?= $item['kode_bahan'] ?></td>
                                                     <td class="text-start"><?= $item['nama_bahan'] ?></td>
-                                                    <td class="text-start"><?= $item['kode_group'] ?></td>
+                                                    <!-- <td class="text-start"><?= $item['kode_group'] ?></td> -->
                                                     <td class="text-start"><?= $item['nama_group'] ?></td>
-                                                    <td class="text-start"><?= $item['kode_kategori'] ?></td>
-                                                    <td class="text-end"><?= $item['stok'] ?></td>
+                                                    <!-- <td class="text-start"><?= $item['kode_kategori'] ?></td> -->
+                                                    <!-- Kondisi untuk warna pada kolom Stok -->
+                                                    <td class="text-end" style="background-color: <?= $item['stok'] <= $item['stok_minimal'] ? '#fa0017' : 'transparent'; ?>;">
+                                                        <strong><?= $item['stok'] ?></strong>
+                                                    </td>
                                                     <td class="text-start"><?= $item['satuan'] ?></td>
                                                     <td class="text-end"><?= number_format($item['harga_beli'], 2, ',', '.') ?></td>
                                                     <td class="text-end"><?= number_format($item['harga_jual'], 2, ',', '.') ?></td>
@@ -72,9 +97,10 @@
                                                     <td class="text-start"><?= $item['tanggal'] ?></td>
                                                 </tr>
                                             <?php endforeach; ?>
-                                            <!-- Tambahkan lebih banyak baris sesuai kebutuhan -->
                                         </tbody>
                                     </table>
+
+
                                 </div>
                             </div>
                         </div>
@@ -251,6 +277,11 @@
                                 <div class="mb-3">
                                     <label for="stok_minimal<?= $b['id_bahan'] ?>" class="form-label">Stok Minimal</label>
                                     <input type="text" class="form-control" id="stok_minimal<?= $b['id_bahan'] ?>" name="stok_minimal" value="<?= $b['stok_minimal'] ?>">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="stok" class="form-label">Stok</label>
+                                    <p>jika bahan memiliki stok input disini, jika tidak biarkan kosong</p>
+                                    <input type="text" class="form-control" id="stok<?= $b['stok'] ?>" name="stok" value="<?= $b['stok'] ?>">
                                 </div>
                                 <div class="mb-3">
                                     <label for="tanggal<?= $b['id_bahan'] ?>" class="form-label">Tanggal</label>

@@ -261,7 +261,7 @@
                                     <tr data-satuan="<?= $item['satuan'] ?>">
                                         <td><?= $item['kode_bahan'] ?></td>
                                         <td><?= $item['nama_bahan'] ?></td>
-                                        <td><?= $item['harga_beli'] ?></td>
+                                        <td><?= $item['harga_jual'] ?></td>
                                     </tr>
 
                                 <?php endforeach; ?>
