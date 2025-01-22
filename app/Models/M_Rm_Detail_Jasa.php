@@ -9,6 +9,7 @@ class M_Rm_Detail_Jasa extends Model
     protected $table = 'rm_detail_jasa';
     protected $primaryKey = 'id';
     protected $allowedFields = [
+        'no_order',
         'kode_jasa',
         'nama_jasa',
         'harga',

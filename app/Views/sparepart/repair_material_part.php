@@ -19,7 +19,7 @@
                     <div class="card-header d-flex align-items-center justify-content-start flex-wrap" style="padding: 20px;">
                         <div class="d-flex align-items-center ms-md-auto w-100 w-md-auto">
                             <div class="d-flex align-items-center w-100 justify-content-start">
-                                <a href="<?= base_url('repair_material_add') ?>" class="btn btn-primary btn-sm me-2" style="width: 60px;">Add</a>
+                                <a href="<?= base_url('repair_material_add') ?>" class="btn btn-primary btn-sm me-2">Add RM</a>
                                 <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
                             </div>
                             <form method="GET" action="">
@@ -47,16 +47,15 @@
                                     <th style="text-align: center;">Tanggal</th>
                                     <th style="text-align: center;">Kode Gudang</th>
                                     <th style="text-align: center;">No. Order</th>
-                                    <!-- <th style="text-align: center;">Tanggal Order</th> -->
                                     <th style="text-align: center;">Jenis Mobil</th>
                                     <th style="text-align: center;">Nopol</th>
                                     <th style="text-align: center;">Nama Pemilik</th>
                                     <th style="text-align: center;">Keterangan</th>
-                                    <th style="text-align: center;">User</th>
+                                    <th style="text-align: center;">User ID</th>
                                     <th style="text-align: center;">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-left">
+                            <tbody class="text-center">
                                 <?php if (!empty($repair)): ?>
                                     <?php foreach ($repair as $index => $data): ?>
                                         <tr>
@@ -68,16 +67,12 @@
                                             <td><?= $data['tanggal'] ?></td>
                                             <td><?= $data['gudang_keluar'] ?></td>
                                             <td><?= $data['no_repair'] ?></td>
-                                            <!-- <td><?= $data['tanggal_masuk'] ?></td> -->
                                             <td><?= $data['jenis_mobil'] ?></td>
                                             <td><?= $data['nopol'] ?></td>
                                             <td><?= $data['nama_pemilik'] ?></td>
                                             <td><?= $data['keterangan'] ?></td>
                                             <td><?= $data['username'] ?></td>
                                             <td>
-                                                <!-- <button type="button" class="btn btn-danger btn-sm delete-user-btn" style="padding: 1px 3px; font-size: 10px;" data-url="<?= base_url('/sparepart/deleterepairpart/' . $data['id_material']); ?>">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </button> -->
                                                 <button type="button" class="btn btn-danger btn-sm delete-user-btn" style="padding: 1px 3px; font-size: 10px;" data-url="<?= base_url('/sparepart/deleterepairpart/' . $data['id_material']); ?>">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
@@ -86,22 +81,11 @@
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="14">Data tidak ditemukan</td>
+                                        <td colspan="12">Data tidak ditemukan</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
-                        <div class="card-body">
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination pagination-primary">
-                                    <li class="page-item"><a class="page-link" href="#">Prev</a></li>
-                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                                </ul>
-                            </nav>
-                        </div>
                     </div>
                 </div>
             </div>

@@ -1563,45 +1563,18 @@ class SparepartController extends BaseController
     public function add_repair_material()
     {
         $repairM = new M_Part_Repair();
-        $partM = new M_Barang_Sparepart();
-        $poM = new M_Po();
-        $terimaM = new M_Part_Terima();
-        $detailM = new M_Pdetail_Terima();
 
-        $barangData = $partM->findAll();
-        $poData = $poM->findAll();
-        $terimaData = $terimaM->findAll();
-        $detailData = $detailM->findAll();
+        $penerimaan = $repairM->getJoinedData();
 
-        // Gabungkan data berdasarkan no_repair_order
-        $penerimaan = [];
-        foreach ($terimaData as $terima) {
-            $noRepairOrder = $terima['no_repair_order'];
-
-            // Cari data detail yang cocok dengan no_repair_order
-            $detailFiltered = array_filter($detailData, function ($detail) use ($noRepairOrder) {
-                return $detail['no_repair_order'] === $noRepairOrder;
-            });
-
-            // Jika ditemukan data detail yang cocok, gabungkan
-            foreach ($detailFiltered as $detail) {
-                $penerimaan[] = array_merge($terima, $detail);
-            }
-        }
 
         $data = [
             'title' => 'RM Sparepart',
             'generateIdrepair' => $repairM->generateId(),
-            'barang' => $barangData,
-            'po' => $poData,
             'penerimaan' => $penerimaan,
         ];
 
         return view('sparepart/repair_material_add', $data);
     }
-
-
-
 
 
 

@@ -236,6 +236,7 @@ $routes->get('/sparepart/delete_detailterima/(:any)', 'SparepartController::dele
 //REPAIR MATERIAL SPAREPART--------------------------------------------------------------------------------------------
 $routes->get('repair_material_part', 'SparepartController::repair_material_sparepart');
 $routes->get('repair_material_add', 'SparepartController::add_repair_material');
+$routes->get('/get-detail-terima', 'SparepartController::getDetailTerima');
 $routes->get('get_spareparts_terima', 'Controller::getSparepartsTerima');
 $routes->post('/sparepart/createRepairpart', 'SparepartController::createRepairPart');
 $routes->get('repair_material_prev/(:any)', 'SparepartController::prev_repair_preview/$1');
@@ -490,5 +491,6 @@ $routes->get('filter/kaskecil', 'KeuanganController::kaskecil');
 $routes->get('filter/kaskeluar', 'KeuanganController::jurnal_kaskeluar');
 $routes->get('filter/kasmasuk', 'KeuanganController::jurnal_kasmasuk');
 $routes->get('filter/keluar_kasbesar', 'KeuanganController::keluarkasbesar');
+$routes->get('filter/rolist', 'KeuanganController::repairoder_list');
 $routes->get('filter/reportjurnal', 'ReportController::jurnal_keuangan');
 $routes->get('filter/bukubesar', 'ReportController::bukubesar_generalledger');

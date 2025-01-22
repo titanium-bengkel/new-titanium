@@ -80,4 +80,52 @@ class M_Part_Repair extends Model
             ->where('is_sent', 1)
             ->findAll();
     }
+
+    public function getJoinedData()
+    {
+        $builder = $this->db->table('part_terima');
+        $builder->select('
+            part_terima.no_repair_order, 
+            part_terima.id_penerimaan, 
+            part_terima.no_rangka, 
+            part_terima.jenis_mobil, 
+            part_terima.nopol, 
+            part_terima.asuransi,
+            part_terima.nama_pemilik,
+            part_terima.gudang,
+            GROUP_CONCAT(pdetail_terima.id_kode_barang SEPARATOR ", ") AS id_kode_barang,
+            GROUP_CONCAT(pdetail_terima.nama_barang SEPARATOR ", ") AS nama_barang,
+            GROUP_CONCAT(pdetail_terima.qty SEPARATOR ", ") AS qty,
+            GROUP_CONCAT(pdetail_terima.satuan SEPARATOR ", ") AS satuan,
+            GROUP_CONCAT(pdetail_terima.harga SEPARATOR ", ") AS harga,
+            GROUP_CONCAT(pdetail_terima.jumlah SEPARATOR ", ") AS jumlah,
+        ');
+        $builder->join('pdetail_terima', 'part_terima.id_penerimaan = pdetail_terima.id_penerimaan', 'left');
+
+        // Group berdasarkan kolom unik
+        $builder->groupBy('
+            part_terima.no_repair_order,
+            part_terima.id_penerimaan,  
+            part_terima.no_rangka, 
+            part_terima.jenis_mobil, 
+            part_terima.nopol, 
+            part_terima.asuransi,
+            part_terima.nama_pemilik,
+            part_terima.gudang,
+        ');
+
+        $query = $builder->get();
+
+        return $query->getResultArray();
+    }
+
+    public function getPdetailTerimaByPenerimaan($idPenerimaan)
+    {
+        $builder = $this->db->table('pdetail_terima');
+        $builder->select('*'); // Ambil semua kolom dari pdetail_terima
+        $builder->where('id_penerimaan', $idPenerimaan); // Filter berdasarkan id_penerimaan
+
+        $query = $builder->get();
+        return $query->getResultArray();
+    }
 }

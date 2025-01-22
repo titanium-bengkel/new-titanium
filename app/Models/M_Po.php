@@ -215,11 +215,11 @@ class M_Po extends Model
         $builder = $this->db->table($this->table);
         $builder->select('po.*, auth_user.username');
         $builder->join('auth_user', 'po.user_id = auth_user.id', 'left');
+        // Urutkan berdasarkan tgl_klaim DESC
         $builder->orderBy('po.tgl_klaim', 'DESC');
         $query = $builder->get();
         return $query->getResultArray();
     }
-
 
     public function getPoWithAsuransi()
     {

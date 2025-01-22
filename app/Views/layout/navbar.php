@@ -6,7 +6,7 @@ $fiturrole = session()->get("fitur_role"); ?><script src="../dist/assets/static/
         <div class="sidebar-wrapper active">
             <div class="sidebar-header position-relative">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div class="logo" style="font-size: 24px; font-weight: bold; color: #fff;"><a href="dashboard/index"
+                    <div class="logo" style="font-size: 24px; font-weight: bold; color: #fff;"><a href="/index"
                             style="text-decoration: none; color: inherit;">TITANIUM</a></div>
                     <div class="theme-toggle d-flex gap-2  align-items-center mt-2"><svg
                             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -43,24 +43,24 @@ $fiturrole = session()->get("fitur_role"); ?><script src="../dist/assets/static/
                 <ul class="menu">
                     <li class="sidebar-title">Menu</li>
                     <?php foreach ($fiturrole as $ind_f => $f): ?>
-                        <li class="sidebar-item <?= isset($f['children']) ? 'has-sub' : '' ?>">
-                            <a <?= isset($f['url']) ? 'href="' . htmlspecialchars($f['url'], ENT_QUOTES, 'UTF-8') . '"' : '' ?> class="sidebar-link">
-                                <i class="<?= htmlspecialchars($f['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
-                                <span><?= htmlspecialchars($f['nama'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <li class="sidebar-item <?= isset($f["children"]) ? 'has-sub' : '' ?>">
+                            <a <?= isset($f["url"]) ? 'href="' . $f["url"] . '"' : '' ?> class="sidebar-link">
+                                <i class="<?= $f["icon"] ?>"></i>
+                                <span><?= $f["nama"] ?></span>
                             </a>
-                            <?php if (!empty($f['children']) && is_array($f['children'])): ?>
+                            <?php if (isset($f["children"]) && is_array($f["children"])): ?>
                                 <ul class="submenu">
-                                    <?php foreach ($f['children'] as $ind_fc => $fc): ?>
-                                        <li class="submenu-item <?= isset($fc['children']) ? 'has-sub' : '' ?>">
-                                            <a <?= isset($fc['url']) ? 'href="' . htmlspecialchars($fc['url'], ENT_QUOTES, 'UTF-8') . '"' : 'onclick="toggleDropdown(event)"' ?> class="submenu-link">
-                                                <?= htmlspecialchars($fc['nama'], ENT_QUOTES, 'UTF-8') ?>
+                                    <?php foreach ($f["children"] as $ind_fc => $fc): ?>
+                                        <li class="submenu-item <?= isset($fc["children"]) ? 'has-sub' : '' ?>">
+                                            <a <?= isset($fc["url"]) ? 'href="' . $fc["url"] . '"' : 'onclick="toggleDropdown(event)"' ?> class="submenu-link">
+                                                <?= $fc["nama"] ?>
                                             </a>
-                                            <?php if (!empty($fc['children']) && is_array($fc['children'])): ?>
+                                            <?php if (isset($fc["children"]) && is_array($fc["children"])): ?>
                                                 <ul class="submenu-dropdown" style="display: none;">
-                                                    <?php foreach ($fc['children'] as $ind_fcc => $fcc): ?>
+                                                    <?php foreach ($fc["children"] as $ind_fcc => $fcc): ?>
                                                         <li class="submenu-item">
-                                                            <a <?= isset($fcc['url']) ? 'href="' . htmlspecialchars($fcc['url'], ENT_QUOTES, 'UTF-8') . '"' : '' ?> class="submenu-link">
-                                                                <?= htmlspecialchars($fcc['nama'], ENT_QUOTES, 'UTF-8') ?>
+                                                            <a <?= isset($fcc["url"]) ? 'href="' . $fcc["url"] . '"' : '' ?> class="submenu-link">
+                                                                <?= $fcc["nama"] ?>
                                                             </a>
                                                         </li>
                                                     <?php endforeach; ?>
@@ -74,105 +74,107 @@ $fiturrole = session()->get("fitur_role"); ?><script src="../dist/assets/static/
                     <?php endforeach; ?>
                 </ul>
             </div>
-            <script>
-                function toggleDropdown(event) {
-                    event.preventDefault();
-                    const submenuDropdown = event.target.nextElementSibling;
-                    if (submenuDropdown.style.display === "none" || submenuDropdown.style.display === "") {
-                        submenuDropdown.style.display = "block";
-                    } else {
-                        submenuDropdown.style.display = "none";
-                    }
-                }
-            </script>
-            <div id="main" class='layout-navbar navbar-fixed'>
-                <header>
-                    <nav class="navbar navbar-expand navbar-light">
-                        <div class="container-fluid"><a href="#" class="burger-btn d-block"><i
-                                    class="bi bi-justify fs-3"></i></a><button class="navbar-toggler" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                                aria-controls="navbarSupportedContent" aria-expanded="false"
-                                aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                                <ul class="navbar-nav ms-auto mb-lg-0">
-                                    <li class="nav-item dropdown me-1"><a class="nav-link active dropdown-toggle text-gray-600"
-                                            href="#" data-bs-toggle="dropdown" aria-expanded="false"><i
-                                                class='bi bi-envelope bi-sub fs-4'></i></a>
-                                        <ul class="dropdown-menu  dropdown-menu-lg-end" aria-labelledby="dropdownMenuButton">
-                                            <li>
-                                                <h6 class="dropdown-header">Mail</h6>
-                                            </li>
-                                            <li><a class="dropdown-item" href="#">No new mail</a></li>
-                                        </ul>
+        </div>
+    </div>
+    <script>
+        function toggleDropdown(event) {
+            event.preventDefault();
+            const submenuDropdown = event.target.nextElementSibling;
+            if (submenuDropdown.style.display === "none" || submenuDropdown.style.display === "") {
+                submenuDropdown.style.display = "block";
+            } else {
+                submenuDropdown.style.display = "none";
+            }
+        }
+    </script>
+    <div id="main" class='layout-navbar navbar-fixed'>
+        <header>
+            <nav class="navbar navbar-expand navbar-light">
+                <div class="container-fluid"><a href="#" class="burger-btn d-block"><i
+                            class="bi bi-justify fs-3"></i></a><button class="navbar-toggler" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false"
+                        aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav ms-auto mb-lg-0">
+                            <li class="nav-item dropdown me-1"><a class="nav-link active dropdown-toggle text-gray-600"
+                                    href="#" data-bs-toggle="dropdown" aria-expanded="false"><i
+                                        class='bi bi-envelope bi-sub fs-4'></i></a>
+                                <ul class="dropdown-menu  dropdown-menu-lg-end" aria-labelledby="dropdownMenuButton">
+                                    <li>
+                                        <h6 class="dropdown-header">Mail</h6>
                                     </li>
-                                    <li class="nav-item dropdown me-3"><a class="nav-link active dropdown-toggle text-gray-600"
-                                            href="#" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"><i
-                                                class='bi bi-bell bi-sub fs-4'></i><span
-                                                class="badge badge-notification bg-danger">7</span></a>
-                                        <ul class="dropdown-menu dropdown-center  dropdown-menu-sm-end notification-dropdown"
-                                            aria-labelledby="dropdownMenuButton">
-                                            <li class="dropdown-header">
-                                                <h6>Notifications</h6>
-                                            </li>
-                                            <li class="dropdown-item notification-item"><a class="d-flex align-items-center"
-                                                    href="#">
-                                                    <div class="notification-icon bg-primary"><i class="bi bi-cart-check"></i>
-                                                    </div>
-                                                    <div class="notification-text ms-4">
-                                                        <p class="notification-title font-bold">Successfully check out</p>
-                                                        <p class="notification-subtitle font-thin text-sm">Order ID #256</p>
-                                                    </div>
-                                                </a></li>
-                                            <li class="dropdown-item notification-item"><a class="d-flex align-items-center"
-                                                    href="#">
-                                                    <div class="notification-icon bg-success"><i
-                                                            class="bi bi-file-earmark-check"></i></div>
-                                                    <div class="notification-text ms-4">
-                                                        <p class="notification-title font-bold">Homework submitted</p>
-                                                        <p class="notification-subtitle font-thin text-sm">Algebra math homework
-                                                        </p>
-                                                    </div>
-                                                </a></li>
-                                            <li>
-                                                <p class="text-center py-2 mb-0"><a href="#">See all notification</a></p>
-                                            </li>
-                                        </ul>
+                                    <li><a class="dropdown-item" href="#">No new mail</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown me-3"><a class="nav-link active dropdown-toggle text-gray-600"
+                                    href="#" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"><i
+                                        class='bi bi-bell bi-sub fs-4'></i><span
+                                        class="badge badge-notification bg-danger">7</span></a>
+                                <ul class="dropdown-menu dropdown-center  dropdown-menu-sm-end notification-dropdown"
+                                    aria-labelledby="dropdownMenuButton">
+                                    <li class="dropdown-header">
+                                        <h6>Notifications</h6>
+                                    </li>
+                                    <li class="dropdown-item notification-item"><a class="d-flex align-items-center"
+                                            href="#">
+                                            <div class="notification-icon bg-primary"><i class="bi bi-cart-check"></i>
+                                            </div>
+                                            <div class="notification-text ms-4">
+                                                <p class="notification-title font-bold">Successfully check out</p>
+                                                <p class="notification-subtitle font-thin text-sm">Order ID #256</p>
+                                            </div>
+                                        </a></li>
+                                    <li class="dropdown-item notification-item"><a class="d-flex align-items-center"
+                                            href="#">
+                                            <div class="notification-icon bg-success"><i
+                                                    class="bi bi-file-earmark-check"></i></div>
+                                            <div class="notification-text ms-4">
+                                                <p class="notification-title font-bold">Homework submitted</p>
+                                                <p class="notification-subtitle font-thin text-sm">Algebra math homework
+                                                </p>
+                                            </div>
+                                        </a></li>
+                                    <li>
+                                        <p class="text-center py-2 mb-0"><a href="#">See all notification</a></p>
                                     </li>
                                 </ul>
-                                <div class="dropdown"><a href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <div class="user-menu d-flex">
-                                            <div class="user-name text-end me-3">
-                                                <h6 class="mb-0 text-gray-600"><?= session()->get('nama_user'); ?></h6>
-                                                <p class="mb-0 text-sm text-gray-600"><?= session()->get('level'); ?></p>
-                                            </div>
-                                            <div class="user-img d-flex align-items-center">
-                                                <div class="avatar avatar-md"><img
-                                                        src="<?= base_url('uploads/profile/' . (session()->get('foto') ?: 'default.jpg')) . '?t=' . time() ?>"
-                                                        alt="Foto Profil"
-                                                        style="width: 60px; height: 60px; border-radius: 50%;">
+                            </li>
+                        </ul>
+                        <div class="dropdown"><a href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="user-menu d-flex">
+                                    <div class="user-name text-end me-3">
+                                        <h6 class="mb-0 text-gray-600"><?= session()->get('nama_user'); ?></h6>
+                                        <p class="mb-0 text-sm text-gray-600"><?= session()->get('level'); ?></p>
+                                    </div>
+                                    <div class="user-img d-flex align-items-center">
+                                        <div class="avatar avatar-md"><img
+                                                src="<?= base_url('uploads/profile/' . (session()->get('foto') ?: 'default.jpg')) . '?t=' . time() ?>"
+                                                alt="Foto Profil"
+                                                style="width: 60px; height: 60px; border-radius: 50%;">
 
 
-                                                </div>
-                                            </div>
                                         </div>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton"
-                                        style="min-width: 11rem;">
-                                        <li>
-                                            <h6 class="dropdown-header">Hallo, <?= session()->get('username'); ?></h6>
-                                        </li>
-                                        <li><a class="dropdown-item" href="<?= base_url('profile') ?>"><i
-                                                    class="icon-mid bi bi-person me-2"></i> My Profile</a></li>
-                                        <!-- <li><a class="dropdown-item" href="#"><i class="icon-mid bi bi-gear me-2"></i>
-                                        Settings</a></li> -->
-                                        <hr class="dropdown-divider">
-                                        </li>
-                                        <li><a class="dropdown-item" href="<?= base_url('logout') ?>"><i
-                                                    class="icon-mid bi bi-box-arrow-left me-2"></i> Logout</a></li>
-                                    </ul>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton"
+                                style="min-width: 11rem;">
+                                <li>
+                                    <h6 class="dropdown-header">Hallo, <?= session()->get('username'); ?></h6>
+                                </li>
+                                <li><a class="dropdown-item" href="<?= base_url('profile') ?>"><i
+                                            class="icon-mid bi bi-person me-2"></i> My Profile</a></li>
+                                <!-- <li><a class="dropdown-item" href="#"><i class="icon-mid bi bi-gear me-2"></i>
+                                        Settings</a></li> -->
+                                <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="<?= base_url('logout') ?>"><i
+                                            class="icon-mid bi bi-box-arrow-left me-2"></i> Logout</a></li>
+                            </ul>
                         </div>
-                    </nav>
-                </header>
-                <div id="main-content">
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div id="main-content">

@@ -357,6 +357,7 @@ class BahanController extends BaseController
 
 
         // Mengambil nilai dari request
+        $pembayaran = strtoupper($this->request->getPost('pembayaran'));
         $raw_disc_total = $this->request->getPost('disc_total'); // Nilai awal dari input
         $disc_total = str_replace(',', '', $raw_disc_total); // Hapus koma jika ada
         $ppn_option = strtoupper($this->request->getPost('ppn')); // PPN atau NON-PPN
@@ -375,7 +376,7 @@ class BahanController extends BaseController
             'nomor' => strtoupper($this->request->getPost('nomor')),
             'kota' => strtoupper($this->request->getPost('kota')),
             'alamat' => strtoupper($this->request->getPost('alamat')),
-            'pembayaran' => strtoupper($this->request->getPost('pembayaran')),
+            'pembayaran' => $pembayaran,
             'ppn' => $ppn_rate,
             'disc_total' => $disc_total,
             'term' => $this->request->getPost('term'),
@@ -509,7 +510,7 @@ class BahanController extends BaseController
         }
 
         // Memproses pengiriman data jurnal berdasarkan jenis pembayaran
-        $pembayaran = strtoupper($this->request->getPost('pembayaran'));
+
         $doc_no = 'JB.' . $GenerateIdT;
         $descriptionItems = [];
         foreach ($nama_barang as $nama) {

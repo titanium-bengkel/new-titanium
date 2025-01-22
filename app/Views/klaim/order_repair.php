@@ -42,27 +42,27 @@
                 <div class="card-body">
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-1">
-                            <label class="col-form-label">Cabang</label>
+                            <label class="col-form-label">Bengkel</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-1 d-flex align-items-center">
                             <div class="form-check me-3">
                                 <input type="radio" id="bengkel-titanium" name="bengkel" value="Titanium" class="form-check-input"
-                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'Titanium') ? 'checked' : '' ?>>
+                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'Titanium') ? 'checked' : '' ?> disabled>
                                 <label class="form-check-label" for="bengkel-titanium">Titanium</label>
                             </div>
                             <div class="form-check me-3">
                                 <input type="radio" id="bengkel-tandem" name="bengkel" value="Tandem" class="form-check-input"
-                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'Tandem') ? 'checked' : '' ?>>
+                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'Tandem') ? 'checked' : '' ?> disabled>
                                 <label class="form-check-label" for="bengkel-tandem">Tandem</label>
                             </div>
                             <div class="form-check me-3">
                                 <input type="radio" id="bengkel-k3karoseri" name="bengkel" value="K3 Karoseri" class="form-check-input"
-                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'K3 Karoseri') ? 'checked' : '' ?>>
+                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'K3 Karoseri') ? 'checked' : '' ?> disabled>
                                 <label class="form-check-label" for="bengkel-k3karoseri">K3 Karoseri</label>
                             </div>
                             <div class="form-check">
                                 <input type="radio" id="bengkel-vortex" name="bengkel" value="Vortex" class="form-check-input"
-                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'Vortex') ? 'checked' : '' ?>>
+                                    <?= (isset($ro['bengkel']) && esc($ro['bengkel']) === 'Vortex') ? 'checked' : '' ?> disabled>
                                 <label class="form-check-label" for="bengkel-vortex">Vortex</label>
                             </div>
                             <div class="d-flex ms-auto">
@@ -258,10 +258,10 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <h5 class="text-center mb-3">Nilai Estimasi</h5>
+                    <h5 class="text-center mb-3">Rincian Biaya</h5>
                     <div class="form-group row align-items-center">
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="nilai-jasa">Nilai Jasa</label>
+                            <label class="col-form-label" for="nilai-jasa">Biaya Jasa</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="nilai-jasa" class="form-control" name="nilai_jasa" readonly>
@@ -284,7 +284,7 @@
                         </script>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="harga-estimasi">Nilai Sparepart</label>
+                            <label class="col-form-label" for="harga-estimasi">Biaya Sparepart</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="nilai-sparepart" class="form-control" name="nilai_sparepart" readonly>
@@ -316,7 +316,7 @@
                         </div>
 
                         <div class="col-lg-2 col-3 mb-3">
-                            <label class="col-form-label" for="harga-acc">Nilai Acc</label>
+                            <label class="col-form-label" for="harga-acc">Total Biaya</label>
                         </div>
                         <div class="col-lg-10 col-9 mb-3">
                             <input type="text" id="harga-estimasi" class="form-control" name="harga-acc"

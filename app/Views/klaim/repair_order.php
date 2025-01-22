@@ -1,11 +1,7 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content') ?>
 
-<!-- SweetAlert2 and Flatpickr CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
 <script>
     <?php if (session()->getFlashdata('success')) : ?>
         Swal.fire({
@@ -116,7 +112,6 @@
                     $totalPerPageAcc = 0;
                     $grandTotalEstimasi = 0;
                     $grandTotalAcc = 0;
-
                     if (!empty($repairOrders)) {
                         foreach ($repairOrders as $item) {
                             if ($item['asuransi'] === 'UMUM/PRIBADI') {
@@ -127,7 +122,6 @@
                         }
                     }
                     ?>
-
                     <table class="table table-bordered table-striped table-hover mb-0" id="repairOrdersTable">
                         <thead class="table-secondary">
                             <tr>
@@ -151,18 +145,6 @@
                             <?php if (!empty($repairOrders)) : ?>
                                 <?php $counter = 1; ?>
                                 <?php foreach ($repairOrders as $item) : ?>
-                                    <?php
-                                    $hargaEstimasi = 0;
-                                    $hargaAcc = 0;
-
-                                    if ($item['asuransi'] === 'UMUM/PRIBADI') {
-                                        $hargaEstimasi = $item['harga_estimasi'] ? floatval($item['harga_estimasi']) : 0;
-                                        $totalPerPageEstimasi += $hargaEstimasi;
-                                    } else {
-                                        $hargaAcc = $item['harga_acc'] ? floatval($item['harga_acc']) : 0;
-                                        $totalPerPageAcc += $hargaAcc;
-                                    }
-                                    ?>
                                     <tr>
                                         <td><?= $counter++; ?></td>
                                         <td><a href="<?= base_url('order_repair/' . $item['id_terima_po']) ?>"><?= $item['id_terima_po']; ?></a></td>
@@ -170,35 +152,21 @@
                                         <td><?= $item['tgl_acc'] ?? '-'; ?></td>
                                         <td><?= $item['progres_pengerjaan']; ?></td>
                                         <td>
-                                            <?php
-                                            switch ($item['status_bayar']) {
-                                                case 'Belum Bayar':
-                                                    echo '<span class="badge bg-warning text-dark">Belum Bayar</span>';
-                                                    break;
-                                                case 'Belum Kwitansi':
-                                                    echo '<span class="badge bg-primary text-dark">Belum Kwitansi</span>';
-                                                    break;
-                                                case 'Sudah Kwitansi':
-                                                    echo '<span class="badge bg-secondary text-dark">Sudah Kwitansi</span>';
-                                                    break;
-                                                case 'Pernah Bayar':
-                                                    echo '<span class="badge bg-danger text-dark">Pernah Bayar</span>';
-                                                    break;
-                                                case 'Lunas':
-                                                    echo '<span class="badge bg-success">Lunas</span>';
-                                                    break;
-                                                default:
-                                                    echo $item['status_bayar'];
-                                                    break;
-                                            }
-                                            ?>
+                                            <?= match ($item['status_bayar']) {
+                                                'Belum Bayar' => '<span class="badge bg-warning text-dark">Belum Bayar</span>',
+                                                'Belum Kwitansi' => '<span class="badge bg-primary text-dark">Belum Kwitansi</span>',
+                                                'Sudah Kwitansi' => '<span class="badge bg-secondary text-dark">Sudah Kwitansi</span>',
+                                                'Pernah Bayar' => '<span class="badge bg-danger text-dark">Pernah Bayar</span>',
+                                                'Lunas' => '<span class="badge bg-success">Lunas</span>',
+                                                default => $item['status_bayar'],
+                                            }; ?>
                                         </td>
                                         <td><?= $item['tgl_estimasi'] ?? '-'; ?></td>
                                         <td><?= $item['no_kendaraan']; ?></td>
                                         <td><?= $item['jenis_mobil']; ?></td>
                                         <td><?= $item['asuransi']; ?></td>
                                         <td><?= $item['customer_name']; ?></td>
-                                        <td><?= $hargaAcc ? number_format($hargaAcc, 0, ',', '.') : ($hargaEstimasi ? number_format($hargaEstimasi, 0, ',', '.') : '-'); ?></td>
+                                        <td><?= number_format($item['harga_acc'] ?? $item['harga_estimasi'] ?? 0, 0, ',', '.') ?: '-'; ?></td>
                                         <td><?= $item['bengkel']; ?></td>
                                         <td><?= $item['user_id']; ?></td>
                                     </tr>
@@ -209,6 +177,8 @@
                                 </tr>
                             <?php endif; ?>
                         </tbody>
+
+
                         <tfoot class="text-center">
                             <tr>
                                 <td colspan="12"><strong>Total Per Halaman</strong></td>

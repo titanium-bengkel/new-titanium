@@ -5,7 +5,6 @@ namespace App\Controllers;
 use App\Models\M_Detail_Terima;
 use App\Models\M_K_Pembelian;
 use App\Models\M_K_DPembelian;
-use App\Models\M_Part_Terima;
 use App\Models\M_RepairOrder;
 use App\Models\M_Supplier;
 use App\Models\M_Terima_Bahan;
@@ -15,40 +14,16 @@ use App\Models\M_Jasa;
 use App\Models\M_Rm_Detail_Jasa;
 use App\Models\M_K_Pembayaran;
 use App\Models\M_K_Pembayaran_Detail;
-use App\Models\M_KasBank;
-use App\Models\M_KasBank_Form;
 use App\Models\M_Coa;
-use App\Models\M_P_KasBesar;
 use App\Models\M_KasKecil;
 use App\Models\M_KasKeluar;
 use App\Models\M_ReportJurnal;
 use App\Models\UserModel;
-use App\Models\M_AuditLogCreate;
-use App\Models\M_AuditLogEdit;
 use App\Models\M_AuditLog;
-use App\Models\M_Pdetail_Terima;
+use App\Models\M_AccAsuransi;
 
 class KeuanganController extends BaseController
 {
-
-    // public function hutang_supp()
-    // {
-    //     $suppartM = new M_Part_Terima();
-    //     $suppbaM = new M_Terima_Bahan();
-
-    //     $part = $suppartM->findAll();
-    //     $bahan = $suppbaM->findAll();
-
-    //     $suppdata = array_merge($part, $bahan);
-
-    //     $data = [
-    //         'title' => 'Rekap Hutang',
-    //         'supplier' => $suppdata
-    //     ];
-
-    //     // Tampilkan view
-    //     return view('keuangan/hutang', $data);
-    // }
 
     public function hutang_supp()
     {
@@ -1396,42 +1371,53 @@ class KeuanganController extends BaseController
         return view('keuangan/kas_keluar', $data);
     }
 
-
-
-
-
-
     public function repairoder_list()
     {
         $modelro = new M_RepairOrder();
 
-        $rodata = $modelro->getRepairOrder();
+        // Ambil filter dari GET request
+        $filterName = $this->request->getGet('filter_name');
+        $searchKeyword = $this->request->getGet('search_keyword');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $showAll = $this->request->getGet('show_all');
 
+        // Panggil data dari model dengan filter
+        $rodata = $modelro->getRepairOrder($filterName, $searchKeyword, $startDate, $endDate, $showAll);
+
+        // Kirim data ke view
         $data = [
-            'title' => 'RO List',
-            'rodata' => $rodata
+            'title' => 'Repair Order List',
+            'rodata' => $rodata,
+            'filterName' => $filterName,
+            'searchKeyword' => $searchKeyword,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'showAll' => $showAll,
         ];
 
         return view('keuangan/ro_list', $data);
     }
 
+
+
     public function repairorder_listprev($id_terima_po)
     {
         $modelro = new M_RepairOrder();
 
-        // Mengambil data dari model
+        $dataro = $modelro->findByTerimaPo($id_terima_po);
         $rodata = $modelro->getRepairOrderDetails($id_terima_po);
 
-        // Jika data tidak ditemukan
+
         if (!$rodata) {
             return redirect()->back()->with('error', 'Repair Order tidak ditemukan.');
         }
 
 
-        // Mempersiapkan data untuk view
         $data = [
-            'title' => 'RO List',
+            'title' => 'Repair Order List',
             'rodata' => $rodata,
+            'dataro' => $dataro
         ];
 
         // Mengembalikan data ke view
@@ -1652,6 +1638,7 @@ class KeuanganController extends BaseController
         $username = session()->get('username');
         $data = [
             'id_jasa' => $this->request->getPost('id_jasa'),
+            'no_order' => $this->request->getPost('no_order'),
             'kode_jasa' => strtoupper($this->request->getPost('kode_jasa')),
             'nama_jasa' => strtoupper($this->request->getPost('nama_jasa')),
             'harga' => str_replace([',', '.'], '', $this->request->getPost('harga')),

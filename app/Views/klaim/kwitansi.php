@@ -46,9 +46,9 @@
                     <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
                         <!-- Tombol Add dan Export -->
                         <div class="d-flex align-items-center gap-3">
-                            <a href="<?= base_url('add_invo') ?>" class="btn btn-primary btn-sm">
+                            <!-- <a href="<?= base_url('add_invo') ?>" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i> Add Kwitansi
-                            </a>
+                            </a> -->
                             <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">
                                 <i class="fas fa-file-excel"></i> Export to Excel
                             </a>

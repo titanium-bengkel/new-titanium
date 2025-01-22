@@ -139,7 +139,8 @@
                         <div id="accordionForm" class="accordion-collapse collapse">
                             <div class="accordion-body border rounded shadow-sm p-3 bg-gradient-success">
                                 <form action="<?= base_url('updateOrCreateJasa'); ?>" method="post">
-                                    <input type="text" class="form-control form-control-sm" id="id_jasa" name="id_jasa" value="<?= $jasa['id_jasa'] ?>" readonly hidden>
+                                    <input type="hidden" class="form-control form-control-sm" id="id_jasa" name="id_jasa" value="<?= $jasa['id_jasa'] ?>">
+                                    <input type="hidden" id="no_ro" class="form-control form-control-sm" name="no_order" value="<?= $jasa['no_ro'] ?>">
 
                                     <!-- Kode Jasa -->
                                     <div class="form-group row align-items-center mb-3">
@@ -212,7 +213,8 @@
                                             <td><?= $data['nama_jasa'] ?></td>
                                             <td><?= $data['harga'] ?></td>
                                             <td><?= $data['jenis_bayar'] ?></td>
-                                            <td></td>
+                                            <td><?= $data['keterangan'] ?></td>
+                                            <th></th>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else: ?>

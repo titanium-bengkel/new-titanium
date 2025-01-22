@@ -25,11 +25,10 @@ use App\Models\M_ReportJurnal;
 use App\Models\M_Coa;
 use App\Models\M_Part_Terima;
 use App\Models\UserModel;
-// --------------------------- //
+
 
 class KlaimController extends BaseController
 {
-
     public function preorder()
     {
         $poModel = new M_Po();
@@ -41,12 +40,11 @@ class KlaimController extends BaseController
         $endDate = $this->request->getGet('end_date');
         $showAll = $this->request->getGet('show_all');
 
-        // Ambil data PO dengan Username
+
         $poData = $poModel->getPoWithUsername();
         $accData = $poModel->getPoWithAccAsuransi();
 
         if (!$showAll) {
-            // Terapkan filter pada data PO dan Acc Asuransi
             if ($filterName) {
                 $poData = array_filter($poData, function ($item) use ($filterName) {
                     return $item['bengkel'] === $filterName;
@@ -78,7 +76,6 @@ class KlaimController extends BaseController
             }
         }
 
-        // Gabungkan data PO dengan data Acc Asuransi
         foreach ($poData as &$po_item) {
             foreach ($accData as $acc_item) {
                 if ($po_item['id_terima_po'] === $acc_item['id_terima_po']) {
@@ -1428,14 +1425,13 @@ class KlaimController extends BaseController
         $searchKeyword = $this->request->getGet('search_keyword');
         $startDate = $this->request->getGet('start_date');
         $endDate = $this->request->getGet('end_date');
-        $showAll = $this->request->getGet('show_all'); // Tambahkan untuk menangani tombol Show All
+        $showAll = $this->request->getGet('show_all');
 
-        // Mulai query dasar
-        $query = $model->where('status !=', 'Mobil Keluar')->orderBy('id_terima_po', 'DESC');
+        $query = $model->where('status !=', 'Mobil Keluar');
+        $query = $model->whereNotIn('progres_pengerjaan', ['Menunggu Comment User', 'Kurang Dokumen', 'Sparepart', 'Data Completed']);
 
-        // Jika tombol "Tampilkan Semua" diklik, abaikan semua filter dan tampilkan semua data
         if ($showAll) {
-            $query = $model->orderBy('id_terima_po', 'DESC'); // Tampilkan semua data tanpa filter
+            $query = $model;
         } else {
             // Terapkan filter nama bengkel
             if (!empty($filterName)) {
@@ -1460,32 +1456,27 @@ class KlaimController extends BaseController
             }
         }
 
-        // Jalankan query untuk mendapatkan data
+
+        $query->orderBy('tgl_masuk', 'DESC');
+
         $repair = $query->findAll();
 
-        // Proses data untuk mendapatkan username dan biaya asuransi
         foreach ($repair as &$order) {
             $user = $userModel->find($order['user_id']);
             $order['username'] = $user ? $user['username'] : 'Unknown';
 
-            // Ambil biaya asuransi jika ada
             if (!empty($order['id_terima_po'])) {
                 $asuransi = $accAsuransiModel->where('id_terima_po', $order['id_terima_po'])->first();
 
                 // Ambil biaya asuransi
                 $order['harga_acc'] = $asuransi ? $asuransi['biaya_total'] : null;
-
-                // Ambil tgl_masuk dan tgl_estimasi
-                $order['tgl_masuk'] = $asuransi ? $asuransi['tgl_masuk'] : null;
                 $order['tgl_estimasi'] = $asuransi ? $asuransi['tgl_estimasi'] : null;
             } else {
                 $order['harga_acc'] = null;
-                $order['tgl_masuk'] = null;
                 $order['tgl_estimasi'] = null;
             }
         }
 
-        // Siapkan data untuk dikirim ke view
         $data = [
             'title' => 'Repair Order',
             'repairOrders' => $repair,
@@ -1493,17 +1484,11 @@ class KlaimController extends BaseController
             'searchKeyword' => $searchKeyword,
             'startDate' => $startDate ?? date('Y-m-01'),
             'endDate' => $endDate ?? date('Y-m-d'),
-            'showAll' => $showAll, // Menambahkan showAll ke dalam data yang dikirim ke view
+            'showAll' => $showAll,
         ];
 
-        // Kembalikan tampilan dengan data yang sudah diproses
         return view('klaim/repair_order', $data);
     }
-
-
-
-
-
 
 
     public function orderlist_pending()
@@ -1519,11 +1504,12 @@ class KlaimController extends BaseController
 
         // Mulai membangun query
         $pending->groupStart()
-            ->where('status_bayar', 'Belum Bayar')
+            ->where('status_bayar !=', 'Lunas')
             ->orGroupStart()
             ->where('progres_pengerjaan', 'Kurang Dokumen')
             ->orWhere('progres_pengerjaan', 'Menunggu Comment User')
             ->orWhere('progres_pengerjaan', 'Sparepart')
+            ->orWhere('progres_pengerjaan', 'Data Completed')
             ->groupEnd()
             ->groupEnd();
 
@@ -1540,10 +1526,15 @@ class KlaimController extends BaseController
                 ->groupEnd();
         }
 
-        // Filter berdasarkan tanggal jika tidak meminta semua data
+        // Jika show_all tidak diatur, filter berdasarkan tanggal
         if (empty($showAll)) {
             $pending->where('tgl_masuk >=', $startDate)
                 ->where('tgl_masuk <=', $endDate);
+        } else {
+            // Jika show_all diaktifkan, hanya tampilkan progres_pengerjaan yang sesuai
+            $pending->groupStart()
+                ->whereIn('progres_pengerjaan', ['Kurang Dokumen', 'Sparepart', 'Data Completed'])
+                ->groupEnd();
         }
 
         // Ambil data hasil query
@@ -1561,6 +1552,7 @@ class KlaimController extends BaseController
 
         return view('klaim/orderlist_pending', $data);
     }
+
 
 
 
@@ -1852,13 +1844,15 @@ class KlaimController extends BaseController
         $repairOrderModel = new M_RepairOrder();
         $auditLogModel = new M_AuditLog(); // Inisialisasi model audit log
 
+        // Ambil user_id dari sesi
         $user_id = session()->get('username');
         if (!$user_id) {
             return redirect()->to('/')->with('error', 'User ID tidak ditemukan dalam sesi');
         }
 
+        // Data yang akan diperbarui
         $data = [
-            'bengkel'          => $this->request->getPost('bengkel'),
+            // 'bengkel'          => $this->request->getPost('bengkel'),
             'id_terima_po'     => $this->request->getPost('id_terima_po'),
             'no_kendaraan'     => strtoupper($this->request->getPost('no_kendaraan')),
             'jenis_mobil'      => strtoupper($this->request->getPost('jenis-mobil')),
@@ -1892,20 +1886,24 @@ class KlaimController extends BaseController
                 // Dapatkan oldValue, jika tidak ada, biarkan null
                 $oldValue = isset($existingData[$key]) ? $existingData[$key] : null;
 
+                // Pastikan oldValue dan newValue selalu berupa string
+                $oldValue = $oldValue === null ? '' : (string) $oldValue;
+                $newValue = $newValue === null ? '' : (string) $newValue;
+
+                // Jika ada perubahan pada nilai
                 if (trim(strtolower($oldValue)) != trim(strtolower($newValue))) {
                     $description = "$user_id mengubah $key dari '$oldValue' menjadi '$newValue' pada Repair Order dengan No. Order $id_terima_po";
                     $auditLogModel->logEdit(
                         'Repair Order',
                         $existingData['id_repair_order'],
                         $key,
-                        $oldValue,  // Bisa null, karena logEdit sudah mendukung
-                        $newValue,
+                        $oldValue,  // Sudah dipastikan string
+                        $newValue,  // Sudah dipastikan string
                         $user_id,
                         $description
                     );
                 }
             }
-
 
             // Lakukan update data
             if ($repairOrderModel->update($existingData['id_repair_order'], $data)) {
