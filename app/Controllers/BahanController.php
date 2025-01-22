@@ -487,7 +487,7 @@ class BahanController extends BaseController
 
         // Perhitungan nilai ppn dan netto
         $dataBahan['nilai_ppn'] = $dataBahan['total_jumlah'] * $ppn_rate;
-        $dataBahan['netto'] = $dataBahan['total_jumlah'];
+        $dataBahan['netto'] = $dataBahan['total_jumlah'] + $dataBahan['nilai_ppn'];
         // Kurangi total diskon setelah semua perhitungan selesai
         // Terapkan diskon total langsung ke total jumlah
         $dataBahan['total_jumlah'] = bcsub($dataBahan['total_jumlah'], $disc_total, 2); // Kurangi dengan presisi 2 desimal
@@ -523,7 +523,7 @@ class BahanController extends BaseController
                 $dataBarang = [
                     'date' => $this->request->getPost('tgl'),
                     'doc_no' => $doc_no,
-                    'account' => '13350',
+                    'account' => '11350',
                     'name' => 'PERSEDIAAN BARANG',
                     'description' => $description,
                     'debit' => $dataBahan['total_jumlah'],
@@ -614,7 +614,7 @@ class BahanController extends BaseController
                 $dataKasKecil = [
                     'tanggal' => $this->request->getPost('tgl'),
                     'doc_no' => $doc_no,
-                    'kode_account' => '11101',
+                    'kode_account' => '11111',
                     'nama_account' => 'KAS KECIL',
                     'keterangan' => 'PEMBAYARAN BARANG - ' . implode(', ', $descriptionItems),
                     'debit' => 0,
@@ -970,7 +970,7 @@ class BahanController extends BaseController
                     ]);
                 }
             }
-            
+
             // Update total nilai ke bahanRepairModel
             $bahanRepairModel->update($data['id_material'], [
                 'total_nilai' => $total_nilai
