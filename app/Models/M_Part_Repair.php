@@ -30,7 +30,33 @@ class M_Part_Repair extends Model
         'total_nilai',
         'user_id',
     ];
+    public function getPenerimaan()
+    {
+        $builder = $this->db->table('part_terima')
+            ->select('
+            part_terima.id_penerimaan,
+            part_terima.no_repair_order,
+            part_terima.asuransi,
+            part_terima.jenis_mobil,
+            part_terima.nama_pemilik,
+            part_terima.nopol,
+            part_terima.gudang,
+            part_terima.netto,
+            part_terima.no_rangka,
+            pdetail_terima.id_penerimaan AS detail_id_penerimaan,
+            pdetail_terima.id_kode_barang,
+            pdetail_terima.nama_barang,
+            pdetail_terima.qty,
+            pdetail_terima.satuan,
+            pdetail_terima.harga,
+            pdetail_terima.is_sent
+        ')
+            ->join('pdetail_terima', 'pdetail_terima.id_penerimaan = part_terima.id_penerimaan', 'left')
+            ->where('pdetail_terima.is_sent', 1);
 
+
+        return $builder->get()->getResultArray();
+    }
     public function generateId()
     {
         $prefix = 'RM' . date('Ym');
@@ -93,13 +119,15 @@ class M_Part_Repair extends Model
             part_terima.asuransi,
             part_terima.nama_pemilik,
             part_terima.gudang,
-            GROUP_CONCAT(pdetail_terima.id_kode_barang SEPARATOR ", ") AS id_kode_barang,
-            GROUP_CONCAT(pdetail_terima.nama_barang SEPARATOR ", ") AS nama_barang,
-            GROUP_CONCAT(pdetail_terima.qty SEPARATOR ", ") AS qty,
-            GROUP_CONCAT(pdetail_terima.satuan SEPARATOR ", ") AS satuan,
-            GROUP_CONCAT(pdetail_terima.harga SEPARATOR ", ") AS harga,
-            GROUP_CONCAT(pdetail_terima.jumlah SEPARATOR ", ") AS jumlah,
+            GROUP_CONCAT(DISTINCT pdetail_terima.id_kode_barang SEPARATOR ", ") AS id_kode_barang,
+            GROUP_CONCAT(DISTINCT pdetail_terima.nama_barang SEPARATOR ", ") AS nama_barang,
+            GROUP_CONCAT(DISTINCT pdetail_terima.qty SEPARATOR ", ") AS qty,
+            GROUP_CONCAT(DISTINCT pdetail_terima.satuan SEPARATOR ", ") AS satuan,
+            GROUP_CONCAT(DISTINCT pdetail_terima.harga SEPARATOR ", ") AS harga,
+            GROUP_CONCAT(DISTINCT pdetail_terima.jumlah SEPARATOR ", ") AS jumlah
         ');
+
+        // Melakukan LEFT JOIN antara part_terima dan pdetail_terima
         $builder->join('pdetail_terima', 'part_terima.id_penerimaan = pdetail_terima.id_penerimaan', 'left');
 
         // Group berdasarkan kolom unik
@@ -111,13 +139,14 @@ class M_Part_Repair extends Model
             part_terima.nopol, 
             part_terima.asuransi,
             part_terima.nama_pemilik,
-            part_terima.gudang,
+            part_terima.gudang
         ');
 
         $query = $builder->get();
 
         return $query->getResultArray();
     }
+
 
     public function getPdetailTerimaByPenerimaan($idPenerimaan)
     {

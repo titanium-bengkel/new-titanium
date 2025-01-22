@@ -105,7 +105,6 @@
                                 <?php endforeach; ?>
                             </tbody>
 
-
                             <tfoot>
                                 <tr>
                                     <td colspan="6" class="text-right"><strong>Total All:</strong></td>

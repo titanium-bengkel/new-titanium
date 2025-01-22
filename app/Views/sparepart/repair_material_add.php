@@ -71,7 +71,7 @@
                             </div>
                             <div class="col-lg-10 col-7 mb-3">
                                 <fieldset class="form-group">
-                                    <select class="form-select form-select-sm" id="gudang_keluar" name="gudang_keluar">
+                                    <select class="form-select form-select-sm" id="gudang" name="gudang_keluar">
                                         <option>--Pilih--</option>
                                         <option>GUDANG STOK SPAREPART </option>
                                         <option>GUDANG SUPPLY ASURANSI</option>
@@ -131,7 +131,7 @@
                                         <th class="text-center">Pilih All <input type="checkbox" id="pilih-all" class="form-check-input"></th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="repair-data-body">
                                     <!-- Data dari JS -->
                                 </tbody>
                                 <tfoot>
@@ -144,7 +144,6 @@
                                     </tr>
                                 </tfoot>
                             </table>
-
                         </div>
                         <div class="form-group row align-items-center mt-3">
                             <div class="col-lg-10 col-9">
@@ -159,7 +158,7 @@
     </div>
 </section>
 
-
+<!-- Modal Order -->
 <div class="modal fade" id="repair" tabindex="-1" aria-labelledby="repairModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -180,32 +179,28 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <?php
+                            // Membuat array untuk menyimpan no_repair_order yang sudah ditampilkan
+                            $uniqueNoRepairOrders = [];
+                            ?>
                             <?php if (!empty($penerimaan)) : ?>
                                 <?php foreach ($penerimaan as $data) : ?>
-                                    <tr class="selectable-row"
-                                        data-id_penerimaan="<?= htmlspecialchars($data['id_penerimaan']) ?>"
-                                        data-no_repair_order="<?= htmlspecialchars($data['no_repair_order']) ?>"
-                                        data-no_rangka="<?= htmlspecialchars($data['no_rangka']) ?>"
-                                        data-jenis_mobil="<?= htmlspecialchars($data['jenis_mobil']) ?>"
-                                        data-nopol="<?= htmlspecialchars($data['nopol']) ?>"
-                                        data-gudang="<?= htmlspecialchars($data['gudang']) ?>"
-                                        nama-pemilik="<?= htmlspecialchars($data['nama_pemilik']) ?>"
-                                        data-asuransi="<?= htmlspecialchars($data['asuransi']) ?>"
-                                        data-kode="<?= htmlspecialchars($data['id_kode_barang']) ?>"
-                                        data-qty="<?= htmlspecialchars($data['qty']) ?>"
-                                        data-satuan="<?= htmlspecialchars($data['satuan']) ?>"
-                                        data-harga="<?= htmlspecialchars($data['harga']) ?>"
-                                        data-jumlah="<?= htmlspecialchars($data['jumlah']) ?>"
-                                        data-barang="<?= htmlspecialchars($data['nama_barang']) ?>">
-
-
-
-                                        <td><?= htmlspecialchars($data['no_repair_order']) ?></td>
-                                        <td><?= htmlspecialchars($data['no_rangka']) ?></td>
-                                        <td><?= htmlspecialchars($data['jenis_mobil']) ?></td>
-                                        <td><?= htmlspecialchars($data['nopol']) ?></td>
-                                        <td><?= htmlspecialchars($data['asuransi']) ?></td>
-                                    </tr>
+                                    <?php
+                                    // Mengecek apakah no_repair_order sudah ada dalam array $uniqueNoRepairOrders
+                                    if (!in_array($data['no_repair_order'], $uniqueNoRepairOrders)) :
+                                        // Menambahkan no_repair_order ke array untuk menghindari duplikasi
+                                        $uniqueNoRepairOrders[] = $data['no_repair_order'];
+                                    ?>
+                                        <tr class="repair-row" data-id-penerimaan="<?= $data['id_penerimaan'] ?>" data-no-repair-order="<?= $data['no_repair_order'] ?>"
+                                            data-no-rangka="<?= $data['no_rangka'] ?>" data-jenis-mobil="<?= $data['jenis_mobil'] ?>" data-nopol="<?= $data['nopol'] ?>"
+                                            data-asuransi="<?= $data['asuransi'] ?>" data-pemilik="<?= $data['nama_pemilik'] ?>" data-gudang="<?= $data['gudang'] ?>">
+                                            <td><?= htmlspecialchars($data['no_repair_order']) ?></td>
+                                            <td><?= htmlspecialchars($data['no_rangka']) ?></td>
+                                            <td><?= htmlspecialchars($data['jenis_mobil']) ?></td>
+                                            <td><?= htmlspecialchars($data['nopol']) ?></td>
+                                            <td><?= htmlspecialchars($data['asuransi']) ?></td>
+                                        </tr>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php else : ?>
                                 <tr>
@@ -220,130 +215,103 @@
     </div>
 </div>
 
-
-
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Ambil semua baris yang bisa dipilih
-        const rows = document.querySelectorAll('.selectable-row');
+    document.addEventListener("DOMContentLoaded", function() {
+        // Menambahkan event listener pada setiap baris di modal
+        const repairRows = document.querySelectorAll(".repair-row");
 
-        // Loop setiap baris untuk menambahkan event listener
-        rows.forEach(row => {
-            row.addEventListener('click', function() {
-                // Ambil data dari atribut data-*
-                const noRepairOrder = row.getAttribute('data-no_repair_order') || '';
-                const noRangka = row.getAttribute('data-no_rangka') || '';
-                const jenisMobil = row.getAttribute('data-jenis_mobil') || '';
-                const nopol = row.getAttribute('data-nopol') || '';
-                const asuransi = row.getAttribute('data-asuransi') || '';
-                const gudang = row.getAttribute('data-gudang') || '';
-                const pemilik = row.getAttribute('nama-pemilik') || '';
-                const barang = row.getAttribute('data-barang') || '';
-                const idKodeBarang = row.getAttribute('data-kode') || '';
-                const qty = row.getAttribute('data-qty') || '';
-                const satuan = row.getAttribute('data-satuan') || '';
-                const harga = row.getAttribute('data-harga') || '';
-                const jumlah = row.getAttribute('data-jumlah') || '';
+        repairRows.forEach(row => {
+            row.addEventListener("click", function() {
+                // Mengambil data dari atribut data-* di baris yang dipilih
+                const noRepairOrder = this.getAttribute("data-no-repair-order");
+                const noRangka = this.getAttribute("data-no-rangka");
+                const jenisMobil = this.getAttribute("data-jenis-mobil");
+                const nopol = this.getAttribute("data-nopol");
+                const asuransi = this.getAttribute("data-asuransi");
+                const idPenerimaan = this.getAttribute("data-id-penerimaan");
+                const pemilik = this.getAttribute('data-pemilik');
+                const gudang = this.getAttribute('data-gudang');
 
-                // Cek apakah data sudah ada di tabel
-                const tbody = document.querySelector('.my-table-class tbody');
-                const existingRow = Array.from(tbody.children).find(tr =>
-                    tr.querySelector('input[name="kode_barang[]"]').value === idKodeBarang
-                );
+                // Mengisi form dengan data yang dipilih
+                document.getElementById("no_ro").value = noRepairOrder;
+                document.getElementById("no_rangka").value = noRangka;
+                document.getElementById("jenis_mobil").value = jenisMobil;
+                document.getElementById("nopol").value = nopol;
+                document.getElementById("asuransi").value = asuransi;
+                document.getElementById("nama_pemilik").value = pemilik;
+                document.getElementById("gudang").value = gudang;
 
-                if (existingRow) {
-                    alert('Data sudah ada di tabel!');
-                    return;
-                }
-
-                // Buat baris baru
-                const newRow = document.createElement('tr');
-                newRow.innerHTML = `
-                <td class="text-center">
-                    <input type="text" class="form-control form-control-sm" name="kode_barang[]" value="${idKodeBarang}" readonly>
-                </td>
-                <td class="text-center">
-                    <input type="text" class="form-control form-control-sm" name="nama_barang[]" value="${barang}" readonly>
-                </td>
-                <td class="text-center">
-                    <input type="number" class="form-control form-control-sm" name="qty[]" value="${qty}">
-                </td>
-                <td class="text-center">
-                    <input type="text" class="form-control form-control-sm" name="satuan[]" value="${satuan}" readonly>
-                </td>
-                <td class="text-center">
-                    <input type="number" class="form-control form-control-sm" name="hpp[]" value="${harga}">
-                </td>
-                <td class="text-center">
-                    <input type="number" class="form-control form-control-sm" name="nilai[]" value="${jumlah}">
-                </td>
-                <td class="text-center">
-                    <input type="checkbox" class="form-check-input" name="pilih[]">
-                </td>
-            `;
-
-                // Tambahkan baris ke dalam tbody tabel
-                tbody.appendChild(newRow);
-
-                // Tutup modal (Bootstrap 5)
-                const modalElement = document.getElementById('repair');
-                if (modalElement) {
-                    const modal = bootstrap.Modal.getInstance(modalElement);
-                    if (modal) modal.hide();
-                }
-            });
-        });
-
-        // Fitur pilih semua checkbox (opsional)
-        const pilihAllCheckbox = document.getElementById('pilih-all');
-        if (pilihAllCheckbox) {
-            pilihAllCheckbox.addEventListener('change', function() {
-                const checkboxes = document.querySelectorAll('.form-check-input[name="pilih[]"]');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = pilihAllCheckbox.checked;
-                });
-            });
-        }
-    });
-</script>
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Ambil semua baris yang bisa dipilih
-        const rows = document.querySelectorAll('.selectable-row');
-
-        rows.forEach(row => {
-            row.addEventListener('click', function() {
-                // Ambil data dari atribut data-*
-                const noRepairOrder = row.getAttribute('data-no_repair_order');
-                const noRangka = row.getAttribute('data-no_rangka');
-                const jenisMobil = row.getAttribute('data-jenis_mobil');
-                const nopol = row.getAttribute('data-nopol');
-                const asuransi = row.getAttribute('data-asuransi');
-                const gudang = row.getAttribute('data-gudang');
-                const pemilik = row.getAttribute('nama-pemilik');
-                const barang = row.getAttribute('data-barang');
-
-                // Masukkan data ke dalam form input
-                document.getElementById('no_ro').value = noRepairOrder;
-                document.getElementById('no_rangka').value = noRangka;
-                document.getElementById('jenis_mobil').value = jenisMobil;
-                document.getElementById('nopol').value = nopol;
-                document.getElementById('asuransi').value = asuransi;
-                document.getElementById('gudang_keluar').value = gudang;
-                document.getElementById('nama_pemilik').value = pemilik;
-                document.getElementById('nama_barang').value = barang;
-
-                // Tutup modal
+                // Menutup modal setelah memilih
                 const modal = bootstrap.Modal.getInstance(document.getElementById('repair'));
                 modal.hide();
+
+                // Fetch spareparts data based on the selected id_penerimaan
+                fetchSpareparts(idPenerimaan);
             });
         });
     });
 
+    // Fetch spareparts data based on id_penerimaan
+    function fetchSpareparts(idPenerimaan) {
+        fetch(`/get_spareparts-terima?id_penerimaan=${idPenerimaan}`)
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    const tableBody = document.querySelector('#repair-data-body');
 
+                    // Jangan menghapus baris yang sudah ada di tabel
+                    // Akan menambahkan baris baru tanpa menghapus yang lama
+                    data.forEach(sparepart => {
+                        const row = `
+                        <tr>
+                            <td><input type="text" class="form-control" name="kode_barang[]" value="${sparepart.id_kode_barang}" readonly></td>
+                            <td><input type="text" class="form-control" name="nama_barang[]" value="${sparepart.nama_barang}"></td>
+                            <td><input type="text" class="form-control qty" name="qty[]" value="${sparepart.qty}"></td>
+                            <td><input type="text" class="form-control" name="satuan[]" value="${sparepart.satuan}"></td>
+                            <td><input type="text" class="form-control harga" name="harga[]" value="${sparepart.harga}"></td>
+                            <td><input type="text" class="form-control jumlah" name="jumlah[]" readonly></td>
+                            <td><input type="checkbox" class="form-check-input pilih-checkbox" name="is_sent_checkbox[]" value="1" ${sparepart.is_sent === 1 ? 'checked' : ''}></td>
+                        </tr>
+                    `;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    });
+
+                    // Fungsi untuk mengupdate jumlah atau validasi lainnya jika diperlukan
+                    updateRemoveButtonStatus();
+                    updateJumlah();
+                } else {
+                    console.error('Data sparepart kosong atau tidak valid');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching spareparts:', error);
+            });
+    }
+
+    // Fungsi untuk mengupdate jumlah atau validasi lainnya jika diperlukan
+    function updateJumlah() {
+        const qtyFields = document.querySelectorAll('.qty');
+        const hargaFields = document.querySelectorAll('.harga');
+        const jumlahFields = document.querySelectorAll('.jumlah');
+
+        qtyFields.forEach((qtyField, index) => {
+            const qty = parseFloat(qtyField.value) || 0;
+            const harga = parseFloat(hargaFields[index].value) || 0;
+            const jumlah = qty * harga;
+            jumlahFields[index].value = jumlah.toFixed(2);
+        });
+    }
+
+    function updateRemoveButtonStatus() {
+        const checkboxes = document.querySelectorAll('.pilih-checkbox');
+        const removeButton = document.querySelector('#remove-selected-btn');
+
+        const selectedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+        removeButton.disabled = selectedCheckboxes.length === 0;
+    }
+</script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         var today = new Date();
         var day = String(today.getDate()).padStart(2, '0');
@@ -353,6 +321,17 @@
 
         document.getElementById('tanggal').value = todayString;
     });
+
+    // Checkbox "Pilih All"
+    document.getElementById("pilih-all").addEventListener("change", function() {
+        const isChecked = this.checked;
+        document.querySelectorAll(".pilih-checkbox").forEach(function(checkbox) {
+            checkbox.checked = isChecked;
+        });
+    });
 </script>
+
+
+
 
 <?= $this->endSection() ?>

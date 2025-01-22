@@ -132,10 +132,10 @@
                                                     case 'REK BCA':
                                                         echo 'TRANSFER BCA';
                                                         break;
-                                                    case 'KAS BESAR':
+                                                    case 'KAS KECIL':
                                                         echo 'CASH';
                                                         break;
-                                                    case 'KAS KECIL':
+                                                    case '':
                                                         echo 'KREDIT';
                                                         break;
                                                     default:

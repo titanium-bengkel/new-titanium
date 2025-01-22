@@ -1540,21 +1540,22 @@ class SparepartController extends BaseController
 
     public function getSparepartsTerima()
     {
+        $id_penerimaan = $this->request->getGet('id_penerimaan');
+        log_message('info', 'id_penerimaan diterima: ' . $id_penerimaan);
 
-        $no_repair_order = $this->request->getGet('no_repair_order');
-
-        if (!$no_repair_order) {
+        if (!$id_penerimaan) {
             return $this->response->setStatusCode(400, 'No Repair Order tidak ditemukan');
         }
 
         $pdetailTerimaModel = new M_Pdetail_Terima();
-
-        $data = $pdetailTerimaModel->where('no_repair_order', $no_repair_order)->findAll();
+        $data = $pdetailTerimaModel->where('id_penerimaan', $id_penerimaan)->findAll();
 
         if (empty($data)) {
+            log_message('error', 'Data sparepart tidak ditemukan untuk id_penerimaan: ' . $id_penerimaan);
             return $this->response->setStatusCode(404, 'Data sparepart tidak ditemukan');
         }
 
+        log_message('info', 'Data sparepart ditemukan: ' . json_encode($data));
         return $this->response->setJSON($data);
     }
 
@@ -1562,19 +1563,21 @@ class SparepartController extends BaseController
 
     public function add_repair_material()
     {
-        $repairM = new M_Part_Repair();
+        $repairM = new M_Part_Terima();
+        $genereted = new M_Part_Repair();
 
-        $penerimaan = $repairM->getJoinedData();
-
+        $penerimaan = $repairM->findAll();
 
         $data = [
             'title' => 'RM Sparepart',
-            'generateIdrepair' => $repairM->generateId(),
+            'generateIdrepair' => $genereted->generateId(),
             'penerimaan' => $penerimaan,
         ];
 
+        // Render view
         return view('sparepart/repair_material_add', $data);
     }
+
 
 
 

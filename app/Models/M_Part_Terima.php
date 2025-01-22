@@ -38,8 +38,6 @@ class M_Part_Terima extends Model
         'created_at'
     ];
 
-
-
     public function generateIdTerima()
     {
         $builder = $this->db->table($this->table);

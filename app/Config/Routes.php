@@ -236,8 +236,11 @@ $routes->get('/sparepart/delete_detailterima/(:any)', 'SparepartController::dele
 //REPAIR MATERIAL SPAREPART--------------------------------------------------------------------------------------------
 $routes->get('repair_material_part', 'SparepartController::repair_material_sparepart');
 $routes->get('repair_material_add', 'SparepartController::add_repair_material');
+$routes->get('/get_spareparts-terima', 'SparepartController::getSparepartsTerima');
+
 $routes->get('/get-detail-terima', 'SparepartController::getDetailTerima');
-$routes->get('get_spareparts_terima', 'Controller::getSparepartsTerima');
+
+
 $routes->post('/sparepart/createRepairpart', 'SparepartController::createRepairPart');
 $routes->get('repair_material_prev/(:any)', 'SparepartController::prev_repair_preview/$1');
 $routes->post('/sparepart/updaterepair', 'SparepartController::updateRepairPart');

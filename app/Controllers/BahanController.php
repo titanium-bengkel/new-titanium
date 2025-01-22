@@ -487,7 +487,7 @@ class BahanController extends BaseController
 
         // Perhitungan nilai ppn dan netto
         $dataBahan['nilai_ppn'] = $dataBahan['total_jumlah'] * $ppn_rate;
-        $dataBahan['netto'] = $dataBahan['total_jumlah'] + $dataBahan['nilai_ppn'];
+        $dataBahan['netto'] = $dataBahan['total_jumlah'];
         // Kurangi total diskon setelah semua perhitungan selesai
         // Terapkan diskon total langsung ke total jumlah
         $dataBahan['total_jumlah'] = bcsub($dataBahan['total_jumlah'], $disc_total, 2); // Kurangi dengan presisi 2 desimal
@@ -562,11 +562,11 @@ class BahanController extends BaseController
                 $modelJurnal->insert($dataBank);
                 break;
 
-            case 'KAS KECIL':
+            case 'KREDIT':
                 // Tidak ada jurnal yang dikirim untuk KREDIT
                 break;
 
-            case 'KAS BESAR':
+            case 'KAS KECIL':
                 // Kirim data ke jurnal
                 $dataBarang = [
                     'date' => $this->request->getPost('tgl'),
@@ -599,8 +599,8 @@ class BahanController extends BaseController
                     $dataBank = [
                         'date' => $this->request->getPost('tgl'),
                         'doc_no' => $doc_no,
-                        'account' => '11112',
-                        'name' => 'KAS BESAR',
+                        'account' => '11111',
+                        'name' => 'KAS KECIL',
                         'description' => $description,
                         'debit' => 0,
                         'kredit' => $dataBahan['netto'],
