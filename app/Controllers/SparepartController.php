@@ -721,7 +721,7 @@ class SparepartController extends BaseController
                 $dataBarang = [
                     'date' => $this->request->getPost('tanggal'),
                     'doc_no' => $doc_no,
-                    'account' => '13350',
+                    'account' => '11350',
                     'name' => 'PERSEDIAAN BARANG',
                     'description' => $description,
                     'debit' => $total_jumlah,

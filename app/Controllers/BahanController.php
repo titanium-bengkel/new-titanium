@@ -78,7 +78,7 @@ class BahanController extends BaseController
         $bahanData = new M_Barang_Bahan();
 
         $supplierData = $bahanModel->getAllSupplier();
-        $bahanData = $bahanData->findAll(100);
+        $bahanData = $bahanData->findAll();
         $poData = $bahanModel->getAllPO();
 
         $data = [

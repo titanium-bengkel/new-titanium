@@ -97,9 +97,9 @@
                             <div class="col-lg-10 col-7 mb-3">
                                 <fieldset class="form-group">
                                     <select class="form-select" id="pembayaran" name="pembayaran">
-                                        <option value="TRANSFER" <?= ($terima['pembayaran'] == 'TRANSFER') ? 'selected' : ''; ?>>TRANSFER</option>
+                                        <option value="TRANSFER" <?= ($terima['pembayaran'] == 'REK BCA') ? 'selected' : ''; ?>>TRANSFER</option>
                                         <option value="KREDIT" <?= ($terima['pembayaran'] == 'KREDIT') ? 'selected' : ''; ?>>KREDIT</option>
-                                        <option value="CASH" <?= ($terima['pembayaran'] == 'CASH') ? 'selected' : ''; ?>>CASH</option>
+                                        <option value="CASH" <?= ($terima['pembayaran'] == 'KAS BESAR') ? 'selected' : ''; ?>>CASH</option>
                                     </select>
                                 </fieldset>
                             </div>
