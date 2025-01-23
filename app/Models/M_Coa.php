@@ -27,7 +27,7 @@ class M_Coa extends Model
     }
     public function getCoaBahan()
     {
-        return $this->whereIn('nama_account', ['REK BCA', 'KAS KECIL', 'KAS BESAR'])->findAll();
+        return $this->whereIn('nama_account', ['REK BCA', 'KAS KECIL'])->findAll();
     }
     public function getCoaKeuangan()
     {

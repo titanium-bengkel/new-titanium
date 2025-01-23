@@ -130,13 +130,10 @@
                                                 <?php
                                                 switch ($item['nama_account']) {
                                                     case 'REK BCA':
-                                                        echo 'TRANSFER BCA';
+                                                        echo 'TRANSFER';
                                                         break;
                                                     case 'KAS KECIL':
                                                         echo 'CASH';
-                                                        break;
-                                                    case '':
-                                                        echo 'KREDIT';
                                                         break;
                                                     default:
                                                         echo $item['nama_account'];
@@ -144,6 +141,7 @@
                                                 ?>
                                             </option>
                                         <?php endforeach; ?>
+                                        <option value="KREDIT">KREDIT</option>
                                     </select>
                                 </fieldset>
                             </div>

@@ -1749,8 +1749,9 @@ class KeuanganController extends BaseController
     public function add_bayar_hutang()
     {
         $hutang = new M_K_Pembelian;
+        $hutangM = new M_Terima_Bahan();
 
-        $hutangsupp = $hutang->findAll();
+        $hutangsupp = $hutangM->getHutangWithAll();
 
 
         $data = [
@@ -1836,7 +1837,7 @@ class KeuanganController extends BaseController
         $dataBayar = [
             'id_pembayaran' => $id_pembayaran,
             'kode_bayar'    => $this->request->getPost('kode_bayar'),
-            'jatuh_tempo'   => $this->request->getPost('jatuh_tempo'),
+            'tgl_pembayaran'   => $this->request->getPost('tgl_pembayaran'),
             'nominal'       => $nominal,
             'no_bukti'      => $this->request->getPost('no_bukti'),
             'user_id'       => $user_id,

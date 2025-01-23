@@ -162,7 +162,7 @@
 
                                                 <input type="hidden" id="ppnValue" name="ppnValue" value="<?= htmlspecialchars($pembayaran['ppn_value'] ?? '') ?>">
                                                 <input type="hidden" id="kodeBayar" name="kodeBayar" value="<?= htmlspecialchars($pembayaran['kode_bayar'] ?? '') ?>">
-                                                <input type="hidden" id="jatuhTempo" name="jatuhTempo" value="<?= htmlspecialchars($pembayaran['jatuh_tempo'] ?? '') ?>">
+                                                <input type="hidden" id="tglPembayaran" name="tglPembayaran" value="<?= htmlspecialchars($pembayaran['jatuh_tempo'] ?? '') ?>">
                                             </div>
 
                                             <button type="submit" class="btn btn-success btn-sm mt-2">Simpan</button>
@@ -249,8 +249,8 @@
                                     </div>
 
                                     <div class="col-md-3 mb-2">
-                                        <label for="jatuhTempo" class="form-label">Jatuh Tempo</label>
-                                        <input type="date" class="form-control" id="jatuhTempo" name="jatuh_tempo" value="<?= date('Y-m-d'); ?>" required>
+                                        <label for="tglPembayaran" class="form-label">Tgl. Pembayaran</label>
+                                        <input type="date" class="form-control" id="tglPembayaran" name="tgl_pembayaran" value="<?= date('Y-m-d'); ?>" required>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-success btn-sm mt-2">Simpan</button>
@@ -269,7 +269,7 @@
                                     <th>No Bukti / BG / SO</th>
                                     <th>Kode Bank</th>
                                     <th>Debet</th>
-                                    <th>Jatuh Tempo</th>
+                                    <th>Tgl. Pembayaran</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -282,7 +282,7 @@
                                             <td><?= htmlspecialchars($item['no_bukti']); ?></td>
                                             <td></td>
                                             <td><?= number_format($item['nominal'], 0, ',', '.'); ?></td>
-                                            <td><?= htmlspecialchars($item['jatuh_tempo']); ?></td>
+                                            <td><?= htmlspecialchars($item['tgl_pembayaran']); ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else: ?>
@@ -374,7 +374,7 @@
         document.getElementById('noFaktur').value = cells[0]?.textContent?.trim() || '';
         document.getElementById('tanggal').value = cells[1]?.textContent?.trim() || ''; // Format Y-M-D langsung diambil
         document.getElementById('kodeBayar').value = cells[2]?.textContent?.trim() || '';
-        document.getElementById('jatuhTempo').value = cells[4]?.textContent?.trim() || ''; // Format Y-M-D langsung diambil
+        document.getElementById('tglPembayaran').value = cells[4]?.textContent?.trim() || ''; // Format Y-M-D langsung diambil
         document.getElementById('jumlah').value = cells[5]?.textContent?.replace(/\./g, '') || '0';
         document.getElementById('discountNilai').value = '0';
         document.getElementById('subtotal').value = cells[7]?.textContent?.replace(/\./g, '') || '0';
@@ -447,7 +447,7 @@
         const noFaktur = document.getElementById('noFaktur').value;
         const tanggal = document.getElementById('tanggal').value;
         const kodeBayar = document.getElementById('kodeBayar').value;
-        const jatuhTempo = document.getElementById('jatuhTempo').value;
+        const tglPembayaran = document.getElementById('tglPembayaran').value;
         const jumlah = document.getElementById('jumlah').value;
         const discount = document.getElementById('discount').value;
         const subtotal = document.getElementById('subtotal').value;
@@ -463,7 +463,7 @@
             <td>${noFaktur}</td>
             <td>${tanggal}</td>
             <td>${kodeBayar}</td>
-            <td>${jatuhTempo}</td>
+            <td>${tglPembayaran}</td>
             <td>${jumlah}</td>
             <td>${discount}</td>
             <td>${subtotal}</td>

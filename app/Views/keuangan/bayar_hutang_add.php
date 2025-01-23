@@ -250,20 +250,22 @@
                     <tbody>
                         <?php if (!empty($faktur)): ?>
                             <?php foreach ($faktur as $item): ?>
-                                <tr onclick="fillInputFields(this)">
-                                    <td><?php echo $item['no_faktur']; ?></td>
-                                    <td><?php echo $item['tanggal']; ?></td>
-                                    <td><?php echo $item['pembayaran']; ?></td>
-                                    <td><?php echo $item['supplier']; ?></td>
-                                    <td><?php echo $item['jatuh_tempo']; ?></td>
-                                    <td><?php echo number_format($item['total_jumlah'], 0, ',', '.'); ?></td>
-                                    <td><?php echo number_format(0, 0, ',', '.'); ?></td>
-                                    <td><?php echo number_format($item['total_jumlah'], 0, ',', '.'); ?></td>
-                                    <td><?php echo number_format($item['ppn'], 0, ',', '.'); ?></td>
-                                    <td hidden><?php echo number_format($item['nilai_ppn'], 0, ',', '.'); ?></td>
-                                    <td hidden><?php echo $item['kode_supplier']; ?></td>
-                                    <td><?php echo number_format($item['netto'], 0, ',', '.'); ?></td>
-                                </tr>
+                                <?php if ($item['pembayaran'] == 'KREDIT'): ?> <!-- Kondisi hanya untuk pembayaran 'KREDIT' -->
+                                    <tr onclick="fillInputFields(this)">
+                                        <td><?php echo $item['id_penerimaan']; ?></td>
+                                        <td><?php echo $item['tanggal']; ?></td>
+                                        <td><?php echo $item['pembayaran']; ?></td>
+                                        <td><?php echo $item['supplier']; ?></td>
+                                        <td><?php echo $item['jatuh_tempo']; ?></td>
+                                        <td><?php echo number_format($item['total_jumlah'], 0, ',', '.'); ?></td>
+                                        <td><?php echo number_format(0, 0, ',', '.'); ?></td>
+                                        <td><?php echo number_format($item['total_jumlah'], 0, ',', '.'); ?></td>
+                                        <td><?php echo number_format($item['ppn'], 0, ',', '.'); ?></td>
+                                        <td hidden><?php echo number_format($item['nilai_ppn'], 0, ',', '.'); ?></td>
+                                        <td hidden><?php echo $item['kode_supplier']; ?></td>
+                                        <td><?php echo number_format($item['netto'], 0, ',', '.'); ?></td>
+                                    </tr>
+                                <?php endif; ?>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>

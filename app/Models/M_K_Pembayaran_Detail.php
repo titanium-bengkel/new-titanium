@@ -14,7 +14,7 @@ class M_K_Pembayaran_Detail extends Model
         'no_bukti',
         'nominal',
         'no_faktur',
-        'jatuh_tempo',
+        'tgl_pembayaran',
         'user_id',
         'created_at',
         'updated_at',
