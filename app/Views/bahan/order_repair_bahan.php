@@ -108,6 +108,7 @@
                                     <tr>
                                         <th>Kode barang</th>
                                         <th>Nama barang</th>
+                                        <th>Kategori</th>
                                         <th>Qty</th>
                                         <th>Satuan</th>
                                         <th>HPP</th>
@@ -120,6 +121,7 @@
                                     <tr>
                                         <td><input type="text" name="id_kode_barang[]" class="form-control form-control-sm" data-bs-toggle="modal" data-bs-target="#kodeBarangModal" readonly></td>
                                         <td><input type="text" name="nama_barang[]" class="form-control form-control-sm"></td>
+                                        <td><input type="text" name="kategori[]" class="form-control form-control-sm"></td>
                                         <td><input type="text" name="qty[]" class="form-control form-control-sm"></td>
                                         <td><input type="text" name="satuan[]" class="form-control form-control-sm"></td>
                                         <td><input type="text" name="hpp[]" class="form-control form-control-sm"></td>
@@ -252,6 +254,7 @@
                             <tr>
                                 <th>Kode</th>
                                 <th>Nama</th>
+                                <th>Kategori</th>
                                 <th>Harga</th>
                             </tr>
                         </thead>
@@ -261,6 +264,7 @@
                                     <tr data-satuan="<?= $item['satuan'] ?>">
                                         <td><?= $item['kode_bahan'] ?></td>
                                         <td><?= $item['nama_bahan'] ?></td>
+                                        <td><?= $item['nama_group'] ?></td>
                                         <td><?= $item['harga_jual'] ?></td>
                                     </tr>
 
@@ -386,12 +390,14 @@
         $('#kodeBarangModal').on('click', 'tbody tr', function() {
             var kode = $(this).find('td:eq(0)').text();
             var nama = $(this).find('td:eq(1)').text();
-            var harga = $(this).find('td:eq(2)').text(); // Perbaiki akses harga
+            var kategori = $(this).find('td:eq(2)').text(); 
+            var harga = $(this).find('td:eq(3)').text(); // Perbaiki akses harga
             var satuan = $(this).data('satuan');
 
             // Mengisi data ke dalam input di baris yang dipilih
             selectedRow.find('input[name="id_kode_barang[]"]').val(kode);
             selectedRow.find('input[name="nama_barang[]"]').val(nama);
+            selectedRow.find('input[name="kategori[]"]').val(kategori);
             selectedRow.find('input[name="hpp[]"]').val(harga);
             selectedRow.find('input[name="satuan[]"]').val(satuan);
 

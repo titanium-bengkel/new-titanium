@@ -147,7 +147,11 @@
                                     <?php if ($item['status'] !== 'Repair Order') : ?>
                                         <tr class="text-center">
                                             <td><?= $counter++; ?></td>
-                                            <td><a href="<?= base_url('order_posprev/' . $item['id_terima_po']) ?>"><?= $item['id_terima_po']; ?></a></td>
+                                            <td>
+                                                <a href="<?= base_url('order_posprev/' . $item['id_terima_po']) ?>">
+                                                    <?= $item['id_terima_po']; ?>
+                                                </a>
+                                            </td>
                                             <td><?= $item['tgl_klaim']; ?></td>
                                             <td><?= $item['tgl_acc'] ?? '-'; ?></td>
                                             <td>
@@ -170,8 +174,12 @@
                                             <td><?= $item['jenis_mobil']; ?></td>
                                             <td><?= $item['asuransi']; ?></td>
                                             <td><?= $item['customer_name']; ?></td>
-                                            <td><?= number_format($item['total_biaya'], 0, ',', '.'); ?></td>
-                                            <td><?= number_format($item['harga_acc'], 0, ',', '.'); ?></td>
+                                            <td data-value="<?= $item['total_biaya']; ?>">
+                                                <?= number_format($item['total_biaya'], 0, ',', '.'); ?>
+                                            </td>
+                                            <td data-value="<?= $item['harga_acc']; ?>">
+                                                <?= number_format($item['harga_acc'], 0, ',', '.'); ?>
+                                            </td>
                                             <td><?= $item['bengkel']; ?></td>
                                             <td><?= $item['user_id']; ?></td>
                                         </tr>
@@ -187,11 +195,14 @@
                                 </tr>
                             <?php endif; ?>
                         </tbody>
+
                         <tfoot class="table-light">
                             <tr>
                                 <td colspan="10" class="text-end fw-bold">Grand Total:</td>
-                                <td class="text-center fw-bold"><?= number_format($totalEstimasi, 0, ',', '.'); ?></td>
-                                <td class="text-center fw-bold"><?= number_format($totalAcc, 0, ',', '.'); ?></td>
+                                <td class="text-center fw-bold" data-value="<?= $totalEstimasi ?>">
+                                    <?= number_format($totalEstimasi, 0, ',', '.'); ?></td>
+                                <td class="text-center fw-bold" data-value="<?= $totalAcc ?>">
+                                    <?= number_format($totalAcc, 0, ',', '.'); ?></td>
                                 <td colspan="2"></td>
                             </tr>
                         </tfoot>
@@ -212,13 +223,32 @@
 
 <script>
     function exportToExcel() {
-        const table = document.getElementById("claimTable");
-        const workbook = XLSX.utils.table_to_book(table, {
+        const table = document.getElementById("claimTableBody").closest("table");
+
+        // Clone tabel untuk memodifikasi salinan
+        const clonedTable = table.cloneNode(true);
+        const rows = clonedTable.querySelectorAll("tr");
+
+        // Ubah nilai nominal menjadi angka murni dari atribut data-value
+        rows.forEach(row => {
+            const cells = row.querySelectorAll("td");
+            cells.forEach(cell => {
+                const originalValue = cell.getAttribute("data-value");
+                if (originalValue) {
+                    cell.textContent = originalValue; // Ganti teks dengan nilai asli
+                }
+            });
+        });
+
+        // Gunakan XLSX untuk ekspor tabel
+        const workbook = XLSX.utils.table_to_book(clonedTable, {
             sheet: "Pre Order"
         });
         XLSX.writeFile(workbook, "Pre_Order.xlsx");
     }
 </script>
+
+
 
 
 <?= $this->endSection() ?>

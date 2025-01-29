@@ -22,7 +22,8 @@ class M_Detail_Barang extends Model
         'kategori',
         'ceklis',
         'id_po_bahan',
-        'supplier'
+        'supplier',
+        'created_at'
     ];
 
     public function getDetailByIdPoBahan($id_po_bahan)

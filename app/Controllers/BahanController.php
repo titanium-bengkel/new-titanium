@@ -118,21 +118,21 @@ class BahanController extends BaseController
         $ceklis = $this->request->getPost('ceklis');
         $kategori = $this->request->getPost('kategori');
 
-        // Konversi format angka di array $harga ke format numerik
+        // Format ulang harga menjadi angka float
         $hargaFormatted = array_map(function ($value) {
             $cleanedValue = str_replace('.', '', $value); // Hapus pemisah ribuan
-            $cleanedValue = str_replace('.', ',', $cleanedValue); // Ganti koma dengan titik untuk desimal
-            return (float)$cleanedValue; // Konversi ke float
+            $cleanedValue = str_replace(',', '.', $cleanedValue); // Ubah koma menjadi titik untuk desimal
+            return floatval($cleanedValue); // Konversi ke float
         }, $harga);
 
         // Hitung jumlah berdasarkan qty dan harga yang diformat
         $jumlah = array_map(function ($qty, $harga) {
-            return $qty * $harga; // Pastikan keduanya numerik
+            return floatval($qty) * floatval($harga); // Pastikan keduanya numerik
         }, $qty, $hargaFormatted);
 
         // Hitung total qty dan jumlah
-        $total_qty_b = array_sum($qty);
-        $total_jumlah = array_sum($jumlah);
+        $total_qty_b = array_sum(array_map('floatval', $qty)); // Konversi qty ke float
+        $total_jumlah = array_sum($jumlah); // Jumlahkan nilai yang sudah diformat
 
         // Data PO Bahan
         $data = [
@@ -156,7 +156,7 @@ class BahanController extends BaseController
                     'id_kode_barang' => strtoupper($kode),
                     'nama_barang' => strtoupper($nama_barang[$index]),
                     'kategori' => strtoupper($kategori[$index]),
-                    'qty' => $qty[$index],
+                    'qty' => floatval($qty[$index]), // Konversi qty ke float
                     'satuan' => strtoupper($satuan[$index]),
                     'harga' => floatval($hargaFormatted[$index]), // Harga dalam format angka
                     'jumlah' => $jumlah[$index], // Hasil perhitungan qty * harga
@@ -448,6 +448,7 @@ class BahanController extends BaseController
                 $detailTerima = [
                     'id_kode_barang' => $kode,
                     'nama_barang' => $nama_barang[$index],
+                    'kategori' => $this->request->getPost('kategori')[$index],
                     'qty' => $qty_clean,
                     'satuan' => $satuan[$index],
                     'harga' => $harga_clean,
@@ -899,6 +900,7 @@ class BahanController extends BaseController
         // Simpan detail repair ke tabel detail_repair
         $id_kode_barang = $this->request->getPost('id_kode_barang');
         $nama_barang = $this->request->getPost('nama_barang');
+        $kategori = $this->request->getPost('kategori');
         $satuan = $this->request->getPost('satuan');
         $total_nilai = 0; // Inisialisasi total nilai
 
@@ -933,6 +935,7 @@ class BahanController extends BaseController
                 $detailData = [
                     'id_kode_barang' => $kode,
                     'nama_barang' => $nama_barang[$index],
+                    'kategori' => $kategori[$index],
                     'qty' => $qty[$index],
                     'satuan' => $satuan[$index],
                     'hpp' => $hpp[$index],

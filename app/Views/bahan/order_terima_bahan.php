@@ -185,6 +185,7 @@
                                     <tr>
                                         <th>Kode Barang</th>
                                         <th>Nama Barang</th>
+                                        <th>Kategori</th>
                                         <th>Qty</th>
                                         <th>Satuan</th>
                                         <th>Harga</th>
@@ -408,6 +409,7 @@
         newRow.innerHTML = `
         <td><input type="text" name="id_kode_barang[]" class="form-control"></td>
         <td><input type="text" name="nama_barang[]" class="form-control"></td>
+        <td><input type="text" name="kategori[]" class="form-control"  readonly></td>
         <td><input type="number" name="qty[]" class="form-control"></td>
         <td><input type="text" name="satuan[]" class="form-control"></td>
         <td><input type="text" name="harga[]" class="form-control"></td>
@@ -488,6 +490,7 @@
                     <tr>
                         <td><input type="text" class="form-control" name="id_kode_barang[]" value="${item.id_kode_barang}" readonly></td>
                         <td><input type="text" class="form-control" name="nama_barang[]" value="${item.nama_barang}" readonly></td>
+                        <td><input type="text" class="form-control" name="kategori[]" value="${item.kategori}" readonly></td>
                         <td><input type="text" class="form-control qty" name="qty[]" value="${item.qty}" oninput="updateJumlah(this)"></td>
                         <td><input type="text" class="form-control" name="satuan[]" value="${item.satuan}" readonly></td>
                         <td><input type="text" class="form-control harga" name="harga[]" value="${item.harga}" oninput="updateJumlah(this)"></td>

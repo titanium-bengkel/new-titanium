@@ -166,7 +166,10 @@
                                         <td><?= $item['jenis_mobil']; ?></td>
                                         <td><?= $item['asuransi']; ?></td>
                                         <td><?= $item['customer_name']; ?></td>
-                                        <td><?= number_format($item['harga_acc'] ?? $item['harga_estimasi'] ?? 0, 0, ',', '.') ?: '-'; ?></td>
+                                        <td
+                                            data-value="<?= $item['harga_acc'] ?? $item['harga_estimasi'] ?? 0; ?>">
+                                            <?= number_format($item['harga_acc'] ?? $item['harga_estimasi'] ?? 0, 0, ',', '.') ?: '-'; ?>
+                                        </td>
                                         <td><?= $item['bengkel']; ?></td>
                                         <td><?= $item['user_id']; ?></td>
                                     </tr>
@@ -178,20 +181,25 @@
                             <?php endif; ?>
                         </tbody>
 
-
                         <tfoot class="text-center">
                             <tr>
-                                <td colspan="12"><strong>Total Per Halaman</strong></td>
-                                <td><strong><?= number_format($totalPerPageEstimasi + $totalPerPageAcc, 0, ',', '.'); ?></strong></td>
+                                <td colspan="11"><strong>Total Per Halaman</strong></td>
+                                <td
+                                    data-value="<?= $totalPerPageEstimasi + $totalPerPageAcc; ?>">
+                                    <strong><?= number_format($totalPerPageEstimasi + $totalPerPageAcc, 0, ',', '.'); ?></strong>
+                                </td>
                                 <td colspan="2"></td>
                             </tr>
                             <tr>
-                                <td colspan="12"><strong>Grand Total</strong></td>
-                                <td><strong><?= number_format($grandTotalEstimasi + $grandTotalAcc, 0, ',', '.'); ?></strong></td>
+                                <td colspan="11"><strong>Grand Total</strong></td>
+                                <td
+                                    data-value="<?= $grandTotalEstimasi + $grandTotalAcc; ?>">
+                                    <strong><?= number_format($grandTotalEstimasi + $grandTotalAcc, 0, ',', '.'); ?></strong>
+                                </td>
                                 <td colspan="2"></td>
                             </tr>
                         </tfoot>
-                    </table>
+
 
                 </div>
             </div>
@@ -204,24 +212,31 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 
 <script>
-    // Function to export the table data to an Excel file
     function exportToExcel() {
-        const table = document.getElementById('repairOrdersTable');
-        const wb = XLSX.utils.table_to_book(table, {
-            sheet: "Repair Orders"
+        const table = document.getElementById("repairOrdersTable").closest("table");
+
+        // Clone tabel untuk memodifikasi salinan
+        const clonedTable = table.cloneNode(true);
+        const rows = clonedTable.querySelectorAll("tr");
+
+        // Ubah nilai nominal menjadi angka murni dari atribut data-value
+        rows.forEach(row => {
+            const cells = row.querySelectorAll("td");
+            cells.forEach(cell => {
+                const originalValue = cell.getAttribute("data-value");
+                if (originalValue) {
+                    cell.textContent = originalValue; // Ganti teks dengan nilai asli
+                }
+            });
         });
 
-        // Generate a file name with the current date and time
-        const date = new Date();
-        const formattedDate = date.toISOString().replace(/[-:.]/g, "").slice(0, 14);
-        const fileName = `Repair_Orders_${formattedDate}.xlsx`;
-
-        // Download the Excel file
-        XLSX.writeFile(wb, fileName);
+        // Gunakan XLSX untuk ekspor tabel
+        const workbook = XLSX.utils.table_to_book(clonedTable, {
+            sheet: "Repair Order"
+        });
+        XLSX.writeFile(workbook, "Repair_Order.xlsx");
     }
-
-    // Initial call to load the table when the page is loaded
-    updateTable();
 </script>
+
 
 <?= $this->endSection() ?>

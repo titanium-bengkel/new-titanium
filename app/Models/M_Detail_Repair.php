@@ -24,5 +24,6 @@ class M_Detail_Repair extends Model
         'jenis_mobil',
         'nopol',
         'kategori',
+        'created_at'
     ];
 }

@@ -87,8 +87,8 @@
                                         <td><input type="text" class="form-control" name="kategori[]"></td>
                                         <td><input type="text" class="form-control" name="qty[]"></td>
                                         <td><input type="text" class="form-control" name="satuan[]"></td>
-                                        <td><input type="text" class="form-control harga" name="harga[]"></td>
-                                        <td><input type="text" class="form-control jumlah" name="jumlah[]" readonly></td>
+                                        <td><input type="text" class="form-control" name="harga[]"></td>
+                                        <td><input type="text" class="form-control" name="jumlah[]" readonly></td>
                                         <td></td>
                                         <td></td>
                                         <td><input type="checkbox" class="form-check-input pilih-checkbox" name="ceklis[]" value="1"></td>
@@ -283,30 +283,30 @@
         return new Intl.NumberFormat('id-ID').format(number);
     }
 
-    function updateJumlah() {
-        let totalQty = 0;
-        let totalJumlah = 0;
+    // function updateJumlah() {
+    //     let totalQty = 0;
+    //     let totalJumlah = 0;
 
-        $('#detail-barang-body tr').each(function() {
-            // Get the raw unformatted values from the inputs by removing formatting
-            const qty = parseFloat($(this).find('.qty').val().replace(/\./g, '').replace(/,/g, '.')) || 0;
-            const harga = parseFloat($(this).find('.harga').val().replace(/\./g, '').replace(/,/g, '.')) || 0;
+    //     $('#detail-barang-body tr').each(function() {
+    //         // Get the raw unformatted values from the inputs by removing formatting
+    //         const qty = parseFloat($(this).find('.qty').val().replace(/\./g, '').replace(/,/g, '.')) || 0;
+    //         const harga = parseFloat($(this).find('.harga').val().replace(/\./g, '').replace(/,/g, '.')) || 0;
 
-            // Perform the multiplication
-            const jumlah = qty * harga;
+    //         // Perform the multiplication
+    //         const jumlah = qty * harga;
 
-            // Set the formatted value in the jumlah field
-            $(this).find('.jumlah').val(formatNumber(jumlah));
+    //         // Set the formatted value in the jumlah field
+    //         $(this).find('.jumlah').val(formatNumber(jumlah));
 
-            // Add to totals
-            totalQty += qty;
-            totalJumlah += jumlah;
-        });
+    //         // Add to totals
+    //         totalQty += qty;
+    //         totalJumlah += jumlah;
+    //     });
 
-        // Set the formatted totals
-        $('#total-qty').val(formatNumber(totalQty));
-        $('#total-jumlah').val(formatNumber(totalJumlah));
-    }
+    //     // Set the formatted totals
+    //     $('#total-qty').val(formatNumber(totalQty));
+    //     $('#total-jumlah').val(formatNumber(totalJumlah));
+    // }
 
     // Formatting function to handle numbers with Indonesian style (thousands separator and no decimals)
     function formatNumber(number) {
@@ -325,8 +325,8 @@
                 '<td><input type="text" class="form-control" name="kategori[]"></td>' +
                 '<td><input type="text" class="form-control" name="qty[]"></td>' +
                 '<td><input type="text" class="form-control" name="satuan[]"></td>' +
-                '<td><input type="text" class="form-control harga" name="harga[]"></td>' +
-                '<td><input type="text" class="form-control jumlah" name="jumlah[]" readonly></td>' +
+                '<td><input type="text" class="form-control" name="harga[]"></td>' +
+                '<td><input type="text" class="form-control" name="jumlah[]" readonly></td>' +
                 '<td></td>' +
                 '<td></td>' +
                 '<td><input type="checkbox" class="form-check-input pilih-checkbox" name="ceklis[]" value="1"></td>' +
@@ -406,6 +406,41 @@
         updateJumlah();
     });
 </script>
+
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function untuk menghitung jumlah
+        function calculateRowTotal(row) {
+            const qty = parseFloat(row.querySelector('input[name="qty[]"]').value.replace(/\./g, '').replace(/,/g, '.')) || 0;
+            const harga = parseFloat(row.querySelector('input[name="harga[]"]').value.replace(/\./g, '').replace(/,/g, '.')) || 0;
+            const jumlah = qty * harga;
+
+            // Menampilkan hasil ke kolom jumlah
+            row.querySelector('input[name="jumlah[]"]').value = jumlah.toFixed(2); // Dua angka desimal
+        }
+
+        // Mengambil semua baris tabel
+        const tableBody = document.querySelector('#detail-barang-body');
+
+        // Event listener untuk input qty dan harga
+        tableBody.addEventListener('input', function(event) {
+            const target = event.target;
+            if (target.name === 'qty[]' || target.name === 'harga[]') {
+                const row = target.closest('tr'); // Baris saat ini
+                calculateRowTotal(row);
+            }
+        });
+
+        // Event listener untuk menghapus baris
+        tableBody.addEventListener('click', function(event) {
+            if (event.target.closest('.remove-row')) {
+                const row = event.target.closest('tr');
+                row.remove();
+            }
+        });
+    });
+</script> -->
+
 
 <!-- search barang -->
 <script>

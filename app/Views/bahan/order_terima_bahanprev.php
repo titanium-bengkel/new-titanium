@@ -99,7 +99,7 @@
                                     <select class="form-select" id="pembayaran" name="pembayaran">
                                         <option value="TRANSFER" <?= ($terima['pembayaran'] == 'REK BCA') ? 'selected' : ''; ?>>TRANSFER</option>
                                         <option value="KREDIT" <?= ($terima['pembayaran'] == 'KREDIT') ? 'selected' : ''; ?>>KREDIT</option>
-                                        <option value="CASH" <?= ($terima['pembayaran'] == 'KAS BESAR') ? 'selected' : ''; ?>>CASH</option>
+                                        <option value="CASH" <?= ($terima['pembayaran'] == 'KAS KECIL') ? 'selected' : ''; ?>>CASH</option>
                                     </select>
                                 </fieldset>
                             </div>
@@ -180,6 +180,7 @@
                                 <tr>
                                     <th>Kode Barang</th>
                                     <th>Nama Barang</th>
+                                    <th>Kategori</th>
                                     <th>Qty</th>
                                     <th>Satuan</th>
                                     <th>Harga</th>
@@ -197,6 +198,7 @@
                                         <tr>
                                             <td class="text-start"><?= $detail['id_kode_barang'] ?></td>
                                             <td class="text-start"><?= $detail['nama_barang'] ?></td>
+                                            <td class="text-start"><?= $detail['kategori'] ?></td>
                                             <td class="text-end"><?= $detail['qty'] ?></td>
                                             <td class="text-start"><?= $detail['satuan'] ?></td>
                                             <td class="text-end"><?= number_format($detail['harga'], 2, ',', '.'); ?></td>

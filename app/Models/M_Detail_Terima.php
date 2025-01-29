@@ -23,6 +23,7 @@ class M_Detail_Terima extends Model
         'ceklis',
         'id_penerimaan',
         'kategori',
+        'created_at'
     ];
 
     public function getAllDetails($no_po)

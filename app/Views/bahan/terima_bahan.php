@@ -42,7 +42,7 @@
                     <div class="card-header d-flex align-items-center justify-content-start flex-wrap" style="padding: 20px;">
                         <div class="d-flex align-items-center ms-md-auto w-100 w-md-auto">
                             <div class="d-flex align-items-center w-100 justify-content-start">
-                                <a href="<?= base_url('order_terima_bahan') ?>" class="btn btn-primary btn-sm me-2">Add Pemesanan</a>
+                                <a href="<?= base_url('order_terima_bahan') ?>" class="btn btn-primary btn-sm me-2">Add Penerimaan</a>
                                 <a href="#" class="btn btn-secondary btn-sm" onclick="exportToExcel()">Export to Excel</a>
                             </div>
                             <form method="GET" action="">
