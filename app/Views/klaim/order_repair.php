@@ -777,6 +777,7 @@
                                             <th>#</th>
                                             <th>Kode</th>
                                             <th>Nama</th>
+                                            <th>Jenis</th>
                                             <th>Qty</th>
                                             <th>Harga</th>
                                             <th>PO</th>
@@ -801,6 +802,7 @@
                                                     <td><?= $index + 1 ?></td>
                                                     <td><?= esc($sparepart['kode_sparepart']) ?></td>
                                                     <td><?= esc($sparepart['nama_sparepart']) ?></td>
+                                                    <td><?= esc($sparepart['jenis_part']) ?></td>
                                                     <td><?= esc($sparepart['qty']) ?></td>
                                                     <td><?= number_format($sparepart['harga'], 0, ',', '.') ?></td>
                                                     <td><?= esc($sparepart['qty_pesan']) ?></td>

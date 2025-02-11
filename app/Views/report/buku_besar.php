@@ -23,20 +23,15 @@
                                 <!-- Dropdown Select Account -->
                                 <div class="d-flex align-items-center">
                                     <label for="coa" class="form-label fw-bold text-primary me-2 mb-0">Akun:</label>
-                                    <select
-                                        name="coa"
-                                        id="coa"
-                                        class="form-select form-select-sm">
+                                    <select name="coa" id="coa" class="form-select form-select-sm">
                                         <option value="">-- Select Account --</option>
                                         <?php foreach ($coaList as $coa): ?>
-                                            <option value="<?= esc($coa['id_report']) ?>" <?= (isset($selectedCoa) && $selectedCoa == $coa['id_report']) ? 'selected' : '' ?>>
-                                                <?= esc($coa['account'] . ' - ' . $coa['name']) ?>
+                                            <option value="<?= $coa['account']; ?>" <?= isset($selectedCoa) && $selectedCoa == $coa['account'] ? 'selected' : ''; ?>>
+                                                <?= $coa['account'] . ' - ' . $coa['name']; ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
-
-
 
                                 <!-- Input Tanggal Mulai -->
                                 <div class="d-flex align-items-center">
@@ -67,19 +62,20 @@
                             </form>
                         </div>
                     </div>
-                    <!-- table head dark -->
+
+                    <!-- Filter Info Header -->
                     <div style="text-align: center; background-color: #007bff; color: white; padding: 20px; margin: 20px;">
                         <h1 style="margin: 0;">TITANIUM CAR REPAIR</h1>
                         <div style="text-align: center; background-color: #fff; color: black; padding: 20px;">
                             <p style="margin: 5px 0;">Buku Besar (General Ledger)</p>
-                            <p style="margin: 5px 0;">Account : 20102</p>
-                            <p style="margin: 5px 0;">Periode 2024-07-01 s/d 2024-07-15</p>
+                            <p style="margin: 5px 0;">Account : <?= esc($selectedCoa) ?> - <?= esc($coaList[array_search($selectedCoa, array_column($coaList, 'account'))]['name'] ?? 'N/A') ?></p>
+                            <p style="margin: 5px 0;">Periode <?= esc($startDate) ?> s/d <?= esc($endDate) ?></p>
                         </div>
                     </div>
+
                     <?php
                     // Cek apakah ada data pada reports
                     if (!empty($reports)) {
-                        // Ambil Balance dari baris pertama sebagai Opening Balance
                         $openingBalance = $reports[0]['balance'] ?? 0;
                     } else {
                         $openingBalance = 0; // Default jika tidak ada data
@@ -159,5 +155,6 @@
         </div>
     </div>
 </section>
+
 <!-- Table head options end -->
 <?= $this->endSection() ?>

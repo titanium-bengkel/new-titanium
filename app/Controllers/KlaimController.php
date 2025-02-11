@@ -1494,6 +1494,8 @@ class KlaimController extends BaseController
     public function orderlist_pending()
     {
         $pending = new M_RepairOrder();
+        $userModel = new UserModel();
+        $accAsuransiModel = new M_AccAsuransi();
 
         // Ambil filter dari request
         $filterName = $this->request->getGet('filter_name');
@@ -1536,10 +1538,23 @@ class KlaimController extends BaseController
                 ->whereIn('progres_pengerjaan', ['Kurang Dokumen', 'Sparepart', 'Data Completed'])
                 ->groupEnd();
         }
-
-        // Ambil data hasil query
+        $pending->orderBy('tgl_masuk', 'DESC');
         $pendingData = $pending->findAll();
+        foreach ($pendingData as &$order) {
+            $user = $userModel->find($order['user_id']);
+            $order['username'] = $user ? $user['username'] : 'Unknown';
 
+            if (!empty($order['id_terima_po'])) {
+                $asuransi = $accAsuransiModel->where('id_terima_po', $order['id_terima_po'])->first();
+
+                // Ambil biaya asuransi
+                $order['harga_acc'] = $asuransi ? $asuransi['biaya_total'] : null;
+                $order['tgl_estimasi'] = $asuransi ? $asuransi['tgl_estimasi'] : null;
+            } else {
+                $order['harga_acc'] = null;
+                $order['tgl_estimasi'] = null;
+            }
+        }
         // Data untuk view
         $data = [
             'title' => 'Pending Invoice',
@@ -1870,10 +1885,9 @@ class KlaimController extends BaseController
             'jam_keluar'       => $this->request->getPost('jam_keluar'),
             'harga_estimasi'   => str_replace(['.', ','], ['', '.'], $this->request->getPost('harga-estimasi')),
             'keterangan'       => strtoupper($this->request->getPost('keterangan')),
-            'progres_pengerjaan' => strtoupper(implode(',', (array) $this->request->getPost('progres_pengerjaan'))),
-            'progres_dokumen'    => strtoupper(implode(',', (array) $this->request->getPost('dokumen_detail'))),
-            'progres_sparepart'  => strtoupper(implode(',', (array) $this->request->getPost('sparepart_detail'))),
-            'user_id' => $user_id
+            'progres_pengerjaan' =>implode(',', (array) $this->request->getPost('progres_pengerjaan')),
+            'progres_dokumen'    =>implode(',', (array) $this->request->getPost('dokumen_detail')),
+            'progres_sparepart'  =>implode(',', (array) $this->request->getPost('sparepart_detail'))
         ];
 
         // Cek apakah data dengan ID yang dimaksud ada

@@ -126,6 +126,13 @@
 
                         <div class="col-md-3">
                             <h5>Jumlah Pengeluaran</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <button id="prevMonth" class="btn btn-secondary">Sebelumnya</button>
+                                <span id="currentMonth" class="h5"></span> <!-- Menampilkan bulan dan tahun -->
+                                <button id="nextMonth" class="btn btn-secondary">Selanjutnya</button>
+                            </div>
+
+                            <!-- Tabel Kas Kecil -->
                             <div class="table-responsive" style="max-height: 800px; overflow-y: auto;">
                                 <table class="table table-bordered table-hover table-striped text-center">
                                     <thead class="thead-dark table-secondary">
@@ -135,33 +142,23 @@
                                         </tr>
                                     </thead>
                                     <tbody id="tableBody">
-                                        <!-- Tanggal dan jumlah akan ditambahkan di sini oleh JS -->
+                                        <!-- Data tabel akan ditambahkan di sini -->
                                     </tbody>
                                 </table>
                             </div>
+
                         </div>
                         <div class="col-md-9">
-                            <?php
-                            $totalDebit = 0;
-                            $totalKredit = 0;
-
-                            // Menghitung total debit dan total kredit
-                            foreach ($kaskecil as $item) {
-                                $totalDebit += $item['debit'];
-                                $totalKredit += $item['kredit'];
-                            }
-
-                            // Menghitung Sisa Debit
-                            $sisaDebit = $totalDebit - $totalKredit;
-                            ?>
-
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h3>Rincian Kas Kecil</h3>
                                 <div>
-                                    <h6>Sisa Debit:</h6>
-                                    <h5><?= number_format($sisaDebit, 0, ',', '.') ?></h5>
+                                    <h6>Saldo Awal:</h6>
+                                    <!-- Format angka dengan number_format untuk menampilkan ribuan -->
+                                    <h5><?= number_format($saldoAwal, 0, ',', '.') ?></h5>
                                 </div>
                             </div>
+
+
 
                             <?php if ($sisaDebit < 500000): ?>
                                 <div class="alert alert-warning" role="alert">
@@ -169,105 +166,95 @@
                                 </div>
                             <?php endif; ?>
 
-
                             <?php if (!empty($kaskecil)): ?>
                                 <?php
                                 // Mengelompokkan data berdasarkan tanggal
                                 $groupedData = [];
                                 foreach ($kaskecil as $item) {
-                                    // Cek apakah item tanggal berada di bulan dan tahun saat ini
-                                    $currentMonth = date('Y-m'); // Format tahun-bulan
-                                    if (date('Y-m', strtotime($item['tanggal'])) === $currentMonth) {
-                                        $groupedData[$item['tanggal']][] = $item;
-                                    }
+                                    $groupedData[$item['tanggal']][] = $item;
                                 }
                                 ?>
 
-                                <?php if (!empty($groupedData)): ?>
-                                    <?php foreach ($groupedData as $tanggal => $items): ?>
-                                        <?php
-                                        // Menghitung total debit dan kredit per kelompok data yang ditampilkan
-                                        $totalDebitview = 0;
-                                        $totalKreditview = 0;
-                                        foreach ($items as $item) {
-                                            $totalDebitview += $item['debit'];
-                                            $totalKreditview += $item['kredit'];
-                                        }
-                                        ?>
-                                        <div class="card mb-3">
-                                            <div class="card-body">
-                                                <table class="table table-bordered table-hover table-striped text-center" style="font-size: 14px;">
-                                                    <thead class="thead-dark table-secondary">
+                                <?php foreach ($groupedData as $tanggal => $items): ?>
+                                    <?php
+                                    // Menghitung total debit dan kredit per kelompok data yang ditampilkan
+                                    $totalDebitview = 0;
+                                    $totalKreditview = 0;
+                                    foreach ($items as $item) {
+                                        $totalDebitview += $item['debit'];
+                                        $totalKreditview += $item['kredit'];
+                                    }
+                                    ?>
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <table class="table table-bordered table-hover table-striped text-center" style="font-size: 14px;">
+                                                <thead class="thead-dark table-secondary">
+                                                    <tr>
+                                                        <th>No.</th>
+                                                        <th>Tanggal</th>
+                                                        <th>Account</th>
+                                                        <th>Name</th>
+                                                        <th>Keterangan</th>
+                                                        <th>Debit</th>
+                                                        <th>Kredit</th>
+                                                        <th>User</th>
+                                                        <th>Tgl. Input</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach ($items as $index => $item): ?>
                                                         <tr>
-                                                            <th>No.</th>
-                                                            <th>Tanggal</th>
-                                                            <th>Account</th>
-                                                            <th>Name</th>
-                                                            <th>Keterangan</th>
-                                                            <th>Debit</th>
-                                                            <th>Kredit</th>
-                                                            <th>User</th>
-                                                            <th>Tgl. Input</th>
-                                                            <th>Action</th>
+                                                            <td><?= $index + 1 ?></td>
+                                                            <td><?= esc($item['tanggal']) ?></td>
+                                                            <td style="text-align: left;"><?= esc($item['kode_account']) ?></td>
+                                                            <td style="text-align: left;"><?= esc($item['nama_account']) ?></td>
+                                                            <td style="text-align: left;"><?= esc($item['keterangan']) ?></td>
+                                                            <td style="text-align: right;"><?= number_format($item['debit'], 0, ',', '.') ?></td>
+                                                            <td style="text-align: right;"><?= number_format($item['kredit'], 0, ',', '.') ?></td>
+                                                            <td><?= esc($item['user_id']) ?></td>
+                                                            <td><?= esc($item['tgl_input']) ?></td>
+                                                            <td>
+                                                                <div class="d-flex">
+                                                                    <button type="button" class="btn btn-sm"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#editModal"
+                                                                        data-id-kc="<?= $item['id_kc']; ?>"
+                                                                        data-kode-account="<?= $item['kode_account']; ?>"
+                                                                        data-nama-account="<?= $item['nama_account']; ?>"
+                                                                        data-keterangan="<?= $item['keterangan']; ?>"
+                                                                        data-debit="<?= $item['debit']; ?>"
+                                                                        data-kredit="<?= $item['kredit']; ?>"
+                                                                        data-user-id="<?= $item['user_id']; ?>">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-sm delete-user-btn" data-id="<?= esc($item['id_kc']) ?>">
+                                                                        <i class="fas fa-trash-alt"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
                                                         </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php foreach ($items as $index => $item): ?>
-                                                            <tr>
-                                                                <td><?= $index + 1 ?></td>
-                                                                <td><?= esc($item['tanggal']) ?></td>
-                                                                <td style="text-align: left;"><?= esc($item['kode_account']) ?></td>
-                                                                <td style="text-align: left;"><?= esc($item['nama_account']) ?></td>
-                                                                <td style="text-align: left;"><?= esc($item['keterangan']) ?></td>
-                                                                <td style="text-align: right;"><?= number_format($item['debit'], 0, ',', '.') ?></td>
-                                                                <td style="text-align: right;"><?= number_format($item['kredit'], 0, ',', '.') ?></td>
-                                                                <td><?= esc($item['user_id']) ?></td>
-                                                                <td><?= esc($item['tgl_input']) ?></td>
-                                                                <td>
-                                                                    <div class="d-flex">
-                                                                        <button type="button" class="btn btn-sm"
-                                                                            data-bs-toggle="modal"
-                                                                            data-bs-target="#editModal"
-                                                                            data-id-kc="<?= $item['id_kc']; ?>"
-                                                                            data-kode-account="<?= $item['kode_account']; ?>"
-                                                                            data-nama-account="<?= $item['nama_account']; ?>"
-                                                                            data-keterangan="<?= $item['keterangan']; ?>"
-                                                                            data-debit="<?= $item['debit']; ?>"
-                                                                            data-kredit="<?= $item['kredit']; ?>"
-                                                                            data-user-id="<?= $item['user_id']; ?>">
-                                                                            <i class="fas fa-edit"></i>
-                                                                        </button>
-                                                                        <!-- <button type="button" class="btn btn-sm edit-user-btn" data-id="<?= esc($item['id_kc']) ?>"></button> -->
-                                                                        <button type="button" class="btn btn-sm delete-user-btn" data-id="<?= esc($item['id_kc']) ?>"><i class="fas fa-trash-alt"></i></button>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        <?php endforeach; ?>
-                                                    </tbody>
-                                                    <tfoot>
-                                                        <tr>
-                                                            <td colspan="5" class="text-right font-weight-bold">Total:</td>
-                                                            <td style="text-align: right;"><?= number_format($totalDebitview, 0, ',', '.') ?></td>
-                                                            <td style="text-align: right;"><?= number_format($totalKreditview, 0, ',', '.') ?></td>
-                                                            <td colspan="3"></td>
-                                                        </tr>
-                                                    </tfoot>
-                                                </table>
-                                            </div>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="5" class="text-right font-weight-bold">Total:</td>
+                                                        <td style="text-align: right;"><?= number_format($totalDebitview, 0, ',', '.') ?></td>
+                                                        <td style="text-align: right;"><?= number_format($totalKreditview, 0, ',', '.') ?></td>
+                                                        <td colspan="3"></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
                                         </div>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <div class="alert alert-warning" role="alert">
-                                        Tidak ada data tersedia untuk bulan ini.
                                     </div>
-                                <?php endif; ?>
+                                <?php endforeach; ?>
                             <?php else: ?>
                                 <div class="alert alert-info text-center" role="alert">
-                                    Belum ada Pengeluaran Bulan ini.
+                                    Belum ada data kas kecil yang tersedia.
                                 </div>
                             <?php endif; ?>
-
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -325,8 +312,8 @@
                         </table>
                     </div>
                     <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" id="saveData" class="btn btn-primary btn-sm">Simpan</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" id="saveData" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -499,12 +486,36 @@
     });
 </script>
 <script>
+    // Mendapatkan tanggal awal bulan
+    let currentDate = new Date();
+
+    // Fungsi untuk menampilkan bulan dan tahun
+    function updateMonthDisplay() {
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const monthName = monthNames[currentDate.getMonth()];
+        const year = currentDate.getFullYear();
+        $('#currentMonth').text(`${monthName} ${year}`);
+    }
+
+    // Fungsi untuk mengubah tanggal ke bulan sebelumnya
+    function prevMonth() {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        updateMonthDisplay();
+        fetchKasKecilData();
+    }
+
+    // Fungsi untuk mengubah tanggal ke bulan selanjutnya
+    function nextMonth() {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        updateMonthDisplay();
+        fetchKasKecilData();
+    }
+
     // Fungsi untuk generate semua tanggal dalam bulan berjalan
     function generateDatesForCurrentMonth() {
         var dates = [];
-        var now = new Date();
-        var currentYear = now.getFullYear();
-        var currentMonth = now.getMonth();
+        var currentYear = currentDate.getFullYear();
+        var currentMonth = currentDate.getMonth();
 
         // Dapatkan jumlah hari dalam bulan saat ini
         var daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -565,9 +576,9 @@
         data.forEach(function(item) {
             tableBody.append(
                 `<tr class="text-center">
-                    <td><a href="#" class="open-modal" data-date="${item.date}" data-bs-toggle="modal" data-bs-target="#tanggalModal">${item.date}</a></td>
-                    <td>${item.amount.toLocaleString()}</td>
-                </tr>`
+                <td><a href="#" class="open-modal" data-date="${item.date}" data-bs-toggle="modal" data-bs-target="#tanggalModal">${item.date}</a></td>
+                <td>${item.amount.toLocaleString()}</td>
+            </tr>`
             );
         });
     }
@@ -578,6 +589,10 @@
             url: '<?= base_url("keuangan/getKasKecilData") ?>', // URL controller
             type: 'GET',
             dataType: 'json',
+            data: {
+                month: currentDate.getMonth() + 1,
+                year: currentDate.getFullYear()
+            },
             success: function(response) {
                 // Generate tanggal untuk bulan berjalan
                 var dates = generateDatesForCurrentMonth();
@@ -593,6 +608,7 @@
     }
 
     $(document).ready(function() {
+        updateMonthDisplay();
         fetchKasKecilData(); // Ambil data kas kecil dari server
 
         // Saat tanggal diklik, tampilkan modal
@@ -634,6 +650,10 @@
             // Tampilkan data yang sudah difilter di tabel
             populateTable(filteredData);
         });
+
+        // Event listener untuk tombol sebelumnya dan selanjutnya
+        $('#prevMonth').click(prevMonth);
+        $('#nextMonth').click(nextMonth);
     });
 </script>
 

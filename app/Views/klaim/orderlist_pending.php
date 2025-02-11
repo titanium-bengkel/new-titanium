@@ -99,48 +99,63 @@
                             </thead>
                             <tbody class="text-center">
                                 <?php
-                                $grandTotal = 0; // Inisialisasi total
-                                foreach ($pending as $key => $order):
-                                    // Tambahkan total_biaya dari setiap baris ke grandTotal
-                                    $grandTotal += $order['total_biaya'];
+                                $totalPerPageEstimasi = 0;
+                                $totalPerPageAcc = 0;
+                                $grandTotalEstimasi = 0;
+                                $grandTotalAcc = 0;
+
+                                if (!empty($pending)) {
+                                    foreach ($pending as $key => $item) {
+                                        if ($item['asuransi'] === 'UMUM/PRIBADI') {
+                                            $grandTotalEstimasi += isset($item['harga_estimasi']) ? floatval($item['harga_estimasi']) : 0;
+                                        } else {
+                                            $grandTotalAcc += isset($item['harga_acc']) ? floatval($item['harga_acc']) : 0;
+                                        }
                                 ?>
-                                    <tr>
-                                        <th><?= $key + 1 ?></th>
-                                        <td><a href="<?= base_url('order_pospending/' . $order['id_terima_po']) ?>"><?= esc($order['id_terima_po']) ?></a></td>
-                                        <th><?= $order['tgl_masuk'] ?></th>
-                                        <th><?= $order['tgl_acc'] ?></th>
-                                        <th><?= $order['progres_pengerjaan'] ?></th>
-                                        <th><?= $order['tgl_keluar'] ?></th>
-
-                                        <th>
-                                            <?= number_format($order['total_biaya'], 0, ',', '.') ?>
-                                        </th>
-
-                                        <th><?= $order['no_kendaraan'] ?></th>
-                                        <th><?= $order['jenis_mobil'] ?></th>
-                                        <th><?= $order['customer_name'] ?></th>
-                                        <th><?= $order['asuransi'] ?></th>
-                                        <th>
-                                            <?php
-                                            if ($order['progres_pengerjaan'] == 'Beres Pengerjaan') {
-                                                echo 'Status: ' . $order['status_bayar'];
-                                            } elseif ($order['progres_pengerjaan'] == 'Kurang Dokumen') {
-                                                echo $order['progres_dokumen'];
-                                            } elseif ($order['progres_pengerjaan'] == 'Sparepart') {
-                                                echo $order['progres_sparepart'];
-                                            } else {
-                                                echo '-';
-                                            }
-                                            ?>
-                                        </th>
-                                        <th><?= $order['user_id'] ?></th>
-                                    </tr>
-                                <?php endforeach; ?>
+                                        <tr>
+                                            <th><?= $key + 1 ?></th>
+                                            <td>
+                                                <a href="<?= base_url('order_repair/' . esc($item['id_terima_po'])) ?>">
+                                                    <?= esc($item['id_terima_po']) ?>
+                                                </a>
+                                            </td>
+                                            <th><?= esc($item['tgl_masuk']) ?></th>
+                                            <th><?= !empty($item['tgl_acc']) ? esc($item['tgl_acc']) : '-' ?></th>
+                                            <th><?= esc($item['progres_pengerjaan']) ?></th>
+                                            <th><?= esc($item['tgl_keluar']) ?></th>
+                                            <td>
+                                                <?= number_format($item['harga_acc'] ?? $item['harga_estimasi'] ?? 0, 0, ',', '.') ?: '-' ?>
+                                            </td>
+                                            <th><?= esc($item['no_kendaraan']) ?></th>
+                                            <th><?= esc($item['jenis_mobil']) ?></th>
+                                            <th><?= esc($item['customer_name']) ?></th>
+                                            <th><?= esc($item['asuransi']) ?></th>
+                                            <th>
+                                                <?php
+                                                if ($item['progres_pengerjaan'] === 'Beres Pengerjaan') {
+                                                    echo 'Status: ' . esc($item['status_bayar']);
+                                                } elseif ($item['progres_pengerjaan'] === 'Kurang Dokumen') {
+                                                    echo esc($item['progres_dokumen']);
+                                                } elseif ($item['progres_pengerjaan'] === 'Sparepart') {
+                                                    echo esc($item['progres_sparepart']);
+                                                } else {
+                                                    echo '-';
+                                                }
+                                                ?>
+                                            </th>
+                                            <th><?= esc($item['user_id']) ?></th>
+                                        </tr>
+                                <?php
+                                    }
+                                }
+                                ?>
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td colspan="6" class="text-center"><strong>Grand Total:</strong></td>
-                                    <td class="text-center"><strong><?= number_format($grandTotal, 0, ',', '.') ?></strong></td>
+                                    <td class="text-center">
+                                        <strong><?= number_format($grandTotalEstimasi + $grandTotalAcc, 0, ',', '.') ?></strong>
+                                    </td>
                                     <td colspan="6"></td>
                                 </tr>
                             </tfoot>

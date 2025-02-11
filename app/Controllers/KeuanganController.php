@@ -726,11 +726,21 @@ class KeuanganController extends BaseController
         $endDate = $this->request->getGet('end_date');
         $showAll = $this->request->getGet('show_all');
 
+        // Rentang waktu untuk bulan lalu
+        $firstDayLastMonth = date('Y-m-01', strtotime('first day of last month'));
+        $lastDayLastMonth = date('Y-m-t', strtotime('last day of last month'));
+
         // Default query builder
         $query = $model->orderBy('tanggal', 'DESC');
 
-        // Jika "Tampilkan Semua" tidak dipilih, tambahkan filter
-        if (!$showAll) {
+        // Jika tidak menggunakan filter, tampilkan data sesuai bulan saat ini
+        if (!$searchKeyword && !$startDate && !$endDate && !$showAll) {
+            $currentMonth = date('Y-m-01');
+            $currentEnd = date('Y-m-t');
+            $query->where('tanggal >=', $currentMonth);
+            $query->where('tanggal <=', $currentEnd);
+        } else {
+            // Jika menggunakan filter, tambahkan filter
             if (!empty($searchKeyword)) {
                 $query->like('keterangan', $searchKeyword)
                     ->orLike('no_document', $searchKeyword); // Asumsi ada kolom 'no_document'
@@ -743,18 +753,27 @@ class KeuanganController extends BaseController
             }
         }
 
-        // Eksekusi query
+        // Eksekusi query untuk data yang ditampilkan
         $kaskecil = $query->findAll();
 
+        // Menghitung total debit dan kredit dari seluruh data bulan lalu untuk saldo awal
+        $totalDebitBulanLalu = $model->selectSum('debit')
+            ->where('tanggal >=', $firstDayLastMonth)
+            ->where('tanggal <=', $lastDayLastMonth)
+            ->first()['debit'] ?? 0;
+
+        $totalKreditBulanLalu = $model->selectSum('kredit')
+            ->where('tanggal >=', $firstDayLastMonth)
+            ->where('tanggal <=', $lastDayLastMonth)
+            ->first()['kredit'] ?? 0;
+
+        // Menghitung saldo awal (sisa debit) bulan lalu
+        $saldoAwal = $totalDebitBulanLalu - $totalKreditBulanLalu;
+
+        // Menghitung total debit dan total kredit untuk bulan ini (atau periode yang difilter)
         $totalDebit = 0;
         $totalKredit = 0;
-
-        foreach ($kaskecil as &$item) {
-            // Menambahkan nama user berdasarkan user_id
-            $user = $userModel->find($item['user_id']);
-            $item['username'] = $user ? $user['username'] : 'Unknown';
-
-            // Menambahkan nilai debit dan kredit untuk menghitung total
+        foreach ($kaskecil as $item) {
             $totalDebit += $item['debit'];
             $totalKredit += $item['kredit'];
         }
@@ -769,6 +788,7 @@ class KeuanganController extends BaseController
             'totalDebit' => $totalDebit,
             'totalKredit' => $totalKredit,
             'sisaDebit' => $sisaDebit,
+            'saldoAwal' => $saldoAwal,  // Saldo Awal berdasarkan bulan lalu
             'searchKeyword' => $searchKeyword,
             'startDate' => $startDate,
             'endDate' => $endDate
@@ -776,6 +796,7 @@ class KeuanganController extends BaseController
 
         return view('keuangan/kas_kecil', $data);
     }
+
 
 
 

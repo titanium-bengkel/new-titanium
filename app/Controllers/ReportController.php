@@ -58,9 +58,14 @@ class ReportController extends BaseController
         // Ambil nilai filter dari input GET
         $startDate = $this->request->getGet('start_date') ?? date('Y-m-01');
         $endDate = $this->request->getGet('end_date') ?? date('Y-m-d');
-        $selectedCoa = $this->request->getGet('coa');
+        $selectedCoa = $this->request->getGet('coa'); // Ambil nilai COA dari input
 
-        // Mulai query
+        // Ambil daftar COA yang unik dari tabel 'report_jurnal'
+        $coaList = $jurnalM->select('account, name')
+            ->groupBy('account, name') // Mengelompokkan berdasarkan account dan name
+            ->findAll(); // Mengambil semua data yang sudah dikelompokkan
+
+        // Mulai query untuk laporan
         $query = $jurnalM;
 
         // Tambahkan filter tanggal jika ada
@@ -74,20 +79,17 @@ class ReportController extends BaseController
             $query = $query->where('account', $selectedCoa); // 'account' adalah kolom ID COA
         }
 
-        // Ambil daftar COA untuk dropdown
-        $coa = $jurnalM->orderBy('tampilkan kode dan nama coa')->findAll();
-
         // Eksekusi query untuk mendapatkan data laporan, urutkan berdasarkan doc_no DESC
-        $report = $query->orderBy('doc_no', 'DESC')->findAll();
+        $reports = $query->orderBy('date', 'DESC')->findAll();
 
         // Kirim data ke view
         $data = [
             'title' => 'Report Buku Besar',
-            'reports' => $report,
+            'reports' => $reports,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'coaList' => $coa,
-            'selectedCoa' => $selectedCoa
+            'coaList' => $coaList,  // Menambahkan daftar akun ke dalam view
+            'selectedCoa' => $selectedCoa // Mengirimkan nilai filter akun yang dipilih
         ];
 
         return view('report/buku_besar', $data);
