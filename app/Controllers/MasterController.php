@@ -1085,16 +1085,27 @@ class MasterController extends BaseController
         // Ambil stok yang dimasukkan dari form
         $stok = $this->request->getPost('stok');
 
-        // Menyiapkan data untuk tabel gd_bahan
-        $gd_bahan_data = [
-            'kode_bahan'    => $data['kode_bahan'],
-            'nama_bahan'    => $data['nama_bahan'],
-            'stok_awal'     => $stok,  // Menggunakan stok awal dari form
-            'stok'          => $stok,
-            'gudang'        => 'GUDANG BAHAN',  // Format Gudang
-        ];
-        // Simpan data ke dalam tabel kartustok
-        $m_Gd_Bahan->insert($gd_bahan_data);
+        // Cek apakah kode_bahan sudah ada di tabel gd_bahan
+        $existing = $m_Gd_Bahan->where('kode_bahan', $data['kode_bahan'])->first();
+
+        if ($existing) {
+            // Jika kode_bahan sudah ada, update stok dan stok_awal
+            $m_Gd_Bahan->update($existing['kode_bahan'], [
+                'stok'      => $existing['stok'] + $stok,
+                'stok_awal' => $existing['stok_awal'] + $stok
+            ]);
+        } else {
+            // Jika kode_bahan belum ada, buat data baru
+            $gd_bahan_data = [
+                'kode_bahan'    => $data['kode_bahan'],
+                'nama_bahan'    => $data['nama_bahan'],
+                'stok_awal'     => $stok,
+                'stok'          => $stok,
+                'gudang'        => 'GUDANG BAHAN',
+            ];
+            $m_Gd_Bahan->update($gd_bahan_data);
+        }
+
 
         // Redirect ke halaman yang diinginkan setelah update
         return redirect()->to('master/masterbahan')->with('message', 'Data berhasil diupdate');

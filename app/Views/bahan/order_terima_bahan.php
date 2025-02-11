@@ -204,20 +204,20 @@
                                 </tbody>
                                 <tbody>
                                     <tr>
-                                        <th class="text-end" colspan="6">Total</th>
+                                        <th class="text-end" colspan="7">Total</th>
                                         <th>
-                                            <input type="text" id="totalJumlah" class="form-control form-control-sm" readonly>
+                                            <input type="text" id="totalJumlah" class="form-control" readonly>
                                         </th>
                                         <th colspan="6"></th>
                                     </tr>
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th class="text-end" colspan="6">Disc Total</th>
+                                        <th class="text-end" colspan="7">Disc Total</th>
                                         <th>
-                                            <input type="text" id="disc_total" name="disc_total" class="form-control form-control-sm">
+                                            <input type="text" id="disc_total" name="disc_total" class="form-control">
                                         </th>
-                                        <th colspan="6"></th>
+                                        <th colspan="6">Khusus ini gunakan koma (,) untuk mengurangi desimal</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -512,28 +512,38 @@
         }
 
         function formatNumber(num, withDecimal = true) {
-            return num.toLocaleString('id-ID', {
-                minimumFractionDigits: withDecimal ? 2 : 0,
-                maximumFractionDigits: withDecimal ? 2 : 0
-            });
+            // Pastikan num adalah angka
+            num = parseFloat(num) || 0;
+
+            // Format angka agar bisa dibaca oleh PHP (tanpa pemisah ribuan, hanya desimal titik)
+            return withDecimal ? num.toFixed(2) : num.toFixed(0);
         }
+
 
         function hitungTotal() {
             let totalJumlah = 0;
 
             // Hitung total jumlah dari semua baris di tabel
             $('#detail-barang-body tr').each(function() {
-                const jumlah = parseFloat($(this).find('.jumlah').val().replace(/,/g, '')) || 0;
+                let jumlahText = $(this).find('.jumlah').val() || "0";
+
+                // Ubah format angka dari 1.912.561,20 ke 1912561.20 agar bisa dibaca PHP
+                // jumlahText = jumlahText.replace(/\./g, '').replace(/,/g, '.');
+
+                const jumlah = parseFloat(jumlahText) || 0;
                 totalJumlah += jumlah;
             });
 
             // Ambil nilai diskon dari input disc_total
-            const discTotal = parseFloat($('#disc_total').val().replace(/,/g, '')) || 0;
+            let discTotalText = $('#disc_total').val() || "0";
+            // discTotalText = discTotalText.replace(/\./g, '').replace(/,/g, '.');
+
+            const discTotal = parseFloat(discTotalText) || 0;
 
             // Kurangi diskon dari totalJumlah
             totalJumlah -= discTotal;
 
-            // Update input totalJumlah dengan format desimal
+            // Update input totalJumlah menggunakan formatNumber
             $('#totalJumlah').val(formatNumber(totalJumlah));
         }
 
@@ -599,7 +609,11 @@
             const qty = parseFloat(row.find('.qty').val()) || 0;
             const harga = parseFloat(row.find('.harga').val()) || 0;
             const disc = parseFloat(row.find('.disc').val()) || 0;
-            const jumlah = (qty * harga) - disc;
+
+            // Menghitung jumlah dengan diskon dalam persen
+            const subtotal = qty * harga;
+            const jumlah = subtotal - (subtotal * (disc / 100));
+
             // Format jumlah menggunakan formatNumber dan update input .jumlah
             row.find('.jumlah').val(formatNumber(jumlah));
 

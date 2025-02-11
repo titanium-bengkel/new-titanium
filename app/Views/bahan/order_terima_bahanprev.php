@@ -222,14 +222,14 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td class="text-end" colspan="2">Total Qty</td>
+                                    <td class="text-end" colspan="3">Total Qty</td>
                                     <td style="text-align: end;"><?= $terima['total_qty'] ?></td>
                                     <td class="text-end" colspan="3">Total Jumlah</td>
                                     <td style="text-align: end;"> <?= number_format($terima['total_jumlah'], 2, ',', '.'); ?></td>
                                     <td colspan="5"></td>
                                 </tr>
                                 <tr>
-                                    <td class="text-end" colspan="6">Disc Total</td>
+                                    <td class="text-end" colspan="7">Disc Total</td>
                                     <td style="text-align: end;"> <?= number_format($terima['disc_total'], 2, ',', '.'); ?></td>
                                     <td colspan="5"></td>
                                 </tr>

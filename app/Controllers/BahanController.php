@@ -362,6 +362,7 @@ class BahanController extends BaseController
         $disc_total = str_replace(',', '', $raw_disc_total); // Hapus koma jika ada
         $ppn_option = strtoupper($this->request->getPost('ppn')); // PPN atau NON-PPN
         $ppn_rate = $ppn_option === 'PPN' ? 0.11 : 0; // 11% untuk PPN, 0 untuk Non-PPN
+        $disc_total = str_replace(',', '.', $disc_total); // Ubah koma menjadi titik
         $disc_total = is_numeric($disc_total) ? (float)$disc_total : 0; // Pastikan nilai berupa angka
 
         // Mengambil data dari request

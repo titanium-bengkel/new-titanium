@@ -366,6 +366,7 @@
             var row = '<tr>' +
                 '<td><input type="text" name="id_kode_barang[]" class="form-control form-control-sm" data-bs-toggle="modal" data-bs-target="#kodeBarangModal" readonly></td>' +
                 '<td><input type="text" name="nama_barang[]" class="form-control form-control-sm"></td>' +
+                '<td><input type="text" name="kategori[]" class="form-control form-control-sm"></td>' +
                 '<td><input type="text" name="qty[]" class="form-control form-control-sm"></td>' +
                 '<td><input type="text" name="satuan[]" class="form-control form-control-sm"></td>' +
                 '<td><input type="text" name="hpp[]" class="form-control form-control-sm"></td>' +

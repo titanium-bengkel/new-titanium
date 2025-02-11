@@ -99,7 +99,7 @@
                                                 <?= $data['ppn'] == 0.11 ? 'PPN' : 'NON-PPN' ?>
                                             </td>
                                             <td class="text-end"><?= number_format($data['nilai_ppn'], 2, ',', '.'); ?></td>
-                                            <td class="text-end"><?= number_format($data['netto'], 2, ',', '.'); ?></td>
+                                            <td class="text-end"><?= number_format($data['total_jumlah'], 2, ',', '.'); ?></td>
                                             <td class="text-end"><?= $data['total_qty'] ?></td>
                                             <td class="text-left"><?= $data['keterangan'] ?></td>
                                             <td class="text-center"><?= $data['user_id'] ?></td>
