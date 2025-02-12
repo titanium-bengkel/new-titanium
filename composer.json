@@ -14,7 +14,6 @@
         "codeigniter4/framework": "^4.5",
         "intervention/image": "^3.7",
         "king23/king23": "^0.1.1",
-        "kint-php/kint": "5.0",
         "mpdf/mpdf": "^8.2",
         "ncjoes/office-converter": "^1.0",
         "phpoffice/phpword": "^1.3"

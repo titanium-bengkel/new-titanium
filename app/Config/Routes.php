@@ -497,3 +497,4 @@ $routes->get('filter/keluar_kasbesar', 'KeuanganController::keluarkasbesar');
 $routes->get('filter/rolist', 'KeuanganController::repairoder_list');
 $routes->get('filter/reportjurnal', 'ReportController::jurnal_keuangan');
 $routes->get('filter/bukubesar', 'ReportController::bukubesar_generalledger');
+$routes->get('filter/labarugi', 'ReportController::laporan_labarugi');
